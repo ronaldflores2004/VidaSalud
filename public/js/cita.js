@@ -27,7 +27,8 @@
     // ---------- 1. Paciente ----------
     const buscar = $('buscar-paciente'), lista = $('sugerencias');
     let espera;
-    buscar.addEventListener('input', function () {
+    // Cuando reserva el propio paciente no hay buscador
+    if (buscar) buscar.addEventListener('input', function () {
         $('paciente_id').value = '';
         texto($('r-paciente'), '');
         clearTimeout(espera);
@@ -43,7 +44,7 @@
             } catch (e) { lista.innerHTML = '<li class="nada">No se pudo buscar</li>'; lista.hidden = false; }
         }, 250);
     });
-    lista.addEventListener('click', function (e) {
+    if (lista) lista.addEventListener('click', function (e) {
         const li = e.target.closest('li[data-id]');
         if (!li) return;
         $('paciente_id').value = li.dataset.id;

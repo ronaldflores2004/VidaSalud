@@ -26,10 +26,10 @@ class HorarioController extends Controller
             'dia_semana' => ['required', 'integer', 'between:1,7'],
             'hora_inicio' => ['required', 'date_format:H:i'],
             'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio'],
-            'duracion_cita' => ['required', 'integer', 'in:15,20,30,45,60'],
         ], [
             'hora_fin.after' => 'La hora final debe ser posterior a la hora inicial.',
-        ], ['dia_semana' => 'día', 'hora_inicio' => 'hora inicial', 'hora_fin' => 'hora final', 'duracion_cita' => 'duración']);
+        ], ['dia_semana' => 'día', 'hora_inicio' => 'hora inicial', 'hora_fin' => 'hora final']);
+        $datos['duracion_cita'] = Horario::DURACION_FICHA; // 15 min por paciente
 
         $cruce = $medico->horarios()
             ->where('dia_semana', $datos['dia_semana'])

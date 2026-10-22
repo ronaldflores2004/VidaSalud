@@ -1,15 +1,23 @@
 @extends('layouts.app')
-@section('titulo', 'Programar cita')
-@section('migas', 'Atención / Programar cita')
+@section('titulo', $esPaciente ? 'Reservar ficha' : 'Programar cita')
+@section('migas', $esPaciente ? 'Mis fichas / Reservar' : 'Atención / Programar cita')
 
 @section('contenido')
-<div class="cabecera"><div><h1>Programar cita médica</h1><p class="sub">Solo se muestran los horarios libres del médico. La disponibilidad se verifica otra vez al guardar.</p></div></div>
+<div class="cabecera"><div><h1>{{ $esPaciente ? 'Reservar ficha médica' : 'Programar cita médica' }}</h1><p class="sub">Solo se muestran los horarios libres del médico. La disponibilidad se verifica otra vez al guardar.</p></div></div>
 
 <form method="POST" action="{{ route('citas.store') }}" id="form-cita" class="cita-layout" data-validar novalidate
-      data-url-medicos="{{ url('api/especialidades') }}" data-url-bloques="{{ url('api/medicos') }}" data-url-pacientes="{{ route('api.pacientes') }}">
+      data-url-medicos="{{ url('api/especialidades') }}" data-url-bloques="{{ url('api/medicos') }}" data-url-pacientes="{{ $esPaciente ? '' : route('api.pacientes') }}">
     @csrf
     <div class="cita-pasos">
-        {{-- Paso 1: paciente --}}
+        {{-- Paso 1: paciente (el paciente que reserva desde la web ya está identificado) --}}
+        @if($esPaciente)
+        <section class="card paso">
+            <h2><span class="num">1</span> Paciente</h2>
+            <input type="hidden" name="paciente_id" id="paciente_id" value="{{ $pacienteSeleccionado->id }}">
+            <p><strong>{{ $pacienteSeleccionado->nombre_completo }}</strong> <span class="sub">· CI {{ $pacienteSeleccionado->ci ?? '—' }} · {{ $pacienteSeleccionado->codigo }}</span></p>
+            <p class="ayuda">Cada ficha es de 15 minutos. Llegue 10 minutos antes de su horario.</p>
+        </section>
+        @else
         <section class="card paso">
             <h2><span class="num">1</span> Paciente</h2>
             <input type="hidden" name="paciente_id" id="paciente_id" value="{{ old('paciente_id', $pacienteSeleccionado?->id) }}" required data-msg="Busque y seleccione un paciente.">
@@ -20,6 +28,7 @@
             </div>
             <p class="ayuda">¿Paciente nuevo? <a href="{{ route('pacientes.create') }}">Regístrelo primero</a>.</p>
         </section>
+        @endif
 
         {{-- Paso 2: especialidad y médico --}}
         <section class="card paso">
@@ -61,7 +70,7 @@
             <dt>Horario</dt><dd id="r-hora">—</dd>
         </dl>
         <button class="btn btn-primario btn-bloque" type="submit">Confirmar cita</button>
-        <a href="{{ route('citas.index') }}" class="btn btn-ghost btn-bloque">Cancelar</a>
+        <a href="{{ $esPaciente ? route('dashboard') : route('citas.index') }}" class="btn btn-ghost btn-bloque">Cancelar</a>
     </aside>
 </form>
 @endsection

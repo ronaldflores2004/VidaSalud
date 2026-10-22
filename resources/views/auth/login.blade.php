@@ -20,7 +20,7 @@
 
     <section class="login-card">
         <h1>Iniciar sesión</h1>
-        <p class="sub">Ingrese con su usuario o correo electrónico.</p>
+        <p class="sub">Personal: usuario o correo. Pacientes: CI o correo.</p>
 
         @if(session('ok'))<div class="alerta alerta-ok">{{ session('ok') }}</div>@endif
         @error('login')<div class="alerta alerta-error">{{ $message }}</div>@enderror
@@ -41,6 +41,8 @@
             <label class="check"><input type="checkbox" name="recordar" value="1"> Recordarme en este equipo</label>
             <button type="submit" class="btn btn-primario btn-bloque">Ingresar</button>
         </form>
+        <p class="login-pie">¿Es paciente y aún no tiene cuenta? <a href="{{ route('registro') }}">Regístrese aquí</a><br>
+            <a href="{{ route('portal') }}">← Volver a la página de la clínica</a></p>
     </section>
 </div>
 <script src="{{ asset('js/app.js') }}"></script>

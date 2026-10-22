@@ -20,17 +20,14 @@
             <label class="campo"><span>Hora inicial *</span><input type="time" name="hora_inicio" value="{{ old('hora_inicio', '08:00') }}" required></label>
             <label class="campo"><span>Hora final *</span><input type="time" name="hora_fin" value="{{ old('hora_fin', '12:00') }}" required data-despues-de="hora_inicio"></label>
         </div>
-        <label class="campo"><span>Duración de cada cita *</span>
-            <select name="duracion_cita" required>
-                @foreach([15,20,30,45,60] as $min)<option value="{{ $min }}" @selected(old('duracion_cita', 30) == $min)>{{ $min }} minutos</option>@endforeach
-            </select></label>
+        <p class="ayuda">Cada ficha dura <strong>15 minutos</strong> por paciente; el sistema calcula los cupos automáticamente.</p>
         <div class="form-pie"><button class="btn btn-primario">Agregar horario</button></div>
     </form>
 
     <div class="card">
         <h2>Semana</h2>
         <table class="tabla">
-            <thead><tr><th>Día</th><th>Horario</th><th>Duración</th><th>Cupos</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Día</th><th>Horario</th><th>Ficha</th><th>Cupos</th><th>Estado</th><th></th></tr></thead>
             <tbody>
             @forelse($medico->horarios as $h)
                 @php($cupos = intdiv((strtotime($h->hora_fin) - strtotime($h->hora_inicio)) / 60, $h->duracion_cita))

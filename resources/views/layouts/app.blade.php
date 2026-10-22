@@ -32,6 +32,13 @@
                 <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.*') ? 'activo' : '' }}">Mi agenda</a>
             @endif
 
+            @if($u->tieneRol('Paciente'))
+                <span class="menu-grupo">Mis fichas</span>
+                <a href="{{ route('citas.create') }}" class="{{ request()->routeIs('citas.create') ? 'activo' : '' }}">Reservar ficha</a>
+                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.index', 'citas.show') ? 'activo' : '' }}">Mis citas</a>
+                <a href="{{ route('portal.horarios') }}">Horarios de médicos</a>
+            @endif
+
             @if($u->tieneRol('Administrador'))
                 <span class="menu-grupo">Administración</span>
                 <a href="{{ route('especialidades.index') }}" class="{{ request()->routeIs('especialidades.*') ? 'activo' : '' }}">Especialidades</a>

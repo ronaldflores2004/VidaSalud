@@ -15,19 +15,30 @@ use App\Http\Controllers\GestionMedica\EspecialidadController;
 use App\Http\Controllers\GestionMedica\HorarioController;
 use App\Http\Controllers\GestionMedica\MedicoController;
 use App\Http\Controllers\Pacientes\PacienteController;
+use App\Http\Controllers\Portal\PortalController;
+use App\Http\Controllers\Portal\RegistroPacienteController;
 use App\Http\Controllers\Seguridad\LoginController;
 use App\Http\Controllers\Seguridad\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
-// ---------- P1 Seguridad y Acceso: CU1 Iniciar sesión / CU2 Cerrar sesión ----------
+// ---------- Portal público: la web de la clínica y los horarios disponibles (CU9) ----------
+Route::get('/', [PortalController::class, 'inicio'])->name('portal');
+Route::get('/horarios', [PortalController::class, 'horarios'])->name('portal.horarios');
+// Consultas de disponibilidad (solo lectura, sin datos de pacientes)
+Route::get('api/especialidades/{especialidad}/medicos', [DisponibilidadController::class, 'medicos'])->name('api.medicos');
+Route::get('api/medicos/{medico}/bloques', [DisponibilidadController::class, 'bloques'])->name('api.bloques');
+
+// ---------- P1 Seguridad y Acceso: CU1 Iniciar sesión / CU2 Cerrar sesión / CU8 Registrarse ----------
 Route::middleware('guest')->group(function () {
+    Route::get('/registro', [RegistroPacienteController::class, 'mostrar'])->name('registro');
+    Route::post('/registro', [RegistroPacienteController::class, 'registrar'])->name('registro.guardar');
     Route::get('/login', [LoginController::class, 'mostrar'])->name('login');
     Route::post('/login', [LoginController::class, 'ingresar'])->name('login.ingresar');
 });
 
 Route::middleware(['auth', 'rol'])->group(function () {
     Route::post('/logout', [LoginController::class, 'salir'])->name('logout');
-    Route::get('/', DashboardController::class)->name('dashboard');
+    Route::get('/panel', DashboardController::class)->name('dashboard');
 
     // ---------- Solo Administrador ----------
     Route::middleware('rol:Administrador')->group(function () {
@@ -62,16 +73,18 @@ Route::middleware(['auth', 'rol'])->group(function () {
         Route::resource('pacientes', PacienteController::class)->except(['destroy']);
         Route::patch('pacientes/{paciente}/estado', [PacienteController::class, 'cambiarEstado'])->name('pacientes.estado');
 
-        // CU8 Programar cita + CU9 Consultar disponibilidad (JSON)
-        Route::get('citas/nueva', [CitaController::class, 'create'])->name('citas.create');
-        Route::post('citas', [CitaController::class, 'store'])->name('citas.store');
-        Route::get('api/especialidades/{especialidad}/medicos', [DisponibilidadController::class, 'medicos'])->name('api.medicos');
-        Route::get('api/medicos/{medico}/bloques', [DisponibilidadController::class, 'bloques'])->name('api.bloques');
+        // Búsqueda de pacientes para programar la cita (datos personales: solo personal autorizado)
         Route::get('api/pacientes', [DisponibilidadController::class, 'pacientes'])->name('api.pacientes');
     });
 
-    // ---------- Consulta de citas: Administrador, Recepcionista y Médico ----------
-    Route::middleware('rol:Administrador,Recepcionista,Medico')->group(function () {
+    // ---------- CU10 Reservar / programar cita: Recepcionista (para un paciente) o Paciente (para sí) ----------
+    Route::middleware('rol:Administrador,Recepcionista,Paciente')->group(function () {
+        Route::get('citas/nueva', [CitaController::class, 'create'])->name('citas.create');
+        Route::post('citas', [CitaController::class, 'store'])->name('citas.store');
+    });
+
+    // ---------- Consulta de citas: cada rol ve solo lo suyo ----------
+    Route::middleware('rol:Administrador,Recepcionista,Medico,Paciente')->group(function () {
         Route::get('citas', [CitaController::class, 'index'])->name('citas.index');
         Route::get('citas/{cita}', [CitaController::class, 'show'])->name('citas.show')->whereNumber('cita');
     });

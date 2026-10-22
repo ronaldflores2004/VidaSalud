@@ -21,7 +21,20 @@ class DashboardController extends Controller
         $citasHoy = Cita::with('paciente', 'medico', 'especialidad')
             ->whereDate('fecha', $hoy)
             ->when($usuario->tieneRol('Medico'), fn ($q) => $q->where('medico_id', $usuario->medico?->id ?? 0))
+            ->when($usuario->tieneRol('Paciente'), fn ($q) => $q->where('paciente_id', $usuario->paciente?->id ?? 0))
             ->orderBy('hora_inicio')->get();
+
+        // Panel del paciente: sus próximas fichas
+        if ($usuario->tieneRol('Paciente')) {
+            return view('dashboard-paciente', [
+                'paciente' => $usuario->paciente,
+                'proximas' => Cita::with('medico', 'especialidad')
+                    ->where('paciente_id', $usuario->paciente?->id ?? 0)
+                    ->whereDate('fecha', '>=', $hoy)
+                    ->whereIn('estado', [Cita::PROGRAMADA, Cita::CONFIRMADA])
+                    ->orderBy('fecha')->orderBy('hora_inicio')->get(),
+            ]);
+        }
 
         return view('dashboard', [
             'citasHoy' => $citasHoy,

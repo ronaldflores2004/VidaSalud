@@ -8,12 +8,13 @@ use App\Models\Medico;
 use App\Models\Paciente;
 use App\Models\Rol;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 /**
  * Datos iniciales de demostración (ficticios).
  * Usuarios de prueba (contraseña para todos: Clinica2026):
- *   admin / recepcion / dr.perez
+ *   admin / recepcion / dr.perez / 8456123 (paciente María López)
  */
 class DatabaseSeeder extends Seeder
 {
@@ -31,29 +32,39 @@ class DatabaseSeeder extends Seeder
         User::create(['name' => 'Carla Méndez Suárez', 'username' => 'recepcion', 'email' => 'recepcion@vidasalud.bo', 'password' => $clave, 'rol_id' => $roles[Rol::RECEPCIONISTA]->id]);
         $uPerez = User::create(['name' => 'Juan Pérez Vargas', 'username' => 'dr.perez', 'email' => 'jperez@vidasalud.bo', 'password' => $clave, 'rol_id' => $roles[Rol::MEDICO]->id]);
 
+        // Especialidades definidas por el grupo (sin terapia intensiva)
         $esp = collect([
-            'Medicina general' => 'Atención primaria y diagnóstico general',
+            'Medicina general' => 'Atención primaria, control y derivación',
             'Pediatría' => 'Atención de niños y adolescentes',
+            'Geriatría' => 'Atención del adulto mayor',
+            'Cardiología' => 'Enfermedades del corazón y presión arterial',
             'Ginecología' => 'Salud de la mujer',
-            'Odontología' => 'Salud bucal',
-            'Cardiología' => 'Enfermedades del corazón',
+            'Traumatología' => 'Lesiones de huesos, músculos y articulaciones',
+            'Reumatología' => 'Enfermedades de las articulaciones y autoinmunes',
+            'Oftalmología' => 'Salud visual',
+            'Otorrinolaringología' => 'Oído, nariz y garganta',
         ])->map(fn ($d, $n) => Especialidad::create(['nombre' => $n, 'descripcion' => $d]));
 
         $medicos = [
             ['Juan', 'Pérez Vargas', 'CMB-10234', ['Medicina general'], $uPerez->id, [[1, '08:00', '12:00'], [3, '14:00', '18:00'], [5, '08:00', '12:00']]],
-            ['Lucía', 'Fernández Arce', 'CMB-11870', ['Pediatría'], null, [[2, '09:00', '13:00'], [4, '09:00', '13:00']]],
+            ['Lucía', 'Fernández Arce', 'CMB-11870', ['Pediatría'], null, [[2, '09:00', '12:00'], [4, '09:00', '12:00']]],
             ['Roberto', 'Salvatierra Chávez', 'CMB-09455', ['Cardiología', 'Medicina general'], null, [[1, '14:00', '18:00'], [4, '14:00', '18:00']]],
             ['María José', 'Antelo Rivero', 'CMB-12011', ['Ginecología'], null, [[2, '14:00', '18:00'], [5, '14:00', '18:00']]],
-            ['Diego', 'Rocha Justiniano', 'COB-03321', ['Odontología'], null, [[1, '08:00', '12:00'], [3, '08:00', '12:00'], [6, '08:00', '12:00']]],
+            ['Hugo', 'Montero Suárez', 'CMB-08712', ['Geriatría'], null, [[3, '08:00', '12:00']]],
+            ['Daniela', 'Rojas Paz', 'CMB-13377', ['Traumatología'], null, [[2, '08:00', '12:00'], [6, '08:00', '11:00']]],
+            ['Fernando', 'Cuéllar Áñez', 'CMB-10990', ['Reumatología'], null, [[4, '08:00', '11:00']]],
+            ['Patricia', 'Méndez Ortiz', 'CMB-12560', ['Oftalmología'], null, [[1, '09:00', '12:00'], [5, '14:00', '17:00']]],
+            ['Gabriel', 'Suárez Ribera', 'CMB-11421', ['Otorrinolaringología'], null, [[3, '14:00', '17:00']]],
         ];
         foreach ($medicos as $i => [$n, $a, $reg, $espNombres, $userId, $horarios]) {
             $m = Medico::create([
                 'codigo' => sprintf('MED-%04d', $i + 1), 'registro_profesional' => $reg, 'nombres' => $n, 'apellidos' => $a,
-                'telefono' => '7' . rand(1000000, 9999999), 'email' => null, 'user_id' => $userId,
+                'telefono' => '7' . (1000000 + $i * 731117 % 8999999), 'email' => null, 'user_id' => $userId,
             ]);
             $m->especialidades()->sync($esp->only($espNombres)->pluck('id'));
             foreach ($horarios as [$dia, $ini, $fin]) {
-                $m->horarios()->create(['dia_semana' => $dia, 'hora_inicio' => $ini, 'hora_fin' => $fin, 'duracion_cita' => 30]);
+                // 15 minutos de atención por paciente
+                $m->horarios()->create(['dia_semana' => $dia, 'hora_inicio' => $ini, 'hora_fin' => $fin, 'duracion_cita' => 15]);
             }
         }
 
@@ -71,20 +82,24 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // Cuenta web de la paciente María López (se registró desde la web): usuario = su CI
+        $uMaria = User::create(['name' => 'María López Saavedra', 'username' => '8456123', 'email' => 'maria.lopez@correo.bo', 'password' => $clave, 'rol_id' => $roles[Rol::PACIENTE]->id]);
+        Paciente::where('ci', '8456123')->update(['user_id' => $uMaria->id, 'email' => 'maria.lopez@correo.bo']);
+
         // Algunas citas de ejemplo en los próximos días hábiles del Dr. Pérez
         $perez = Medico::where('registro_profesional', 'CMB-10234')->first();
         $fecha = today()->addDay();
         while (! in_array($fecha->dayOfWeekIso, [1, 3, 5])) {
             $fecha->addDay();
         }
-        $base = $fecha->dayOfWeekIso === 3 ? 14 : 8;
+        $base = Carbon::parse($fecha->toDateString() . ($fecha->dayOfWeekIso === 3 ? ' 14:00' : ' 08:00'));
         foreach ([[1, 0, 'Control general'], [2, 1, 'Dolor de cabeza frecuente'], [4, 3, 'Chequeo de presión arterial']] as $k => [$pac, $slot, $motivo]) {
-            $ini = sprintf('%02d:%02d', $base + intdiv($slot * 30, 60), ($slot * 30) % 60);
-            $fin = sprintf('%02d:%02d', $base + intdiv(($slot + 1) * 30, 60), (($slot + 1) * 30) % 60);
+            $ini = $base->copy()->addMinutes($slot * 15);
             Cita::create([
                 'codigo' => sprintf('CM-%04d', $k + 1), 'paciente_id' => $pac, 'medico_id' => $perez->id,
                 'especialidad_id' => $esp['Medicina general']->id, 'fecha' => $fecha->toDateString(),
-                'hora_inicio' => $ini, 'hora_fin' => $fin, 'motivo' => $motivo, 'estado' => Cita::PROGRAMADA, 'registrado_por' => $admin->id,
+                'hora_inicio' => $ini->format('H:i'), 'hora_fin' => $ini->copy()->addMinutes(15)->format('H:i'),
+                'motivo' => $motivo, 'estado' => Cita::PROGRAMADA, 'registrado_por' => $admin->id,
             ]);
         }
     }

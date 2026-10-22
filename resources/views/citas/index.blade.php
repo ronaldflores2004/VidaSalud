@@ -1,16 +1,17 @@
 @extends('layouts.app')
 @php($esMedico = auth()->user()->tieneRol('Medico'))
-@section('titulo', $esMedico ? 'Mi agenda' : 'Citas')
-@section('migas', $esMedico ? 'Mi consulta / Agenda' : 'Atención / Citas')
+@php($esPaciente = auth()->user()->tieneRol('Paciente'))
+@section('titulo', $esMedico ? 'Mi agenda' : ($esPaciente ? 'Mis citas' : 'Citas'))
+@section('migas', $esMedico ? 'Mi consulta / Agenda' : ($esPaciente ? 'Mis fichas / Mis citas' : 'Atención / Citas'))
 
 @section('contenido')
 <div class="cabecera">
-    <div><h1>{{ $esMedico ? 'Mi agenda' : 'Citas médicas' }}</h1><p class="sub">Filtre por fecha, médico y estado.</p></div>
+    <div><h1>{{ $esMedico ? 'Mi agenda' : ($esPaciente ? 'Mis citas' : 'Citas médicas') }}</h1><p class="sub">{{ $esMedico ? 'Solo se muestran sus pacientes.' : 'Filtre por fecha, médico y estado.' }}</p></div>
     @unless($esMedico)<a href="{{ route('citas.create') }}" class="btn btn-primario">+ Programar cita</a>@endunless
 </div>
 <form class="filtros" method="GET">
     <input type="date" name="fecha" value="{{ request('fecha') }}">
-    @unless($esMedico)
+    @unless($esMedico || $esPaciente)
     <select name="medico">
         <option value="">Todos los médicos</option>
         @foreach($medicos as $m)<option value="{{ $m->id }}" @selected(request('medico') == $m->id)>{{ $m->nombre_completo }}</option>@endforeach

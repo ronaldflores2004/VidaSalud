@@ -21,7 +21,7 @@
     </dl>
 </div>
 <div class="botones">
-    <a href="{{ route('citas.index') }}" class="btn btn-ghost">Volver a citas</a>
+    <a href="{{ route('citas.index') }}" class="btn btn-ghost">Volver a {{ auth()->user()->tieneRol('Paciente') ? 'mis citas' : 'citas' }}</a>
     @if(auth()->user()->tieneRol('Administrador', 'Recepcionista'))
         <a href="{{ route('pacientes.show', $cita->paciente) }}" class="btn btn-sec">Ver paciente</a>
         <a href="{{ route('citas.create') }}" class="btn btn-primario">Programar otra cita</a>

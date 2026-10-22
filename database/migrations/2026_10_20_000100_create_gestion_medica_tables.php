@@ -50,7 +50,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('dia_semana');              // 1 = lunes ... 7 = domingo (ISO-8601)
             $table->time('hora_inicio');
             $table->time('hora_fin');
-            $table->unsignedSmallInteger('duracion_cita')->default(30); // minutos por cita
+            $table->unsignedSmallInteger('duracion_cita')->default(15); // 15 minutos de atención por paciente
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
@@ -58,7 +58,7 @@ return new class extends Migration
         // Reglas de RF05 protegidas también en la base de datos
         DB::statement('ALTER TABLE horarios ADD CONSTRAINT chk_horario_rango CHECK (hora_fin > hora_inicio)');
         DB::statement('ALTER TABLE horarios ADD CONSTRAINT chk_horario_dia CHECK (dia_semana BETWEEN 1 AND 7)');
-        DB::statement('ALTER TABLE horarios ADD CONSTRAINT chk_horario_duracion CHECK (duracion_cita BETWEEN 10 AND 120)');
+        DB::statement('ALTER TABLE horarios ADD CONSTRAINT chk_horario_duracion CHECK (duracion_cita = 15)');
     }
 
     public function down(): void

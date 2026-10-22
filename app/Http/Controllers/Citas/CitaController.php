@@ -14,8 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * CU8 Programar cita médica (módulo principal, RF06 y RF07).
- * También lista las citas con filtros por fecha, médico y estado.
+ * CU10 Reservar / programar cita (ficha de 15 min, módulo principal, RF06 y RF07).
+ * La recepcionista elige al paciente; el paciente reserva desde la web para sí mismo.
+ * También lista las citas con filtros; cada rol ve solo lo que le corresponde.
  */
 class CitaController extends Controller
 {
@@ -28,8 +29,9 @@ class CitaController extends Controller
         $usuario = $request->user();
 
         $citas = Cita::with(['paciente', 'medico', 'especialidad'])
-            // El médico solo ve su propia agenda
+            // El médico solo ve su propia agenda y el paciente solo sus propias citas
             ->when($usuario->tieneRol('Medico'), fn ($q) => $q->where('medico_id', $usuario->medico?->id ?? 0))
+            ->when($usuario->tieneRol('Paciente'), fn ($q) => $q->where('paciente_id', $usuario->paciente?->id ?? 0))
             ->when($request->fecha, fn ($q, $f) => $q->whereDate('fecha', $f))
             ->when($request->medico, fn ($q, $m) => $q->where('medico_id', $m))
             ->when($request->estado, fn ($q, $e) => $q->where('estado', $e))
@@ -45,15 +47,28 @@ class CitaController extends Controller
 
     public function create(Request $request): View
     {
+        $usuario = $request->user();
+        if ($usuario->tieneRol('Paciente')) {
+            abort_unless($usuario->paciente?->activo, 403, 'Su registro de paciente no está activo.');
+        }
+
         return view('citas.create', [
+            'esPaciente' => $usuario->tieneRol('Paciente'),
             'especialidades' => Especialidad::where('activo', true)->whereHas('medicos', fn ($m) => $m->where('activo', true))->orderBy('nombre')->get(),
             // Si vuelve con error de validación se conserva el paciente elegido
-            'pacienteSeleccionado' => ($id = old('paciente_id', $request->paciente)) ? Paciente::where('activo', true)->find($id) : null,
+            'pacienteSeleccionado' => $usuario->tieneRol('Paciente')
+                ? $usuario->paciente
+                : (($id = old('paciente_id', $request->paciente)) ? Paciente::where('activo', true)->find($id) : null),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        // El paciente solo puede reservar para sí mismo: se ignora cualquier paciente_id enviado
+        if ($request->user()->tieneRol('Paciente')) {
+            $request->merge(['paciente_id' => $request->user()->paciente?->id]);
+        }
+
         $datos = $request->validate([
             'paciente_id' => ['required', 'integer', 'exists:pacientes,id'],
             'especialidad_id' => ['required', 'integer', 'exists:especialidades,id'],
@@ -80,6 +95,7 @@ class CitaController extends Controller
     {
         $usuario = $request->user();
         abort_if($usuario->tieneRol('Medico') && $cita->medico_id !== $usuario->medico?->id, 403);
+        abort_if($usuario->tieneRol('Paciente') && $cita->paciente_id !== $usuario->paciente?->id, 403);
 
         return view('citas.show', ['cita' => $cita->load('paciente', 'medico', 'especialidad', 'registradoPor')]);
     }

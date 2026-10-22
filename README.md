@@ -10,16 +10,17 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 
 | CU | Caso de uso | Estado |
 |----|-------------|--------|
-| CU1 | Iniciar sesión (usuario o correo, bloqueo tras 3 intentos) | ✅ |
+| CU1 | Iniciar sesión (usuario, CI o correo; bloqueo tras 3 intentos) | ✅ |
 | CU2 | Cerrar sesión | ✅ |
-| CU3 | Gestionar usuarios y roles | ✅ |
-| CU4 | Gestionar especialidades (sin nombres duplicados) | ✅ |
+| CU3 | Gestionar usuarios y roles (4 perfiles) | ✅ |
+| CU4 | Gestionar especialidades | ✅ |
 | CU5 | Gestionar médicos y sus especialidades | ✅ |
-| CU6 | Gestionar horarios de atención (sin bloques cruzados) | ✅ |
-| CU7 | Gestionar pacientes (CI único, búsqueda, desactivación lógica) | ✅ |
-| CU8 | Programar cita médica | ✅ |
-| CU9 | Consultar disponibilidad de horarios | ✅ |
-| CU10–CU16 | Reprogramar, cancelar, asistencia, agenda, historial, reportes, perfil | Ciclo II |
+| CU6 | Gestionar horarios de atención (fichas de 15 min) | ✅ |
+| CU7 | Gestionar pacientes (recepción) | ✅ |
+| CU8 | Registrarse como paciente desde la web | ✅ |
+| CU9 | Consultar disponibilidad de horarios (portal público) | ✅ |
+| CU10 | Reservar / programar ficha | ✅ |
+| CU11–CU20 | Reprogramar, cancelar, asistencia, agenda del médico, consulta, historial clínico, tratamiento, estudios, resultados, reportes | Ciclo II |
 
 ### Cómo se evita la doble reserva (RN07)
 1. El formulario solo ofrece los bloques libres (`DisponibilidadService`).
@@ -87,6 +88,7 @@ Abrir http://127.0.0.1:8000
 | `admin` | Administrador |
 | `recepcion` | Recepcionista |
 | `dr.perez` | Médico |
+| `8456123` (CI) | Paciente (María López) |
 
 ## Pruebas mínimas cubiertas en el Ciclo I
 
