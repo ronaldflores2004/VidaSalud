@@ -22,6 +22,11 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 | CU10 | Reservar / programar ficha | ✅ |
 | CU11–CU20 | Reprogramar, cancelar, asistencia, agenda del médico, consulta, historial clínico, tratamiento, estudios, resultados, reportes | Ciclo II |
 
+### Base de datos
+Las **12 tablas del sistema ya están creadas** (incluidas las del Ciclo II: `historias_clinicas`, `consultas`,
+`tratamientos`, `estudios`). El script completo para pgAdmin/psql está en
+`backend/database/sql/clinica_vida_salud.sql` y es equivalente a `php artisan migrate --seed`.
+
 ### Cómo se evita la doble reserva (RN07)
 1. El formulario solo ofrece los bloques libres (`DisponibilidadService`).
 2. Al guardar, `CitaService` vuelve a verificar la disponibilidad dentro de una transacción con `SELECT … FOR UPDATE` sobre el médico.
