@@ -26,6 +26,7 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 Las **12 tablas del sistema ya están creadas** (incluidas las del Ciclo II: `historias_clinicas`, `consultas`,
 `tratamientos`, `estudios`). El script completo para pgAdmin/psql está en
 `backend/database/sql/clinica_vida_salud.sql` y es equivalente a `php artisan migrate --seed`.
+El diagrama de clases de la base de datos está en StarUML: `docs/uml/clinica_vida_salud_bd.mdj` (imagen: `docs/uml/diagrama_clases_bd.png`).
 
 ### Cómo se evita la doble reserva (RN07)
 1. El formulario solo ofrece los bloques libres (`DisponibilidadService`).
