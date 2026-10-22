@@ -23,8 +23,9 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 | CU11–CU20 | Reprogramar, cancelar, asistencia, agenda del médico, consulta, historial clínico, tratamiento, estudios, resultados, reportes | Ciclo II |
 
 ### Base de datos
-Las **12 tablas del sistema ya están creadas** (incluidas las del Ciclo II: `historias_clinicas`, `consultas`,
-`tratamientos`, `estudios`). El script completo para pgAdmin/psql está en
+La base de datos está **diseñada completa desde el Ciclo I: 16 tablas**, incluidas las que se usan en el Ciclo II
+(historial clínico, consultas, tratamientos, estudios), el historial de cada cita, feriados/bloqueos de agenda,
+recordatorios (notificaciones) y la bitácora de auditoría. El script completo para pgAdmin/psql está en
 `backend/database/sql/clinica_vida_salud.sql` y es equivalente a `php artisan migrate --seed`.
 El diagrama de clases de la base de datos está en StarUML: `docs/uml/clinica_vida_salud_bd.mdj` (imagen: `docs/uml/diagrama_clases_bd.png`).
 

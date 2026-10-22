@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\P1_SeguridadAcceso;
 
 use App\Http\Controllers\Controller;
+use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P1_SeguridadAcceso\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -58,12 +59,14 @@ class LoginController extends Controller
         /** @var User $usuario */
         $usuario = Auth::user();
         $usuario->forceFill(['ultimo_acceso' => now()])->save();
+        Bitacora::registrar('LOGIN', 'P1_SeguridadAcceso', $usuario, 'Inicio de sesión');
 
         return redirect()->intended(route('dashboard'));
     }
 
     public function salir(Request $request): RedirectResponse
     {
+        Bitacora::registrar('LOGOUT', 'P1_SeguridadAcceso', $request->user(), 'Cierre de sesión');
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

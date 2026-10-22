@@ -9,11 +9,12 @@
    En el proyecto Laravel las mismas tablas se crean con: php artisan migrate --seed
    -----------------------------------------------------------------------------
    Tablas por paquete (misma numeración del documento):
-     P1 Seguridad y Acceso ............ roles, users
-     P2 Gestión Médica ................ especialidades, medicos, especialidad_medico, horarios
+     P1 Seguridad y Acceso ............ roles, users, bitacora
+     P2 Gestión Médica ................ especialidades, medicos, especialidad_medico, horarios, bloqueos_agenda
      P3 Gestión de Pacientes .......... pacientes
-     P4 Gestión de Citas .............. citas
+     P4 Gestión de Citas .............. citas, historial_citas, notificaciones
      P5 Atención Médica e Historial ... historias_clinicas, consultas, tratamientos, estudios
+     (16 tablas del sistema)
      Soporte del framework ............ sessions, password_reset_tokens, cache, cache_locks
    ============================================================================= */
 
@@ -51,6 +52,21 @@ CREATE TABLE users (
     created_at      TIMESTAMP,
     updated_at      TIMESTAMP
 );
+
+-- Bitácora de auditoría: quién hizo qué, cuándo y desde qué IP
+CREATE TABLE bitacora (
+    id           BIGSERIAL     PRIMARY KEY,
+    user_id      BIGINT        REFERENCES users (id) ON DELETE SET NULL,
+    accion       VARCHAR(20)   NOT NULL,                             -- LOGIN, LOGOUT, CREAR, MODIFICAR…
+    modulo       VARCHAR(40)   NOT NULL,                             -- P1_SeguridadAcceso, P4_GestionCitas…
+    tabla        VARCHAR(40),
+    registro_id  BIGINT,
+    descripcion  TEXT,
+    ip           VARCHAR(45),
+    created_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_bitacora_usuario_fecha ON bitacora (user_id, created_at);
+CREATE INDEX idx_bitacora_tabla_registro ON bitacora (tabla, registro_id);
 
 
 /* =============================================================================
@@ -106,6 +122,24 @@ CREATE TABLE horarios (
     CONSTRAINT chk_horario_duracion  CHECK (duracion_cita = 15)
 );
 
+-- Feriados y bloqueos de agenda (RF05). medico_id NULL = toda la clínica; horas NULL = todo el día.
+CREATE TABLE bloqueos_agenda (
+    id              BIGSERIAL     PRIMARY KEY,
+    medico_id       BIGINT        REFERENCES medicos (id) ON DELETE CASCADE,
+    fecha           DATE          NOT NULL,
+    hora_inicio     TIME,
+    hora_fin        TIME,
+    tipo            VARCHAR(10)   NOT NULL,                          -- FERIADO, VACACION, PERMISO, OTRO
+    motivo          VARCHAR(150)  NOT NULL,
+    registrado_por  BIGINT        NOT NULL REFERENCES users (id),
+    created_at      TIMESTAMP,
+    updated_at      TIMESTAMP,
+    CONSTRAINT chk_bloqueo_tipo  CHECK (tipo IN ('FERIADO','VACACION','PERMISO','OTRO')),
+    CONSTRAINT chk_bloqueo_rango CHECK ((hora_inicio IS NULL AND hora_fin IS NULL)
+                                     OR (hora_inicio IS NOT NULL AND hora_fin IS NOT NULL AND hora_fin > hora_inicio))
+);
+CREATE INDEX idx_bloqueos_fecha_medico ON bloqueos_agenda (fecha, medico_id);
+
 
 /* =============================================================================
    P3 GESTIÓN DE PACIENTES
@@ -127,8 +161,10 @@ CREATE TABLE pacientes (
     tipo_sangre                   VARCHAR(3),
     alergias                      VARCHAR(255),
     contacto_emergencia_nombre    VARCHAR(120),
+    contacto_emergencia_parentesco VARCHAR(40),
     contacto_emergencia_telefono  VARCHAR(20),
     activo                        BOOLEAN       NOT NULL DEFAULT TRUE,
+    acepta_notificaciones         BOOLEAN       NOT NULL DEFAULT TRUE, -- recordatorios de citas
     user_id                       BIGINT        UNIQUE REFERENCES users (id) ON DELETE SET NULL,
     created_at                    TIMESTAMP,
     updated_at                    TIMESTAMP
@@ -150,6 +186,7 @@ CREATE TABLE citas (
     fecha               DATE          NOT NULL,
     hora_inicio         TIME          NOT NULL,
     hora_fin            TIME          NOT NULL,
+    modalidad           VARCHAR(10)   NOT NULL DEFAULT 'PRESENCIAL',  -- PRESENCIAL, VIRTUAL
     motivo              VARCHAR(255),
     estado              VARCHAR(15)   NOT NULL DEFAULT 'PROGRAMADA',
     motivo_cancelacion  VARCHAR(255),
@@ -158,6 +195,7 @@ CREATE TABLE citas (
     updated_at          TIMESTAMP,
     CONSTRAINT chk_cita_estado CHECK (estado IN ('PROGRAMADA','CONFIRMADA','ATENDIDA','CANCELADA','INASISTENCIA')),
     CONSTRAINT chk_cita_rango  CHECK (hora_fin > hora_inicio),
+    CONSTRAINT chk_cita_modalidad CHECK (modalidad IN ('PRESENCIAL','VIRTUAL')),
     -- RN07: un médico no puede tener dos citas activas que se crucen en el tiempo.
     -- Las citas CANCELADAS no participan, por eso liberan la ficha (RN09).
     CONSTRAINT excl_cita_medico_sin_cruce EXCLUDE USING gist (
@@ -167,6 +205,43 @@ CREATE TABLE citas (
 );
 CREATE INDEX idx_citas_medico_fecha   ON citas (medico_id, fecha);
 CREATE INDEX idx_citas_paciente_fecha ON citas (paciente_id, fecha);
+
+-- Historial de cada cita: creación, reprogramación y cambios de estado (trazabilidad, RF08–RF12)
+CREATE TABLE historial_citas (
+    id               BIGSERIAL     PRIMARY KEY,
+    cita_id          BIGINT        NOT NULL REFERENCES citas (id) ON DELETE CASCADE,
+    accion           VARCHAR(15)   NOT NULL,
+    estado_anterior  VARCHAR(15),
+    estado_nuevo     VARCHAR(15)   NOT NULL,
+    fecha_anterior   DATE,
+    hora_anterior    TIME,
+    fecha_nueva      DATE,
+    hora_nueva       TIME,
+    motivo           VARCHAR(255),
+    user_id          BIGINT        NOT NULL REFERENCES users (id),
+    created_at       TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_historial_accion CHECK (accion IN
+        ('CREADA','REPROGRAMADA','CONFIRMADA','ATENDIDA','CANCELADA','INASISTENCIA'))
+);
+CREATE INDEX idx_historial_citas_cita_fecha ON historial_citas (cita_id, created_at);
+
+-- Recordatorios automáticos de próximas consultas y avisos al paciente
+CREATE TABLE notificaciones (
+    id               BIGSERIAL     PRIMARY KEY,
+    paciente_id      BIGINT        NOT NULL REFERENCES pacientes (id) ON DELETE CASCADE,
+    cita_id          BIGINT        REFERENCES citas (id) ON DELETE CASCADE,
+    tipo             VARCHAR(15)   NOT NULL,                         -- RECORDATORIO, CANCELACION, REPROGRAMACION, RESULTADO
+    canal            VARCHAR(10)   NOT NULL DEFAULT 'SISTEMA',       -- SISTEMA, EMAIL
+    mensaje          VARCHAR(255)  NOT NULL,
+    programada_para  TIMESTAMP     NOT NULL,
+    enviada_en       TIMESTAMP,
+    leida_en         TIMESTAMP,
+    created_at       TIMESTAMP,
+    updated_at       TIMESTAMP,
+    CONSTRAINT chk_notificacion_tipo  CHECK (tipo IN ('RECORDATORIO','CANCELACION','REPROGRAMACION','RESULTADO')),
+    CONSTRAINT chk_notificacion_canal CHECK (canal IN ('SISTEMA','EMAIL'))
+);
+CREATE INDEX idx_notificaciones_paciente_leida ON notificaciones (paciente_id, leida_en);
 
 
 /* =============================================================================
@@ -304,6 +379,11 @@ INSERT INTO especialidades (nombre, nombre_normalizado, descripcion, created_at,
     ('Reumatología',         'reumatologia',         'Enfermedades de las articulaciones y autoinmunes', NOW(), NOW()),
     ('Oftalmología',         'oftalmologia',         'Salud visual',                                    NOW(), NOW()),
     ('Otorrinolaringología', 'otorrinolaringologia', 'Oído, nariz y garganta',                          NOW(), NOW());
+
+-- Feriado nacional: bloquea la agenda de toda la clínica
+INSERT INTO bloqueos_agenda (medico_id, fecha, tipo, motivo, registrado_por, created_at, updated_at)
+SELECT NULL, DATE '2026-11-02', 'FERIADO', 'Día de Todos los Difuntos', id, NOW(), NOW()
+FROM users WHERE username = 'admin';
 
 
 /* =============================================================================

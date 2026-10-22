@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\P3_GestionPacientes;
 
 use App\Http\Controllers\Controller;
+use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P3_GestionPacientes\Paciente;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class PacienteController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $paciente = Paciente::create($this->validar($request) + ['codigo' => Paciente::siguienteCodigo()]);
+        Bitacora::registrar('CREAR', 'P3_GestionPacientes', $paciente, "Paciente {$paciente->codigo}");
 
         return redirect()->route('pacientes.show', $paciente)->with('ok', "Paciente {$paciente->codigo} registrado correctamente.");
     }
@@ -66,7 +68,8 @@ class PacienteController extends Controller
 
     private function validar(Request $request, ?Paciente $actual = null): array
     {
-        $request->merge(['ci' => $request->filled('ci') ? strtoupper(trim($request->ci)) : null]);
+        $request->merge(['ci' => $request->filled('ci') ? strtoupper(trim($request->ci)) : null,
+            'acepta_notificaciones' => $request->boolean('acepta_notificaciones')]);
 
         return $request->validate([
             'ci' => ['nullable', 'regex:/^[0-9]{5,12}(-?[A-Z0-9]{1,3})?$/', Rule::unique('pacientes')->ignore($actual)],
@@ -80,6 +83,8 @@ class PacienteController extends Controller
             'tipo_sangre' => ['nullable', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'],
             'alergias' => ['nullable', 'string', 'max:255'],
             'contacto_emergencia_nombre' => ['nullable', 'string', 'max:120'],
+            'contacto_emergencia_parentesco' => ['nullable', 'string', 'max:40'],
+            'acepta_notificaciones' => ['boolean'],
             'contacto_emergencia_telefono' => ['nullable', 'regex:/^[0-9+\s-]{7,20}$/'],
         ], [
             'ci.unique' => 'Ya existe un paciente registrado con ese CI.',

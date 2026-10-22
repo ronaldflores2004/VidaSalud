@@ -24,7 +24,7 @@ class Cita extends Model
     public const ESTADOS_ACTIVOS = [self::PROGRAMADA, self::CONFIRMADA, self::ATENDIDA, self::INASISTENCIA];
 
     protected $fillable = [
-        'codigo', 'paciente_id', 'medico_id', 'especialidad_id', 'fecha', 'hora_inicio', 'hora_fin',
+        'codigo', 'paciente_id', 'medico_id', 'especialidad_id', 'fecha', 'hora_inicio', 'hora_fin', 'modalidad',
         'motivo', 'estado', 'motivo_cancelacion', 'registrado_por',
     ];
 
@@ -43,6 +43,11 @@ class Cita extends Model
     public function especialidad(): BelongsTo
     {
         return $this->belongsTo(Especialidad::class);
+    }
+
+    public function historial(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(HistorialCita::class)->orderBy('created_at');
     }
 
     public function registradoPor(): BelongsTo

@@ -43,10 +43,13 @@
         <label class="campo"><span>Alergias</span>
             <input name="alergias" value="{{ old('alergias', $paciente->alergias) }}" maxlength="255" placeholder="Ninguna conocida"></label>
         <label class="campo"><span>Contacto de emergencia</span>
-            <input name="contacto_emergencia_nombre" value="{{ old('contacto_emergencia_nombre', $paciente->contacto_emergencia_nombre) }}" maxlength="120" placeholder="Nombre y parentesco"></label>
+            <input name="contacto_emergencia_nombre" value="{{ old('contacto_emergencia_nombre', $paciente->contacto_emergencia_nombre) }}" maxlength="120" placeholder="Nombre completo"></label>
+        <label class="campo"><span>Parentesco</span>
+            <input name="contacto_emergencia_parentesco" value="{{ old('contacto_emergencia_parentesco', $paciente->contacto_emergencia_parentesco) }}" maxlength="40" placeholder="Ej. Madre, esposo"></label>
         <label class="campo"><span>Teléfono de emergencia</span>
             <input name="contacto_emergencia_telefono" value="{{ old('contacto_emergencia_telefono', $paciente->contacto_emergencia_telefono) }}" pattern="[0-9+\s\-]{7,20}" data-msg="Entre 7 y 20 dígitos."></label>
     </div>
+    <label class="check"><input type="checkbox" name="acepta_notificaciones" value="1" @checked(old('acepta_notificaciones', $paciente->acepta_notificaciones ?? true))> El paciente acepta recibir recordatorios de sus citas</label>
     <div class="form-pie">
         <a href="{{ $editando ? route('pacientes.show', $paciente) : route('pacientes.index') }}" class="btn btn-ghost">Cancelar</a>
         <button class="btn btn-primario">Guardar paciente</button>

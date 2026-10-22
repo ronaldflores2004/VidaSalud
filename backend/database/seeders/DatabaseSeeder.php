@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\P2_GestionMedica\BloqueoAgenda;
 use App\Models\P4_GestionCitas\Cita;
+use App\Models\P4_GestionCitas\HistorialCita;
 use App\Models\P2_GestionMedica\Especialidad;
 use App\Models\P2_GestionMedica\Medico;
 use App\Models\P3_GestionPacientes\Paciente;
@@ -95,12 +97,18 @@ class DatabaseSeeder extends Seeder
         $base = Carbon::parse($fecha->toDateString() . ($fecha->dayOfWeekIso === 3 ? ' 14:00' : ' 08:00'));
         foreach ([[1, 0, 'Control general'], [2, 1, 'Dolor de cabeza frecuente'], [4, 3, 'Chequeo de presión arterial']] as $k => [$pac, $slot, $motivo]) {
             $ini = $base->copy()->addMinutes($slot * 15);
-            Cita::create([
+            $c = Cita::create([
                 'codigo' => sprintf('CM-%04d', $k + 1), 'paciente_id' => $pac, 'medico_id' => $perez->id,
                 'especialidad_id' => $esp['Medicina general']->id, 'fecha' => $fecha->toDateString(),
                 'hora_inicio' => $ini->format('H:i'), 'hora_fin' => $ini->copy()->addMinutes(15)->format('H:i'),
                 'motivo' => $motivo, 'estado' => Cita::PROGRAMADA, 'registrado_por' => $admin->id,
             ]);
+            HistorialCita::create(['cita_id' => $c->id, 'accion' => 'CREADA', 'estado_nuevo' => Cita::PROGRAMADA,
+                'fecha_nueva' => $c->fecha, 'hora_nueva' => $c->hora_inicio, 'user_id' => $admin->id]);
         }
+
+        // Feriado nacional (Día de Todos los Difuntos): bloquea la agenda de toda la clínica
+        BloqueoAgenda::create(['medico_id' => null, 'fecha' => '2026-11-02', 'tipo' => 'FERIADO',
+            'motivo' => 'Día de Todos los Difuntos', 'registrado_por' => $admin->id]);
     }
 }

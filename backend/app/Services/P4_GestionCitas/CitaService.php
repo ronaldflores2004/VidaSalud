@@ -3,7 +3,10 @@
 namespace App\Services\P4_GestionCitas;
 
 use App\Exceptions\ReglaNegocioException;
+use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P4_GestionCitas\Cita;
+use App\Models\P4_GestionCitas\HistorialCita;
+use App\Models\P4_GestionCitas\Notificacion;
 use App\Models\P2_GestionMedica\Medico;
 use App\Models\P3_GestionPacientes\Paciente;
 use App\Models\P1_SeguridadAcceso\User;
@@ -56,7 +59,7 @@ class CitaService
                     );
                 }
 
-                return Cita::create([
+                $cita = Cita::create([
                     'codigo' => Cita::siguienteCodigo(),
                     'paciente_id' => $paciente->id,
                     'medico_id' => $medico->id,
@@ -64,10 +67,30 @@ class CitaService
                     'fecha' => $fecha->toDateString(),
                     'hora_inicio' => $bloque['inicio'],
                     'hora_fin' => $bloque['fin'],
+                    'modalidad' => $datos['modalidad'] ?? 'PRESENCIAL',
                     'motivo' => $datos['motivo'] ?? null,
                     'estado' => Cita::PROGRAMADA,
                     'registrado_por' => $usuario->id,
                 ]);
+
+                // Trazabilidad: primer registro del historial de la cita (RF12)
+                HistorialCita::create([
+                    'cita_id' => $cita->id, 'accion' => 'CREADA', 'estado_nuevo' => Cita::PROGRAMADA,
+                    'fecha_nueva' => $cita->fecha, 'hora_nueva' => $cita->hora_inicio, 'user_id' => $usuario->id,
+                ]);
+
+                // Recordatorio automático 24 horas antes, si el paciente acepta notificaciones
+                if ($paciente->acepta_notificaciones) {
+                    Notificacion::create([
+                        'paciente_id' => $paciente->id, 'cita_id' => $cita->id, 'tipo' => 'RECORDATORIO',
+                        'mensaje' => "Recuerde su cita {$cita->codigo} el " . $fecha->format('d/m/Y') . " a las {$cita->hora_inicio} con {$medico->nombre_completo}.",
+                        'programada_para' => Carbon::parse($fecha->toDateString() . ' ' . $cita->hora_inicio)->subDay(),
+                    ]);
+                }
+
+                Bitacora::registrar('CREAR', 'P4_GestionCitas', $cita, "Cita {$cita->codigo} para el paciente {$paciente->codigo}", $usuario->id);
+
+                return $cita;
             });
         } catch (QueryException $e) {
             // 23P01 = exclusion_violation: otra transacción ocupó el bloque al mismo tiempo

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\P3_GestionPacientes;
 
 use App\Http\Controllers\Controller;
+use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P3_GestionPacientes\Paciente;
 use App\Models\P1_SeguridadAcceso\Rol;
 use App\Models\P1_SeguridadAcceso\User;
@@ -81,6 +82,7 @@ class RegistroPacienteController extends Controller
             return $usuario;
         });
 
+        Bitacora::registrar('REGISTRO_WEB', 'P3_GestionPacientes', $usuario, 'El paciente se registró desde la web', $usuario->id);
         Auth::login($usuario);
         $request->session()->regenerate();
 

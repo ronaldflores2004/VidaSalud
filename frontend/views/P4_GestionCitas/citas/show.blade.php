@@ -15,11 +15,32 @@
     <dl class="datos datos-ancho">
         <dt>Paciente</dt><dd>{{ $cita->paciente->nombre_completo }} <span class="sub">({{ $cita->paciente->codigo }} · CI {{ $cita->paciente->ci ?? '—' }})</span></dd>
         <dt>Especialidad</dt><dd>{{ $cita->especialidad->nombre }}</dd>
+        <dt>Modalidad</dt><dd>{{ ucfirst(strtolower($cita->modalidad)) }}</dd>
         <dt>Médico</dt><dd>{{ $cita->medico->nombre_completo }}</dd>
         <dt>Motivo</dt><dd>{{ $cita->motivo ?? '—' }}</dd>
         @if($cita->motivo_cancelacion)<dt>Motivo de cancelación</dt><dd>{{ $cita->motivo_cancelacion }}</dd>@endif
     </dl>
 </div>
+@unless(auth()->user()->tieneRol('Paciente'))
+<div class="card">
+    <h2>Historial de la cita</h2>
+    <table class="tabla">
+        <thead><tr><th>Fecha</th><th>Acción</th><th>Estado</th><th>Horario</th><th>Usuario</th><th>Motivo</th></tr></thead>
+        <tbody>
+        @foreach($cita->historial as $h)
+            <tr>
+                <td>{{ \Illuminate\Support\Carbon::parse($h->created_at)->format('d/m/Y H:i') }}</td>
+                <td>{{ ucfirst(strtolower($h->accion)) }}</td>
+                <td>{{ $h->estado_anterior ? ucfirst(strtolower($h->estado_anterior)) . ' → ' : '' }}{{ ucfirst(strtolower($h->estado_nuevo)) }}</td>
+                <td class="mono">{{ $h->fecha_nueva ? \Illuminate\Support\Carbon::parse($h->fecha_nueva)->format('d/m/Y') . ' ' . substr($h->hora_nueva, 0, 5) : '—' }}</td>
+                <td>{{ $h->usuario?->name }}</td>
+                <td>{{ $h->motivo ?? '—' }}</td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
+</div>
+@endunless
 <div class="botones">
     <a href="{{ route('citas.index') }}" class="btn btn-ghost">Volver a {{ auth()->user()->tieneRol('Paciente') ? 'mis citas' : 'citas' }}</a>
     @if(auth()->user()->tieneRol('Administrador', 'Recepcionista'))

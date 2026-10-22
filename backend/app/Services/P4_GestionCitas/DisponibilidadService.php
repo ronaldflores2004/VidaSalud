@@ -2,6 +2,7 @@
 
 namespace App\Services\P4_GestionCitas;
 
+use App\Models\P2_GestionMedica\BloqueoAgenda;
 use App\Models\P4_GestionCitas\Cita;
 use App\Models\P2_GestionMedica\Medico;
 use Carbon\Carbon;
@@ -15,7 +16,8 @@ use Illuminate\Support\Collection;
  *  - RN05 solo se ofrecen bloques dentro de su horario de atención.
  *  - RN06 no se ofrecen fechas ni horas pasadas.
  *  - RN07 / RN09 se descartan los bloques ocupados por citas no canceladas.
- *  - RN08 cada bloque dura lo configurado en el horario (por defecto 30 min).
+ *  - RN08 cada ficha dura 15 minutos.
+ *  - RF05 se descartan los feriados y bloqueos de agenda (del médico o de toda la clínica).
  */
 class DisponibilidadService
 {
@@ -43,6 +45,13 @@ class DisponibilidadService
             ->when($ignorarCitaId, fn ($q) => $q->where('id', '<>', $ignorarCitaId))
             ->get(['hora_inicio', 'hora_fin'])
             ->map(fn ($c) => [substr($c->hora_inicio, 0, 5), substr($c->hora_fin, 0, 5)]);
+
+        // Feriados y bloqueos: todo el día (sin horas) o un rango de horas
+        $bloqueos = BloqueoAgenda::queAfectan($medico->id, $fecha->toDateString())->get();
+        if ($bloqueos->contains(fn ($b) => $b->hora_inicio === null)) {
+            return collect();
+        }
+        $ocupadas = $ocupadas->merge($bloqueos->map(fn ($b) => [substr($b->hora_inicio, 0, 5), substr($b->hora_fin, 0, 5)]));
 
         $bloques = collect();
 

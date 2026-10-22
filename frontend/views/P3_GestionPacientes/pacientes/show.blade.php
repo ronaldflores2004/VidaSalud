@@ -25,6 +25,7 @@
         <dt>Alergias</dt><dd>{{ $paciente->alergias ?? 'Ninguna registrada' }}</dd></dl></div>
     <div class="card"><h2>Emergencia</h2><dl class="datos">
         <dt>Contacto</dt><dd>{{ $paciente->contacto_emergencia_nombre ?? '—' }}</dd>
+        <dt>Parentesco</dt><dd>{{ $paciente->contacto_emergencia_parentesco ?? '—' }}</dd>
         <dt>Teléfono</dt><dd>{{ $paciente->contacto_emergencia_telefono ?? '—' }}</dd></dl></div>
 </div>
 <div class="card">

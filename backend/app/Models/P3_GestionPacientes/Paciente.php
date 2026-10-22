@@ -16,10 +16,11 @@ class Paciente extends Model
 {
     protected $fillable = [
         'codigo', 'ci', 'nombres', 'apellidos', 'fecha_nacimiento', 'sexo', 'telefono', 'email', 'direccion',
-        'tipo_sangre', 'alergias', 'contacto_emergencia_nombre', 'contacto_emergencia_telefono', 'activo', 'user_id',
+        'tipo_sangre', 'alergias', 'contacto_emergencia_nombre', 'contacto_emergencia_parentesco', 'contacto_emergencia_telefono',
+        'activo', 'acepta_notificaciones', 'user_id',
     ];
 
-    protected $casts = ['activo' => 'boolean', 'fecha_nacimiento' => 'date'];
+    protected $casts = ['activo' => 'boolean', 'acepta_notificaciones' => 'boolean', 'fecha_nacimiento' => 'date'];
 
     public function citas(): HasMany
     {

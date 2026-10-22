@@ -75,6 +75,7 @@ class CitaController extends Controller
             'medico_id' => ['required', 'integer', 'exists:medicos,id'],
             'fecha' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
             'hora_inicio' => ['required', 'date_format:H:i'],
+            'modalidad' => ['required', 'in:PRESENCIAL,VIRTUAL'],
             'motivo' => ['nullable', 'string', 'max:255'],
         ], [
             'paciente_id.required' => 'Busque y seleccione un paciente.',
@@ -97,6 +98,6 @@ class CitaController extends Controller
         abort_if($usuario->tieneRol('Medico') && $cita->medico_id !== $usuario->medico?->id, 403);
         abort_if($usuario->tieneRol('Paciente') && $cita->paciente_id !== $usuario->paciente?->id, 403);
 
-        return view('P4_GestionCitas.citas.show', ['cita' => $cita->load('paciente', 'medico', 'especialidad', 'registradoPor')]);
+        return view('P4_GestionCitas.citas.show', ['cita' => $cita->load('paciente', 'medico', 'especialidad', 'registradoPor', 'historial.usuario')]);
     }
 }

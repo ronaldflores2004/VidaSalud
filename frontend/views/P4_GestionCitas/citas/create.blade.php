@@ -54,6 +54,11 @@
                 <input type="date" name="fecha" id="fecha" required min="{{ today()->toDateString() }}" value="{{ old('fecha') }}"></label>
             <input type="hidden" name="hora_inicio" id="hora_inicio" value="{{ old('hora_inicio') }}" required data-msg="Seleccione un horario disponible.">
             <div id="bloques" class="bloques"><p class="ayuda">Elija médico y fecha para ver los horarios.</p></div>
+            <label class="campo estrecho"><span>Modalidad *</span>
+                <select name="modalidad" required>
+                    <option value="PRESENCIAL" @selected(old('modalidad', 'PRESENCIAL') === 'PRESENCIAL')>Presencial</option>
+                    <option value="VIRTUAL" @selected(old('modalidad') === 'VIRTUAL')>Virtual (videollamada)</option>
+                </select></label>
             <label class="campo"><span>Motivo de la consulta (opcional)</span>
                 <input name="motivo" maxlength="255" value="{{ old('motivo') }}" placeholder="Ej. Control general"></label>
         </section>
