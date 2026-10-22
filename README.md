@@ -4,7 +4,7 @@ Proyecto del **Segundo Examen Parcial – Ingeniería de Requisitos (INF342-SC)*
 Aplicación web para registrar pacientes, médicos, especialidades y horarios, y programar citas
 **sin cruces de horario**, conservando el historial de cada paciente.
 
-**Stack:** PHP 8.2+ · Laravel 12 · PostgreSQL 16 · Blade + HTML5/CSS3 + JavaScript (sin frameworks de frontend)
+**Stack Full Stack:** Backend PHP 8.2+ · Laravel 12 · PostgreSQL 16 — Frontend HTML5 (Blade) · CSS3 · JavaScript
 
 ## Avance – Ciclo I (Presentación 1)
 
@@ -27,24 +27,44 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 2. Al guardar, `CitaService` vuelve a verificar la disponibilidad dentro de una transacción con `SELECT … FOR UPDATE` sobre el médico.
 3. PostgreSQL lo garantiza con una restricción `EXCLUDE USING gist` sobre `(medico_id, tsrange(fecha+hora_inicio, fecha+hora_fin))` para citas no canceladas.
 
-## Arquitectura en capas
+## Estructura del repositorio (Full Stack: Backend / Frontend)
+
+Los paquetes tienen la **misma numeración que el documento PUDS-UML** (P1 … P6), tanto en el backend como en el frontend.
 
 ```
-app/
-├── Http/Controllers/        Capa de presentación / control (por paquete)
-│   ├── Seguridad/           CU1, CU2, CU3
-│   ├── GestionMedica/       CU4, CU5, CU6
-│   ├── Pacientes/           CU7
-│   └── Citas/               CU8, CU9
-├── Http/Middleware/         VerificarRol (control de acceso por rol)
-├── Services/                Capa de negocio (DisponibilidadService, CitaService)
-├── Exceptions/              ReglaNegocioException
-└── Models/                  Capa de datos (Eloquent: Rol, User, Medico, Especialidad, Horario, Paciente, Cita)
-resources/views/             Vistas Blade
-public/css, public/js        Estilos y validación del lado del cliente
-database/migrations          Esquema PostgreSQL (con CHECK y EXCLUDE)
-database/sql                 Script SQL del esquema
+clinica-vida-salud/
+├── backend/                         BACK END – PHP 8.2+ / Laravel 12 / PostgreSQL
+│   ├── app/
+│   │   ├── Http/Controllers/
+│   │   │   ├── P1_SeguridadAcceso/      LoginController (CU1, CU2), UsuarioController (CU3)
+│   │   │   ├── P2_GestionMedica/        EspecialidadController (CU4), MedicoController (CU5), HorarioController (CU6)
+│   │   │   ├── P3_GestionPacientes/     PacienteController (CU7), RegistroPacienteController (CU8)
+│   │   │   ├── P4_GestionCitas/         PortalController + DisponibilidadController (CU9), CitaController (CU10)
+│   │   │   ├── P5_AtencionMedica/       Ciclo II
+│   │   │   └── P6_Reportes/             Ciclo II
+│   │   ├── Http/Middleware/P1_SeguridadAcceso/   VerificarRol (control de acceso por perfil)
+│   │   ├── Services/P4_GestionCitas/             CitaService, DisponibilidadService (reglas de negocio)
+│   │   ├── Models/P1_SeguridadAcceso … P4_GestionCitas/   Rol, User, Especialidad, Medico, Horario, Paciente, Cita
+│   │   └── Exceptions/                           ReglaNegocioException
+│   ├── database/migrations, seeders, sql/        Esquema PostgreSQL (CHECK y EXCLUDE)
+│   ├── routes/web.php                            Rutas ordenadas por paquete P1 … P6
+│   └── public/index.php                          Punto de entrada
+└── frontend/                        FRONT END – HTML5 (Blade) / CSS3 / JavaScript
+    ├── views/
+    │   ├── compartido/                  layouts, partials y paneles de inicio
+    │   ├── P1_SeguridadAcceso/          login, usuarios
+    │   ├── P2_GestionMedica/            especialidades, medicos, horarios
+    │   ├── P3_GestionPacientes/         pacientes, registro (web)
+    │   ├── P4_GestionCitas/             portal (público), citas
+    │   ├── P5_AtencionMedica/           Ciclo II
+    │   └── P6_Reportes/                 Ciclo II
+    └── assets/
+        ├── css/compartido/app.css
+        └── js/compartido/app.js · js/P4_GestionCitas/cita.js · horarios-publicos.js
 ```
+
+El backend lee las vistas desde `frontend/views` (`backend/config/view.php`) y entrega los archivos de
+`frontend/assets` en la ruta `/assets/...`, sin enlaces simbólicos, así funciona igual en XAMPP (Windows) y Linux.
 
 ## Instalación (XAMPP / Laragon / cualquier PHP 8.2+)
 
@@ -52,7 +72,7 @@ Requisitos: PHP 8.2+ con `pdo_pgsql`, Composer y PostgreSQL 13+.
 
 ```bash
 git clone <URL-DEL-REPO>
-cd clinica-vida-salud
+cd clinica-vida-salud/backend
 composer install
 cp .env.example .env          # en Windows: copy .env.example .env
 php artisan key:generate
@@ -76,7 +96,9 @@ DB_PASSWORD=su_clave
 php artisan migrate --seed
 php artisan serve
 ```
-Abrir http://127.0.0.1:8000
+Abrir http://127.0.0.1:8000 (portal público) o http://127.0.0.1:8000/login
+
+> Con XAMPP, apunte el sitio a la carpeta `backend/public`.
 
 > En XAMPP habilite `extension=pdo_pgsql` y `extension=pgsql` en `php.ini`.
 > Las migraciones crean las extensiones `btree_gist` y `unaccent` (vienen con PostgreSQL); el usuario de la BD necesita permiso para crearlas.
