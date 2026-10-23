@@ -1,0 +1,4 @@
+# CU14 Consultar agenda médica (P4_GestionCitas)
+
+Vistas de este caso de uso: se implementa en el **Ciclo II** (Presentación 2).
+Las tablas que usa ya existen en la base de datos (ver `backend/database/sql/clinica_vida_salud.sql`).

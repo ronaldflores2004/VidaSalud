@@ -4,22 +4,24 @@
 |--------------------------------------------------------------------------
 | Rutas web – Sistema de Gestión de Citas Médicas "Clínica Vida Salud"
 |--------------------------------------------------------------------------
-| Ordenadas por paquete, con la misma numeración del documento (P1 … P6).
+| Ordenadas por paquete y caso de uso, con la misma numeración del documento (P1 … P6, CU1 … CU20).
+| Cada controlador está en la carpeta de su caso de uso: Controllers/P{n}_Paquete/CU{n}_CasoDeUso/.
 | El middleware "rol" aplica RN12: cada perfil solo ejecuta lo que le corresponde.
 */
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendAssetController;
-use App\Http\Controllers\P1_SeguridadAcceso\LoginController;
-use App\Http\Controllers\P1_SeguridadAcceso\UsuarioController;
-use App\Http\Controllers\P2_GestionMedica\EspecialidadController;
-use App\Http\Controllers\P2_GestionMedica\HorarioController;
-use App\Http\Controllers\P2_GestionMedica\MedicoController;
-use App\Http\Controllers\P3_GestionPacientes\PacienteController;
-use App\Http\Controllers\P3_GestionPacientes\RegistroPacienteController;
-use App\Http\Controllers\P4_GestionCitas\CitaController;
-use App\Http\Controllers\P4_GestionCitas\DisponibilidadController;
-use App\Http\Controllers\P4_GestionCitas\PortalController;
+use App\Http\Controllers\P1_SeguridadAcceso\CU1_IniciarSesion\LoginController;
+use App\Http\Controllers\P1_SeguridadAcceso\CU2_CerrarSesion\LogoutController;
+use App\Http\Controllers\P1_SeguridadAcceso\CU3_GestionarUsuarios\UsuarioController;
+use App\Http\Controllers\P2_GestionMedica\CU4_GestionarEspecialidades\EspecialidadController;
+use App\Http\Controllers\P2_GestionMedica\CU5_GestionarMedicos\MedicoController;
+use App\Http\Controllers\P2_GestionMedica\CU6_GestionarHorarios\HorarioController;
+use App\Http\Controllers\P3_GestionPacientes\CU7_GestionarPacientes\PacienteController;
+use App\Http\Controllers\P3_GestionPacientes\CU8_RegistrarsePaciente\RegistroPacienteController;
+use App\Http\Controllers\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadController;
+use App\Http\Controllers\P4_GestionCitas\CU9_ConsultarDisponibilidad\PortalController;
+use App\Http\Controllers\P4_GestionCitas\CU10_ReservarFicha\CitaController;
 use Illuminate\Support\Facades\Route;
 
 // Archivos estáticos del frontend (frontend/assets)
@@ -32,7 +34,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth', 'rol'])->group(function () {
-    Route::post('/logout', [LoginController::class, 'salir'])->name('logout');             // CU2
+    Route::post('/logout', [LogoutController::class, 'salir'])->name('logout');             // CU2
     Route::get('/panel', DashboardController::class)->name('dashboard');
 });
 
@@ -76,7 +78,7 @@ Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function (
     // CU7 Gestionar pacientes (recepción)
     Route::resource('pacientes', PacienteController::class)->except(['destroy']);
     Route::patch('pacientes/{paciente}/estado', [PacienteController::class, 'cambiarEstado'])->name('pacientes.estado');
-    Route::get('api/pacientes', [DisponibilidadController::class, 'pacientes'])->name('api.pacientes');
+    Route::get('api/pacientes', [DisponibilidadController::class, 'pacientes'])->name('api.pacientes'); // búsqueda para CU10
 });
 
 /* ======================= P4 Gestión de Citas (Fichas) ======================= */
@@ -93,10 +95,15 @@ Route::middleware(['auth', 'rol:Administrador,Recepcionista,Paciente'])->group(f
 });
 
 Route::middleware(['auth', 'rol:Administrador,Recepcionista,Medico,Paciente'])->group(function () {
-    // Consulta de citas: cada perfil ve solo lo suyo (el médico, solo sus pacientes)
+    // CU10 Reservar ficha – consulta del comprobante y de las citas: cada perfil ve solo lo suyo (el médico, solo sus pacientes)
     Route::get('citas', [CitaController::class, 'index'])->name('citas.index');
     Route::get('citas/{cita}', [CitaController::class, 'show'])->name('citas.show')->whereNumber('cita');
 });
 
+// CU11 Reprogramar cita · CU12 Cancelar cita · CU13 Registrar asistencia · CU14 Consultar agenda médica — Ciclo II
+
 /* ======================= P5 Atención Médica e Historial Clínico — Ciclo II ======================= */
+// CU15 Registrar consulta médica · CU16 Gestionar historial clínico · CU17 Registrar tratamiento
+// CU18 Gestionar estudios médicos · CU19 Consultar historial y resultados
 /* ======================= P6 Reportes — Ciclo II ======================= */
+// CU20 Generar reportes
