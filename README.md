@@ -144,12 +144,36 @@ Abrir http://127.0.0.1:8000 (portal público) o http://127.0.0.1:8000/login
 
 ### Usuarios de prueba (contraseña `Clinica2026`)
 
-| Usuario | Rol |
-|---------|-----|
-| `admin` | Administrador |
-| `recepcion` | Recepcionista |
-| `dr.perez` | Médico |
-| `8456123` (CI) | Paciente (María López) |
+Están en `backend/database/seeders/P1_UsuarioSeeder.php`.
+
+| Usuario | Correo | Rol |
+|---------|--------|-----|
+| `admin` | admin@vidasalud.bo | Administrador |
+| `recepcion` | recepcion@vidasalud.bo | Recepcionista |
+| `dr.perez` | jperez@vidasalud.bo | Médico (Juan Pérez Vargas) |
+| `8456123` (CI) | maria.lopez@correo.bo | Paciente (María López) |
+
+### Datos de prueba (seeders separados por paquete)
+
+| Seeder | Qué carga |
+|--------|-----------|
+| `P1_RolSeeder` | Los 4 perfiles |
+| `P1_UsuarioSeeder` | Las 4 cuentas de prueba de arriba |
+| `P2_EspecialidadSeeder` | 9 especialidades |
+| `P2_MedicoSeeder` | 9 médicos con sus especialidades y horarios |
+| `P2_BloqueoAgendaSeeder` | Feriado del 2 de noviembre |
+| `P3_PacienteSeeder` | 5 pacientes con historial clínico y contacto de emergencia |
+| `P4_CitaSeeder` | 3 citas de ejemplo con su historial |
+| `P5_MedicamentoSeeder` | Catálogo de medicamentos (Ciclo II) |
+| `P5_CatalogoEstudioSeeder` | Catálogo de estudios (Ciclo II) |
+
+```bash
+php artisan migrate:fresh --seed                 # borra todo, crea las tablas y carga todos los seeders
+php artisan db:seed --class=P1_UsuarioSeeder     # carga solo una parte (por ejemplo, solo los usuarios)
+```
+Cada seeder se puede ejecutar solo: si necesita datos de otro (las citas necesitan médicos y pacientes) los
+carga primero, y si se ejecuta dos veces no duplica registros. Los estados de cita y la duración de la ficha
+(15 min) los inserta la propia migración, porque son parte del diseño de la base de datos.
 
 ## Pruebas mínimas cubiertas en el Ciclo I
 
