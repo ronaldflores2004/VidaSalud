@@ -55,12 +55,14 @@ class DisponibilidadService
 
         $bloques = collect();
 
+        $minutos = \App\Models\P2_GestionMedica\Horario::duracionFicha();   // 15 min (tabla configuracion)
+
         foreach ($horarios as $h) {
             $inicio = Carbon::parse($fecha->toDateString() . ' ' . $h->hora_inicio);
             $limite = Carbon::parse($fecha->toDateString() . ' ' . $h->hora_fin);
 
-            while ($inicio->copy()->addMinutes($h->duracion_cita)->lte($limite)) {
-                $fin = $inicio->copy()->addMinutes($h->duracion_cita);
+            while ($inicio->copy()->addMinutes($minutos)->lte($limite)) {
+                $fin = $inicio->copy()->addMinutes($minutos);
                 $ini = $inicio->format('H:i');
                 $fn = $fin->format('H:i');
 

@@ -25,7 +25,7 @@ class Cita extends Model
 
     protected $fillable = [
         'codigo', 'paciente_id', 'medico_id', 'especialidad_id', 'fecha', 'hora_inicio', 'hora_fin', 'modalidad',
-        'motivo', 'estado', 'motivo_cancelacion', 'registrado_por',
+        'motivo', 'estado', 'registrado_por',
     ];
 
     protected $casts = ['fecha' => 'date'];
@@ -43,6 +43,11 @@ class Cita extends Model
     public function especialidad(): BelongsTo
     {
         return $this->belongsTo(Especialidad::class);
+    }
+
+    public function estadoCita(): BelongsTo
+    {
+        return $this->belongsTo(EstadoCita::class, 'estado', 'codigo');
     }
 
     public function historial(): \Illuminate\Database\Eloquent\Relations\HasMany

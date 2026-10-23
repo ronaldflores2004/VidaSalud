@@ -22,11 +22,14 @@
     <div class="card"><h2>Información médica</h2><dl class="datos">
         <dt>Nacimiento</dt><dd>{{ $paciente->fecha_nacimiento->format('d/m/Y') }}</dd>
         <dt>Tipo de sangre</dt><dd>{{ $paciente->tipo_sangre ?? '—' }}</dd>
-        <dt>Alergias</dt><dd>{{ $paciente->alergias ?? 'Ninguna registrada' }}</dd></dl></div>
+        <dt>Alergias</dt><dd>{{ $paciente->historia?->alergias ?? 'Ninguna registrada' }}</dd>
+        <dt>Historia clínica</dt><dd class="mono">{{ $paciente->historia?->numero ?? '—' }}</dd></dl></div>
     <div class="card"><h2>Emergencia</h2><dl class="datos">
-        <dt>Contacto</dt><dd>{{ $paciente->contacto_emergencia_nombre ?? '—' }}</dd>
-        <dt>Parentesco</dt><dd>{{ $paciente->contacto_emergencia_parentesco ?? '—' }}</dd>
-        <dt>Teléfono</dt><dd>{{ $paciente->contacto_emergencia_telefono ?? '—' }}</dd></dl></div>
+        @forelse($paciente->contactos as $ce)
+            <dt>{{ $ce->parentesco }}</dt><dd>{{ $ce->nombre }} · {{ $ce->telefono }}</dd>
+        @empty
+            <dt>Contacto</dt><dd>—</dd>
+        @endforelse</dl></div>
 </div>
 <div class="card">
     <div class="card-cab"><h2>Citas del paciente</h2><span class="sub">{{ $paciente->citas->count() }} registradas</span></div>

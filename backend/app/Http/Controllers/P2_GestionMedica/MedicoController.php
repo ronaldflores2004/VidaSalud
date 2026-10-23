@@ -68,10 +68,19 @@ class MedicoController extends Controller
     {
         $datos = $this->validar($request, $medico);
 
-        DB::transaction(function () use ($medico, $datos) {
-            $medico->update($datos);
-            $medico->especialidades()->sync($datos['especialidades']);
-        });
+        try {
+            DB::transaction(function () use ($medico, $datos) {
+                $medico->update($datos);
+                $medico->especialidades()->sync($datos['especialidades']);
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            // La cita guarda (médico, especialidad) como clave foránea compuesta: no se puede
+            // quitar una especialidad con la que el médico ya tiene citas registradas.
+            if ($e->getCode() === '23503') {
+                return back()->withInput()->with('error', 'No se puede quitar una especialidad con la que el médico ya tiene citas registradas.');
+            }
+            throw $e;
+        }
 
         return redirect()->route('medicos.show', $medico)->with('ok', 'Datos del médico actualizados.');
     }

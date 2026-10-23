@@ -29,7 +29,7 @@
     <div class="card">
         <h2>Horario de atención</h2>
         @forelse($medico->horarios as $h)
-            <div class="fila-horario {{ $h->activo ? '' : 'apagado' }}"><strong>{{ $h->nombre_dia }}</strong><span class="mono">{{ substr($h->hora_inicio,0,5) }} – {{ substr($h->hora_fin,0,5) }}</span><small>citas de {{ $h->duracion_cita }} min</small></div>
+            <div class="fila-horario {{ $h->activo ? '' : 'apagado' }}"><strong>{{ $h->nombre_dia }}</strong><span class="mono">{{ substr($h->hora_inicio,0,5) }} – {{ substr($h->hora_fin,0,5) }}</span><small>fichas de {{ \App\Models\P2_GestionMedica\Horario::duracionFicha() }} min</small></div>
         @empty
             <p class="vacio">Aún no tiene horarios registrados.</p>
         @endforelse

@@ -16,8 +16,7 @@ class Paciente extends Model
 {
     protected $fillable = [
         'codigo', 'ci', 'nombres', 'apellidos', 'fecha_nacimiento', 'sexo', 'telefono', 'email', 'direccion',
-        'tipo_sangre', 'alergias', 'contacto_emergencia_nombre', 'contacto_emergencia_parentesco', 'contacto_emergencia_telefono',
-        'activo', 'acepta_notificaciones', 'user_id',
+        'tipo_sangre', 'activo', 'acepta_notificaciones', 'user_id',
     ];
 
     protected $casts = ['activo' => 'boolean', 'acepta_notificaciones' => 'boolean', 'fecha_nacimiento' => 'date'];
@@ -25,6 +24,22 @@ class Paciente extends Model
     public function citas(): HasMany
     {
         return $this->hasMany(Cita::class)->orderByDesc('fecha')->orderByDesc('hora_inicio');
+    }
+
+    public function contactos(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ContactoEmergencia::class);
+    }
+
+    public function historia(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\P5_AtencionMedica\HistoriaClinica::class);
+    }
+
+    /** Crea el historial clínico del paciente si aún no tiene (relación 1 a 1). */
+    public function asegurarHistoria(array $datos = []): \App\Models\P5_AtencionMedica\HistoriaClinica
+    {
+        return $this->historia()->firstOrCreate([], $datos + ['numero' => \App\Models\P5_AtencionMedica\HistoriaClinica::siguienteNumero()]);
     }
 
     public function usuario(): BelongsTo

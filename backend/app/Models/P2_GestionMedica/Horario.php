@@ -10,14 +10,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Horario extends Model
 {
-    /** Regla de la clínica: cada paciente tiene 15 minutos de atención (una ficha). */
-    public const DURACION_FICHA = 15;
+    /** Minutos de atención por paciente (una ficha); se lee de la tabla configuracion. */
+    public static function duracionFicha(): int
+    {
+        return (int) Configuracion::valor('DURACION_FICHA_MIN', 15);
+    }
 
     public const DIAS = [1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'];
 
-    protected $fillable = ['medico_id', 'dia_semana', 'hora_inicio', 'hora_fin', 'duracion_cita', 'activo'];
+    protected $fillable = ['medico_id', 'dia_semana', 'hora_inicio', 'hora_fin', 'activo'];
 
-    protected $casts = ['activo' => 'boolean', 'dia_semana' => 'integer', 'duracion_cita' => 'integer'];
+    protected $casts = ['activo' => 'boolean', 'dia_semana' => 'integer'];
 
     public function medico(): BelongsTo
     {

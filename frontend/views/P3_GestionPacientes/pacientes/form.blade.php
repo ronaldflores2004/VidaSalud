@@ -4,6 +4,7 @@
 @section('migas', 'Atención / Pacientes / ' . ($editando ? 'Editar' : 'Nuevo'))
 
 @section('contenido')
+@php($contacto = $paciente->exists ? $paciente->contactos->first() : null)
 <div class="cabecera"><div><h1>{{ $editando ? 'Editar paciente' : 'Registrar paciente' }}</h1><p class="sub">Código: <span class="mono">{{ $paciente->codigo }}</span> · Los campos con * son obligatorios.</p></div></div>
 
 <form class="card form" method="POST" action="{{ $editando ? route('pacientes.update', $paciente) : route('pacientes.store') }}" data-validar novalidate>
@@ -41,13 +42,13 @@
     <h2>Información médica y emergencia</h2>
     <div class="grid-3">
         <label class="campo"><span>Alergias</span>
-            <input name="alergias" value="{{ old('alergias', $paciente->alergias) }}" maxlength="255" placeholder="Ninguna conocida"></label>
+            <input name="alergias" value="{{ old('alergias', $paciente->historia?->alergias) }}" maxlength="255" placeholder="Ninguna conocida"></label>
         <label class="campo"><span>Contacto de emergencia</span>
-            <input name="contacto_emergencia_nombre" value="{{ old('contacto_emergencia_nombre', $paciente->contacto_emergencia_nombre) }}" maxlength="120" placeholder="Nombre completo"></label>
+            <input name="contacto_emergencia_nombre" value="{{ old('contacto_emergencia_nombre', $contacto?->nombre) }}" maxlength="120" placeholder="Nombre completo"></label>
         <label class="campo"><span>Parentesco</span>
-            <input name="contacto_emergencia_parentesco" value="{{ old('contacto_emergencia_parentesco', $paciente->contacto_emergencia_parentesco) }}" maxlength="40" placeholder="Ej. Madre, esposo"></label>
+            <input name="contacto_emergencia_parentesco" value="{{ old('contacto_emergencia_parentesco', $contacto?->parentesco) }}" maxlength="40" placeholder="Ej. Madre, esposo"></label>
         <label class="campo"><span>Teléfono de emergencia</span>
-            <input name="contacto_emergencia_telefono" value="{{ old('contacto_emergencia_telefono', $paciente->contacto_emergencia_telefono) }}" pattern="[0-9+\s\-]{7,20}" data-msg="Entre 7 y 20 dígitos."></label>
+            <input name="contacto_emergencia_telefono" value="{{ old('contacto_emergencia_telefono', $contacto?->telefono) }}" pattern="[0-9+\s\-]{7,20}" data-msg="Entre 7 y 20 dígitos."></label>
     </div>
     <label class="check"><input type="checkbox" name="acepta_notificaciones" value="1" @checked(old('acepta_notificaciones', $paciente->acepta_notificaciones ?? true))> El paciente acepta recibir recordatorios de sus citas</label>
     <div class="form-pie">

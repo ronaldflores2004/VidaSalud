@@ -30,11 +30,11 @@
             <thead><tr><th>Día</th><th>Horario</th><th>Ficha</th><th>Cupos</th><th>Estado</th><th></th></tr></thead>
             <tbody>
             @forelse($medico->horarios as $h)
-                @php($cupos = intdiv((strtotime($h->hora_fin) - strtotime($h->hora_inicio)) / 60, $h->duracion_cita))
+                @php($cupos = intdiv((strtotime($h->hora_fin) - strtotime($h->hora_inicio)) / 60, \App\Models\P2_GestionMedica\Horario::duracionFicha()))
                 <tr class="{{ $h->activo ? '' : 'apagado' }}">
                     <td><strong>{{ $h->nombre_dia }}</strong></td>
                     <td class="mono">{{ substr($h->hora_inicio,0,5) }} – {{ substr($h->hora_fin,0,5) }}</td>
-                    <td>{{ $h->duracion_cita }} min</td>
+                    <td>{{ \App\Models\P2_GestionMedica\Horario::duracionFicha() }} min</td>
                     <td>{{ $cupos }}</td>
                     <td>@include('compartido.partials.estado', ['activo' => $h->activo])</td>
                     <td class="acciones">

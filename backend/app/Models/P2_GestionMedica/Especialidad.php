@@ -22,7 +22,7 @@ class Especialidad extends Model
         return $this->belongsToMany(Medico::class, 'especialidad_medico');
     }
 
-    /** "  Pediatría " -> "pediatria": se usa para impedir nombres repetidos. */
+    /** "  Pediatría " -> "pediatria" (equivale a la función f_normalizar de la base de datos). */
     public static function normalizar(string $nombre): string
     {
         return Str::of($nombre)->squish()->ascii()->lower()->value();
@@ -30,9 +30,13 @@ class Especialidad extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (Especialidad $e) {
-            $e->nombre = Str::squish($e->nombre);
-            $e->nombre_normalizado = self::normalizar($e->nombre);
-        });
+        static::saving(fn (Especialidad $e) => $e->nombre = Str::squish($e->nombre));
+    }
+
+    /** ¿Existe otra especialidad con el mismo nombre normalizado? (usa f_normalizar de PostgreSQL) */
+    public static function nombreRepetido(string $nombre, ?int $ignorarId = null): bool
+    {
+        return static::whereRaw('f_normalizar(nombre) = f_normalizar(?)', [$nombre])
+            ->when($ignorarId, fn ($q) => $q->where('id', '<>', $ignorarId))->exists();
     }
 }

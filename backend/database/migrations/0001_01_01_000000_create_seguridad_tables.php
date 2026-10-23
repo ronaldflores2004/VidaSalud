@@ -1,9 +1,8 @@
 <?php
 
 /**
- * Paquete: Seguridad y Acceso
- * Tablas: roles, users, password_reset_tokens, sessions.
- * Cada usuario tiene exactamente un rol (Administrador, Recepcionista, Medico, Paciente).
+ * P1 Seguridad y Acceso – roles, users, bitacora (+ tablas de sesión de Laravel).
+ * 3FN: cada usuario tiene un solo rol (rol_id); el nombre del rol no se repite en users.
  */
 
 use Illuminate\Database\Migrations\Migration;
@@ -34,6 +33,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Bitácora de auditoría: quién hizo qué, cuándo y desde qué IP
+        Schema::create('bitacora', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('accion', 20);                 // LOGIN, LOGOUT, CREAR, MODIFICAR…
+            $table->string('modulo', 40);                 // P1_SeguridadAcceso, P4_GestionCitas…
+            $table->string('tabla', 40)->nullable();
+            $table->unsignedBigInteger('registro_id')->nullable();
+            $table->text('descripcion')->nullable();
+            $table->string('ip', 45)->nullable();
+            $table->timestamp('created_at')->useCurrent();
+            $table->index(['user_id', 'created_at']);
+            $table->index(['tabla', 'registro_id']);
+        });
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -54,6 +68,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('bitacora');
         Schema::dropIfExists('users');
         Schema::dropIfExists('roles');
     }

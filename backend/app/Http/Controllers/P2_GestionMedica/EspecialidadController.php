@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\P2_GestionMedica\Especialidad;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
@@ -57,19 +56,17 @@ class EspecialidadController extends Controller
 
     private function validar(Request $request, ?Especialidad $actual = null): array
     {
-        // Se valida la unicidad sobre el nombre normalizado ("Pediatría" == "pediatria")
-        $request->merge(['nombre_normalizado' => Especialidad::normalizar((string) $request->nombre)]);
-
-        $datos = $request->validate([
-            'nombre' => ['required', 'string', 'min:3', 'max:80', 'regex:/^[\pL\s\-\.]+$/u'],
-            'nombre_normalizado' => [Rule::unique('especialidades')->ignore($actual)],
+        return $request->validate([
+            'nombre' => ['required', 'string', 'min:3', 'max:80', 'regex:/^[\pL\s\-\.]+$/u',
+                // RF04: no se repite el nombre normalizado (índice único sobre f_normalizar(nombre))
+                function ($attr, $valor, $fail) use ($actual) {
+                    if (Especialidad::nombreRepetido($valor, $actual?->id)) {
+                        $fail('Ya existe una especialidad con ese nombre.');
+                    }
+                }],
             'descripcion' => ['nullable', 'string', 'max:255'],
         ], [
-            'nombre_normalizado.unique' => 'Ya existe una especialidad con ese nombre.',
             'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
         ]);
-        unset($datos['nombre_normalizado']);
-
-        return $datos;
     }
 }

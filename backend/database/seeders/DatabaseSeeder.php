@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             $m->especialidades()->sync($esp->only($espNombres)->pluck('id'));
             foreach ($horarios as [$dia, $ini, $fin]) {
                 // 15 minutos de atención por paciente
-                $m->horarios()->create(['dia_semana' => $dia, 'hora_inicio' => $ini, 'hora_fin' => $fin, 'duracion_cita' => 15]);
+                $m->horarios()->create(['dia_semana' => $dia, 'hora_inicio' => $ini, 'hora_fin' => $fin]);
             }
         }
 
@@ -78,10 +78,13 @@ class DatabaseSeeder extends Seeder
             ['10223344', 'Valeria', 'Ortiz Paz', '1998-09-09', 'F', '75566778', null],
         ];
         foreach ($pacientes as $i => [$ci, $n, $a, $fn, $s, $tel, $sangre]) {
-            Paciente::create([
+            $pac = Paciente::create([
                 'codigo' => sprintf('PAC-%04d', $i + 1), 'ci' => $ci, 'nombres' => $n, 'apellidos' => $a, 'fecha_nacimiento' => $fn,
                 'sexo' => $s, 'telefono' => $tel, 'tipo_sangre' => $sangre, 'direccion' => 'Santa Cruz de la Sierra',
             ]);
+            // Cada paciente tiene su historial clínico (1 a 1) y un contacto de emergencia
+            $pac->asegurarHistoria(['alergias' => $i === 1 ? 'Penicilina' : null]);
+            $pac->contactos()->create(['nombre' => 'Familiar de ' . $n, 'parentesco' => $s === 'F' ? 'Esposo' : 'Esposa', 'telefono' => '7' . (5000000 + $i * 1111)]);
         }
 
         // Cuenta web de la paciente María López (se registró desde la web): usuario = su CI
@@ -105,6 +108,17 @@ class DatabaseSeeder extends Seeder
             ]);
             HistorialCita::create(['cita_id' => $c->id, 'accion' => 'CREADA', 'estado_nuevo' => Cita::PROGRAMADA,
                 'fecha_nueva' => $c->fecha, 'hora_nueva' => $c->hora_inicio, 'user_id' => $admin->id]);
+        }
+
+        // Catálogos de la atención médica (se usan en el Ciclo II)
+        foreach ([['Paracetamol', 'Tabletas 500 mg'], ['Ibuprofeno', 'Tabletas 400 mg'], ['Amoxicilina', 'Cápsulas 500 mg'],
+                  ['Losartán', 'Tabletas 50 mg'], ['Omeprazol', 'Cápsulas 20 mg'], ['Salbutamol', 'Inhalador 100 mcg']] as [$nom, $pres]) {
+            \App\Models\P5_AtencionMedica\Medicamento::create(['nombre' => $nom, 'presentacion' => $pres]);
+        }
+        foreach ([['Hemograma completo', 'LABORATORIO'], ['Glucosa en ayunas', 'LABORATORIO'], ['Perfil lipídico', 'LABORATORIO'],
+                  ['Examen general de orina', 'LABORATORIO'], ['Rayos X de tórax', 'IMAGEN'], ['Ecografía abdominal', 'IMAGEN'],
+                  ['Electrocardiograma', 'OTRO']] as [$nom, $cat]) {
+            \App\Models\P5_AtencionMedica\CatalogoEstudio::create(['nombre' => $nom, 'categoria' => $cat]);
         }
 
         // Feriado nacional (Día de Todos los Difuntos): bloquea la agenda de toda la clínica

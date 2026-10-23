@@ -23,9 +23,19 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 | CU11–CU20 | Reprogramar, cancelar, asistencia, agenda del médico, consulta, historial clínico, tratamiento, estudios, resultados, reportes | Ciclo II |
 
 ### Base de datos
-La base de datos está **diseñada completa desde el Ciclo I: 16 tablas**, incluidas las que se usan en el Ciclo II
-(historial clínico, consultas, tratamientos, estudios), el historial de cada cita, feriados/bloqueos de agenda,
-recordatorios (notificaciones) y la bitácora de auditoría. El script completo para pgAdmin/psql está en
+La base de datos está **diseñada completa desde el Ciclo I y normalizada en 3FN: 21 tablas**, incluidas las que se
+usan en el Ciclo II (historial clínico, consultas, tratamientos, estudios y sus catálogos), el historial de cada cita,
+feriados/bloqueos de agenda, recordatorios (notificaciones) y la bitácora de auditoría.
+
+Normalización aplicada:
+- **1FN:** el contacto de emergencia sale de `pacientes` a su tabla `contactos_emergencia` (un paciente puede tener varios).
+- **2FN:** la única clave compuesta (`especialidad_medico`) no tiene dependencias parciales; la cita usa la FK compuesta
+  `(medico_id, especialidad_id)` → `especialidad_medico`, así no puede tener una especialidad que el médico no atiende.
+- **3FN:** sin dependencias transitivas: `consultas` y `notificaciones` obtienen médico/paciente por la cita;
+  las alergias viven solo en `historias_clinicas`; el motivo de cancelación va en `historial_citas`; catálogos
+  `estados_cita`, `medicamentos` y `catalogo_estudios`; la duración de la ficha (15 min) está una sola vez en
+  `configuracion`; el nombre de especialidad es único con un índice sobre `f_normalizar(nombre)`.
+ El script completo para pgAdmin/psql está en
 `backend/database/sql/clinica_vida_salud.sql` y es equivalente a `php artisan migrate --seed`.
 El diagrama de clases de la base de datos está en StarUML: `docs/uml/clinica_vida_salud_bd.mdj` (imagen: `docs/uml/diagrama_clases_bd.png`).
 

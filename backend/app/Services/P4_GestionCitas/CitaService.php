@@ -82,7 +82,7 @@ class CitaService
                 // Recordatorio automático 24 horas antes, si el paciente acepta notificaciones
                 if ($paciente->acepta_notificaciones) {
                     Notificacion::create([
-                        'paciente_id' => $paciente->id, 'cita_id' => $cita->id, 'tipo' => 'RECORDATORIO',
+                        'cita_id' => $cita->id, 'tipo' => 'RECORDATORIO',
                         'mensaje' => "Recuerde su cita {$cita->codigo} el " . $fecha->format('d/m/Y') . " a las {$cita->hora_inicio} con {$medico->nombre_completo}.",
                         'programada_para' => Carbon::parse($fecha->toDateString() . ' ' . $cita->hora_inicio)->subDay(),
                     ]);

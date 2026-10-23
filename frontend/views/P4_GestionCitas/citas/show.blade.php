@@ -18,7 +18,6 @@
         <dt>Modalidad</dt><dd>{{ ucfirst(strtolower($cita->modalidad)) }}</dd>
         <dt>Médico</dt><dd>{{ $cita->medico->nombre_completo }}</dd>
         <dt>Motivo</dt><dd>{{ $cita->motivo ?? '—' }}</dd>
-        @if($cita->motivo_cancelacion)<dt>Motivo de cancelación</dt><dd>{{ $cita->motivo_cancelacion }}</dd>@endif
     </dl>
 </div>
 @unless(auth()->user()->tieneRol('Paciente'))

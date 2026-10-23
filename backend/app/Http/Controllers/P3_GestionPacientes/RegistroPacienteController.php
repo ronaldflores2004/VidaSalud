@@ -75,9 +75,11 @@ class RegistroPacienteController extends Controller
 
             if ($existente) {
                 $existente->update($perfil + ['user_id' => $usuario->id, 'activo' => true]);
+                $paciente = $existente;
             } else {
-                Paciente::create($perfil + ['codigo' => Paciente::siguienteCodigo(), 'user_id' => $usuario->id]);
+                $paciente = Paciente::create($perfil + ['codigo' => Paciente::siguienteCodigo(), 'user_id' => $usuario->id]);
             }
+            $paciente->asegurarHistoria();   // todo paciente tiene su historial clínico (1 a 1)
 
             return $usuario;
         });
