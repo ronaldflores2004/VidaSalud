@@ -4,6 +4,13 @@ Proyecto del **Segundo Examen Parcial – Ingeniería de Requisitos (INF342-SC)*
 Aplicación web para registrar pacientes, médicos, especialidades y horarios, y programar citas
 **sin cruces de horario**, conservando el historial de cada paciente.
 
+**Grupo 4** – Docente: M.Sc. Ing. Garzón Cuéllar Angélica
+
+| Integrante | Registro |
+|------------|----------|
+| Flores Llanos Ronald | 222008350 |
+| Salazar Alcocer Carlos Alfonso | 215049616 |
+
 **Stack Full Stack:** Backend PHP 8.2+ · Laravel 12 · PostgreSQL 16 — Frontend HTML5 (Blade) · CSS3 · JavaScript
 
 ## Avance – Ciclo I (Presentación 1)
