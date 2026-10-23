@@ -16,7 +16,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Capa de negocio – Programación de citas médicas (CU8, RF06, RF07).
+ * Capa de negocio – CU10 Reservar ficha médica (RF06, RF07).
  *
  * La disponibilidad se vuelve a comprobar en el servidor dentro de una transacción
  * y con bloqueo de la fila del médico (SELECT ... FOR UPDATE), para que dos

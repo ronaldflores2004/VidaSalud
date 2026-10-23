@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * CU4 Gestionar especialidades médicas.
+ * CU4 Gestionar especialidades.
  * No se permiten dos especialidades con el mismo nombre normalizado (RF04).
  */
 class EspecialidadController extends Controller

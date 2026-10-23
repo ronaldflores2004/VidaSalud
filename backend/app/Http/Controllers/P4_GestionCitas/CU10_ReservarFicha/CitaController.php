@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * CU10 Reservar / programar cita (ficha de 15 min, módulo principal, RF06 y RF07).
+ * CU10 Reservar ficha médica (ficha de 15 min, módulo principal, RF06 y RF07).
  * La recepcionista elige al paciente; el paciente reserva desde la web para sí mismo.
  * También lista las citas con filtros; cada rol ve solo lo que le corresponde.
  */

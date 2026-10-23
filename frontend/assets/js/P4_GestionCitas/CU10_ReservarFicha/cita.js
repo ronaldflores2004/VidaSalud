@@ -1,5 +1,5 @@
 /**
- * CU8 Programar cita – interacción del formulario.
+ * CU10 Reservar ficha médica – interacción del formulario.
  * 1) Busca pacientes, 2) carga médicos por especialidad, 3) muestra los bloques libres
  * del médico para la fecha elegida (CU9 Consultar disponibilidad).
  */
