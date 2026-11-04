@@ -1,0 +1,83 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU5_GestionarMédicos**
+actor "Administrador" as A
+participant ":GestionarMedicos" as F <<frm>>
+participant ":CtrlGestionarMedicos" as C <<ctrl>>
+participant ":Medico" as E1 <<entidad>>
+participant ":Especialidad" as E2 <<entidad>>
+participant ":Usuario" as E3 <<entidad>>
+A -> F : nuevoMedico()
+activate F
+F -> C : mostrarFormulario()
+activate C
+C -> E2 : listarActivas()
+activate E2
+E2 --> C : especialidades
+C -> E3 : cuentasMedicoLibres()
+activate E3
+E3 --> C : cuentas
+C --> F : formulario
+A -> F : ingresarDatos(datos, especialidades[], cuenta)
+F -> C : registrar(datos)
+C -> E1 : registroProfesionalUnico(registro)
+activate E1
+E1 --> C : resultado
+alt datos válidos
+C -> E1 : crear(datos, siguienteCodigo())
+C -> E1 : sincronizarEspecialidades(ids)
+C --> F : médico registrado
+F --> A : mostrarFichaMedico()
+else registro profesional repetido o sin especialidad
+C --> F : errores
+F --> A : mostrarMensaje(error)
+end
+deactivate F
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

@@ -1,0 +1,76 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU15 FRegistrarConsulta\n(form.blade.php,\nshow.blade.php)" as F_CU15_0 #E3EEFB
+  component "«form»\nCU16 FGestionarHistorial\n(index.blade.php,\nshow.blade.php)" as F_CU16_0 #E3EEFB
+  component "«form»\nCU17 FRegistrarTratamiento\n(_filas, _agregar.blade.php\n+ tratamiento.js)" as F_CU17_0 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGRegistrarConsulta\n(ConsultaController.php,\nConsultaService.php)" as C_CU15_0 #E6F5EC
+  component "«class»\nGGestionarHistorial\n(HistorialClinicoController.php)" as C_CU16_0 #E6F5EC
+  component "«class»\nGRegistrarTratamiento\n(TratamientoController.php)" as C_CU17_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\nconsultas" as T_consultas #FCE8E8
+  component "«table»\ncitas" as T_citas #FCE8E8
+  component "«table»\nhistorias_clinicas" as T_historias_clinicas #FCE8E8
+  component "«table»\npacientes" as T_pacientes #FCE8E8
+  component "«table»\ntratamientos" as T_tratamientos #FCE8E8
+  component "«table»\nmedicamentos" as T_medicamentos #FCE8E8
+}
+F_CU15_0 -[hidden]right- F_CU16_0
+F_CU16_0 -[hidden]right- F_CU17_0
+F_CU15_0 ..> C_CU15_0
+C_CU15_0 ..> T_consultas
+C_CU15_0 ..> T_citas
+C_CU15_0 ..> T_historias_clinicas
+F_CU16_0 ..> C_CU16_0
+C_CU16_0 ..> T_historias_clinicas
+C_CU16_0 ..> T_pacientes
+C_CU16_0 ..> T_consultas
+F_CU17_0 ..> C_CU17_0
+C_CU17_0 ..> T_tratamientos
+C_CU17_0 ..> T_medicamentos
+@enduml

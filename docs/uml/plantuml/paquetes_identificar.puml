@@ -1,0 +1,57 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+package "P1. Seguridad y Acceso" as P1 {
+}
+package "P2. Gestión Médica" as P2 {
+}
+package "P3. Gestión de Pacientes" as P3 {
+}
+package "P4. Gestión de Citas (Fichas)" as P4 {
+}
+package "P5. Atención Médica e Historial Clínico" as P5 {
+}
+package "P6. Reportes" as P6 {
+}
+P4 ..> P3
+P4 ..> P2
+P5 ..> P4
+P5 ..> P3
+P2 ..> P1
+P3 ..> P1
+P4 ..> P1
+P5 ..> P1
+P6 ..> P4
+P6 ..> P1
+@enduml

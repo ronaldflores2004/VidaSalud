@@ -1,0 +1,68 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+actor "Administrador" as ADM
+actor "Médico" as MED
+actor "Paciente" as PAC
+actor "Recepcionista" as REC
+rectangle "Ciclo II" {
+  usecase "CU11. Reprogramar cita" as CU11
+  usecase "CU12. Cancelar cita" as CU12
+  usecase "CU13. Registrar asistencia" as CU13
+  usecase "CU14. Consultar agenda médica" as CU14
+  usecase "CU15. Registrar consulta médica" as CU15
+  usecase "CU16. Gestionar historial clínico" as CU16
+  usecase "CU17. Registrar tratamiento" as CU17
+  usecase "CU18. Gestionar estudios médicos" as CU18
+  usecase "CU19. Consultar historial y resultados" as CU19
+  usecase "CU20. Generar reportes" as CU20
+  usecase "CU9. Consultar disponibilidad de horarios" as CU9
+}
+REC -- CU11
+REC -- CU12
+PAC -- CU12
+REC -- CU13
+MED -- CU14
+MED -- CU15
+MED -- CU16
+MED -- CU17
+MED -- CU18
+PAC -- CU19
+ADM -- CU20
+CU11 ..> CU9 : <<include>>
+CU15 ..> CU16 : <<include>>
+CU17 ..> CU15 : <<extend>>
+CU18 ..> CU15 : <<extend>>
+@enduml

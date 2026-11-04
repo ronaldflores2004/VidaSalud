@@ -1,0 +1,54 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+title CU15 – Registrar consulta médica
+actor "Médico" as A
+boundary "Pantalla Consulta Médica" as B
+control "Control Consulta" as C
+entity "Cita" as E0
+entity "Historia Clínica" as E1
+entity "Consulta" as E2
+entity "Tratamiento" as E3
+entity "Estudio" as E4
+A --> B : 1: atender cita\n5: signos vitales, examen, diagnóstico
+B --> C : 2: verificar(cita)\n6: registrar(datos, tratamientos, estudios)
+C --> E0 : 3: cita del médico, de hoy y vigente\n10: cambiar a ATENDIDA
+C --> E1 : 4: obtener historial (CU16)
+C --> E2 : 7: crear consulta
+C --> E3 : 8: crear tratamientos (CU17)
+C --> E4 : 9: crear estudios (CU18)
+B <-- C : 11: consulta registrada
+A <-- B : 12: mostrar consulta
+@enduml

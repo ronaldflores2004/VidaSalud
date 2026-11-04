@@ -1,0 +1,153 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 40
+skinparam ranksep 55
+package "P1. Seguridad y Acceso" {
+  class Rol {
+    id : int
+    nombre : string
+    descripcion : string
+  }
+  class Usuario {
+    id : int
+    name : string
+    username : string
+    email : string
+    password : string
+    activo : bool
+    ultimo_acceso : datetime
+  }
+}
+package "P2. Gestión Médica" {
+  class Especialidad {
+    id : int
+    nombre : string
+    descripcion : string
+    activo : bool
+  }
+  class Medico {
+    id : int
+    codigo : string
+    registro_profesional : string
+    nombres : string
+    apellidos : string
+    telefono : string
+    activo : bool
+  }
+  class Horario {
+    id : int
+    dia_semana : int
+    hora_inicio : time
+    hora_fin : time
+    duracion_cita : int = 15
+    activo : bool
+  }
+}
+package "P3. Gestión de Pacientes" {
+  class Paciente {
+    id : int
+    codigo : string
+    ci : string
+    nombres : string
+    apellidos : string
+    fecha_nacimiento : date
+    sexo : char
+    telefono : string
+    tipo_sangre : string
+    activo : bool
+  }
+}
+package "P4. Gestión de Citas" {
+  class Cita {
+    id : int
+    codigo : string
+    fecha : date
+    hora_inicio : time
+    hora_fin : time
+    motivo : string
+    estado : string
+  }
+}
+package "P5. Atención Médica e Historial Clínico" {
+  class HistoriaClinica {
+    id : int
+    numero : string
+    antecedentes : text
+    alergias : string
+    enfermedades_cronicas : string
+  }
+  class Consulta {
+    id : int
+    fecha_hora : datetime
+    motivo : string
+    signos_vitales
+    diagnostico : text
+  }
+  class Tratamiento {
+    id : int
+    medicamento : string
+    dosis : string
+    frecuencia : string
+    duracion : string
+  }
+  class Estudio {
+    id : int
+    tipo : string
+    nombre : string
+    estado : string
+    fecha_solicitud : date
+    resultado : text
+  }
+}
+Rol "1" -- "1..*" Usuario : tiene >
+Usuario "0..1" -- "0..1" Medico : cuenta de >
+Usuario "0..1" -- "0..1" Paciente : cuenta de >
+Medico "1..*" -- "1..*" Especialidad : atiende >
+Medico "1" *-- "0..*" Horario : tiene >
+Paciente "1" -- "0..*" Cita : reserva >
+Medico "1" -- "0..*" Cita : atiende >
+Especialidad "1" -- "0..*" Cita : de >
+Paciente "1" -- "1" HistoriaClinica : tiene >
+HistoriaClinica "1" *-- "0..*" Consulta : registra >
+Cita "1" -- "0..1" Consulta : genera >
+Consulta "1" *-- "0..*" Tratamiento : indica >
+Consulta "1" *-- "0..*" Estudio : solicita >
+
+@enduml

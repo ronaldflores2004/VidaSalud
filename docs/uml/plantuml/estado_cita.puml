@@ -1,0 +1,59 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam StateBackgroundColor #F3F8FD
+skinparam StateBorderColor #1F4E79
+hide empty description
+
+title Cita médica (CU10 a CU15)
+state "Programada" as P
+state "Confirmada\n(el paciente llegó)" as C
+state "Atendida" as A
+state "Cancelada" as X
+state "Inasistencia" as I
+[*] --> P : CU10 reservar ficha
+P --> P : CU11 reprogramar\n(nueva fecha y hora)
+C --> P : CU11 reprogramar
+P --> C : CU13 registrar llegada
+P --> X : CU12 cancelar\n(con motivo)
+C --> X : CU12 cancelar
+P --> I : CU13 no asistió\n(pasó la hora)
+P --> A : CU15 registrar consulta
+C --> A : CU15 registrar consulta
+A --> [*]
+X --> [*]
+I --> [*]
+note right of X : libera la ficha (RN09);\nla cita no se borra
+
+@enduml

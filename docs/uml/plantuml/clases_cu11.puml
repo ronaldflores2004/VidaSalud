@@ -1,0 +1,105 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Recepcionista" as A
+class "Pantalla Reprogramar Cita" as B <<boundary>> {
+  fecha: date
+  hora_inicio: time
+  motivo: string
+}
+class "Control Reprogramación" as C <<control>> {
+  + mostrarFormulario(cita)
+  + reprogramar(cita, fecha, hora, motivo)
+  + fichasLibres(medico, fecha, ignorar)
+}
+class "Cita" as E0 <<entity>> {
+  id: int
+  codigo: string
+  fecha: date
+  hora_inicio: time
+  hora_fin: time
+  modalidad: string
+  motivo: string
+  estado: EstadoCita
+  --
+  + siguienteCodigo(): string
+}
+class "Horario" as E1 <<entity>> {
+  id: int
+  dia_semana: int
+  hora_inicio: time
+  hora_fin: time
+  activo: bool
+  --
+  + seCruzaCon(inicio, fin): bool
+  + duracionFicha(): int
+}
+class "Historial Cita" as E2 <<entity>> {
+  id: int
+  accion: string
+  estado_anterior: string
+  estado_nuevo: string
+  fecha_anterior: date
+  hora_anterior: time
+  fecha_nueva: date
+  hora_nueva: time
+  motivo: string
+  --
+  + registrar(cita, accion)
+}
+class "Notificación" as E3 <<entity>> {
+  id: int
+  tipo: string
+  canal: string
+  mensaje: string
+  programada_para: datetime
+  leida_en: datetime
+  --
+  + avisar(paciente, mensaje)
+  + marcarLeida()
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+C --> E3
+E0 "1" -- "1..*" E2 : registra
+E0 "0..1" -- "0..*" E3 : genera
+E1 "1" -- "0..*" E0 : ofrece fichas
+@enduml

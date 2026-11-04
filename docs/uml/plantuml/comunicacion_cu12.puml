@@ -1,0 +1,50 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+title CU12 – Cancelar cita
+actor "Recepcionista" as A
+boundary "Pantalla Cancelar Cita" as B
+control "Control Cancelación" as C
+entity "Cita" as E0
+entity "Historial Cita" as E1
+entity "Notificación" as E2
+A --> B : 1: escribir motivo y confirmar
+B --> C : 2: cancelar(cita, motivo)
+C --> E0 : 3: verificar cita vigente y futura\n4: cambiar estado a CANCELADA
+C --> E1 : 5: registrar motivo
+C --> E2 : 6: quitar recordatorio y avisar
+B <-- C : 7: ficha liberada
+A <-- B : 8: mostrar cita cancelada
+@enduml

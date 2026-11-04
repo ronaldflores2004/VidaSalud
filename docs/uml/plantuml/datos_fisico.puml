@@ -1,0 +1,257 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+skinparam nodesep 30
+skinparam ranksep 45
+entity roles {
+  * id : bigserial <<PK>>
+  --
+  nombre : varchar(30) <<UQ>>
+  descripcion : varchar(150)
+}
+entity users {
+  * id : bigserial <<PK>>
+  --
+  name : varchar(120)
+  username : varchar(40) <<UQ>>
+  email : varchar(120) <<UQ>>
+  password : varchar(255)
+  rol_id : bigint <<FK>>
+  activo : boolean
+  ultimo_acceso : timestamp
+}
+entity bitacora {
+  * id : bigserial <<PK>>
+  --
+  user_id : bigint <<FK>>
+  accion : varchar(20)
+  modulo, tabla : varchar(40)
+  registro_id : bigint
+  descripcion : text
+  ip : varchar(45)
+  created_at : timestamp
+}
+entity configuracion {
+  * clave : varchar(40) <<PK>>
+  --
+  valor : varchar(100)
+  descripcion : varchar(200)
+}
+entity especialidades {
+  * id : bigserial <<PK>>
+  --
+  nombre : varchar(80) <<UQ f_normalizar>>
+  descripcion : varchar(255)
+  activo : boolean
+}
+entity medicos {
+  * id : bigserial <<PK>>
+  --
+  codigo : varchar(12) <<UQ>>
+  registro_profesional : varchar(30) <<UQ>>
+  nombres, apellidos : varchar(80)
+  telefono : varchar(20)
+  email : varchar(120)
+  activo : boolean
+  user_id : bigint <<FK, UQ>>
+}
+entity especialidad_medico {
+  * medico_id : bigint <<PK, FK>>
+  * especialidad_id : bigint <<PK, FK>>
+}
+entity horarios {
+  * id : bigserial <<PK>>
+  --
+  medico_id : bigint <<FK>>
+  dia_semana : smallint  CHECK 1..7
+  hora_inicio, hora_fin : time  CHECK fin > inicio
+  activo : boolean
+}
+entity bloqueos_agenda {
+  * id : bigserial <<PK>>
+  --
+  medico_id : bigint <<FK>> (NULL = clínica)
+  fecha : date
+  hora_inicio, hora_fin : time
+  tipo : varchar(10)  CHECK
+  motivo : varchar(150)
+  registrado_por : bigint <<FK>>
+}
+entity pacientes {
+  * id : bigserial <<PK>>
+  --
+  codigo : varchar(12) <<UQ>>
+  ci : varchar(20) <<UQ>>
+  nombres, apellidos : varchar(80)
+  fecha_nacimiento : date
+  sexo : char(1)
+  telefono, email, direccion
+  tipo_sangre : varchar(3)
+  acepta_notificaciones, activo : boolean
+  user_id : bigint <<FK, UQ>>
+}
+entity contactos_emergencia {
+  * id : bigserial <<PK>>
+  --
+  paciente_id : bigint <<FK>>
+  nombre : varchar(120)
+  parentesco : varchar(40)
+  telefono : varchar(20)
+}
+entity estados_cita {
+  * codigo : varchar(15) <<PK>>
+  --
+  nombre : varchar(40)
+  descripcion : varchar(150)
+  ocupa_horario : boolean
+}
+entity citas {
+  * id : bigserial <<PK>>
+  --
+  codigo : varchar(12) <<UQ>>
+  paciente_id : bigint <<FK>>
+  medico_id, especialidad_id <<FK compuesta>>
+  fecha : date
+  hora_inicio, hora_fin : time
+  modalidad : varchar(10)  CHECK
+  motivo : varchar(255)
+  estado : varchar(15) <<FK>>
+  registrado_por : bigint <<FK>>
+  EXCLUDE gist (medico_id, tsrange)
+}
+entity historial_citas {
+  * id : bigserial <<PK>>
+  --
+  cita_id : bigint <<FK>>
+  accion : varchar(15)  CHECK
+  estado_anterior, estado_nuevo <<FK>>
+  fecha/hora_anterior, fecha/hora_nueva
+  motivo : varchar(255)
+  user_id : bigint <<FK>>
+  created_at : timestamp
+}
+entity historias_clinicas {
+  * id : bigserial <<PK>>
+  --
+  numero : varchar(12) <<UQ>>
+  paciente_id : bigint <<FK, UQ>>
+  antecedentes_personales : text
+  antecedentes_familiares : text
+  alergias, enfermedades_cronicas
+  medicacion_habitual : varchar(255)
+}
+entity consultas {
+  * id : bigserial <<PK>>
+  --
+  cita_id : bigint <<FK, UQ>>
+  fecha_hora : timestamp
+  motivo_consulta : varchar(255)
+  peso_kg, talla_cm, presion_arterial
+  temperatura_c, frecuencia_cardiaca
+  examen_fisico, diagnostico : text
+  observaciones : text
+}
+entity medicamentos {
+  * id : bigserial <<PK>>
+  --
+  nombre, presentacion <<UQ>>
+  activo : boolean
+}
+entity tratamientos {
+  * id : bigserial <<PK>>
+  --
+  consulta_id : bigint <<FK>>
+  medicamento_id : bigint <<FK>>
+  dosis, frecuencia, duracion
+  indicaciones : varchar(255)
+}
+entity catalogo_estudios {
+  * id : bigserial <<PK>>
+  --
+  nombre : varchar(120) <<UQ>>
+  categoria : varchar(15)  CHECK
+  descripcion : varchar(255)
+  activo : boolean
+}
+entity estudios {
+  * id : bigserial <<PK>>
+  --
+  consulta_id : bigint <<FK>>
+  catalogo_estudio_id : bigint <<FK>>
+  indicaciones : varchar(255)
+  estado : varchar(12)  CHECK
+  fecha_solicitud, fecha_resultado : date
+  resultado : text
+  archivo_resultado : varchar(255)
+}
+entity notificaciones {
+  * id : bigserial <<PK>>
+  --
+  cita_id : bigint <<FK>>
+  estudio_id : bigint <<FK>>
+  CHECK solo uno de los dos
+  tipo : varchar(15)  CHECK
+  canal : varchar(10)  CHECK
+  mensaje : varchar(255)
+  programada_para, enviada_en, leida_en
+}
+roles ||--o{ users
+users ||--o{ bitacora
+users |o--o| medicos
+users |o--o| pacientes
+medicos |o--o{ bloqueos_agenda
+medicos ||--o{ especialidad_medico
+especialidades ||--o{ especialidad_medico
+medicos ||--o{ horarios
+pacientes ||--o{ contactos_emergencia
+pacientes ||--o{ citas
+especialidad_medico ||--o{ citas
+estados_cita ||--o{ citas
+users ||--o{ citas
+citas ||--|{ historial_citas
+estados_cita ||--o{ historial_citas
+pacientes ||--|| historias_clinicas
+citas ||--o| consultas
+consultas ||--o{ tratamientos
+medicamentos ||--o{ tratamientos
+consultas ||--o{ estudios
+catalogo_estudios ||--o{ estudios
+citas |o--o{ notificaciones
+estudios |o--o{ notificaciones
+
+@enduml

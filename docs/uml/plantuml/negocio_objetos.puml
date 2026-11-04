@@ -1,0 +1,91 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #FFF8E1
+class "Paciente" as PAC <<actor del negocio>> {
+  nombre
+  CI
+  teléfono
+}
+class "Recepcionista" as REC <<trabajador del negocio>>
+class "Médico" as MED <<trabajador del negocio>> {
+  nombre
+  especialidad
+}
+class "Administrador" as ADM <<trabajador del negocio>>
+class "Cuaderno de citas" as CUA <<entidad del negocio>> {
+  fecha
+  hora
+  paciente
+  médico
+}
+class "Horario de atención" as HOR <<entidad del negocio>> {
+  día
+  hora inicio
+  hora fin
+}
+class "Historia clínica (papel)" as HC <<entidad del negocio>> {
+  antecedentes
+  alergias
+  consultas
+}
+class "Receta" as REC2 <<entidad del negocio>> {
+  medicamento
+  dosis
+}
+class "Orden de estudio" as ORD <<entidad del negocio>> {
+  estudio
+  resultado
+}
+class "Informe mensual" as INF <<entidad del negocio>> {
+  atendidas
+  canceladas
+}
+REC "1" -- "1..*" CUA : anota en >
+PAC "1" -- "0..*" CUA : figura en >
+MED "1" -- "1..*" HOR : tiene >
+CUA "0..*" -- "1" MED : agenda de >
+PAC "1" -- "1" HC : tiene >
+MED "1" -- "0..*" HC : escribe en >
+MED "1" -- "0..*" REC2 : entrega >
+MED "1" -- "0..*" ORD : solicita >
+ADM "1" -- "0..*" INF : elabora >
+INF "0..*" -- "1" CUA : se basa en >
+
+@enduml

@@ -1,0 +1,81 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU12_CancelarCita**
+actor "Recepcionista" as A
+participant ":CancelarCita" as F <<frm>>
+participant ":CtrlCancelarCita" as C <<ctrl>>
+participant ":Cita" as E1 <<entidad>>
+participant ":HistorialCita" as E2 <<entidad>>
+participant ":Notificacion" as E3 <<entidad>>
+A -> F : seleccionarCancelar(cita)
+activate F
+F --> A : solicitarMotivo()
+A -> F : ingresarMotivo(motivo)
+F --> A : solicitarConfirmacion()
+A -> F : confirmar()
+F -> C : cancelar(cita, motivo)
+activate C
+C -> E1 : estaVigente() y noComenzo()
+activate E1
+E1 --> C : resultado
+alt cita vigente y futura
+C -> E1 : cambiarEstado(CANCELADA)
+C -> E2 : registrar(CANCELADA, motivo)
+activate E2
+C -> E3 : eliminarRecordatorio()
+activate E3
+C --> F : ficha liberada
+F --> A : mostrarCitaCancelada()
+else ya cancelada, atendida o pasada
+C --> F : no se puede cancelar
+F --> A : mostrarMensaje(error)
+end
+deactivate F
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

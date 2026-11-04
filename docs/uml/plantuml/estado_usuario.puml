@@ -1,0 +1,55 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam StateBackgroundColor #F3F8FD
+skinparam StateBorderColor #1F4E79
+hide empty description
+
+title Usuario (CU1 Iniciar sesión, CU2 Cerrar sesión, CU3 Gestionar usuarios)
+[*] --> Activo : CU3 registrar usuario
+state Activo {
+  [*] --> SinSesion
+  SinSesion --> ConSesion : CU1 credenciales válidas
+  SinSesion --> SinSesion : CU1 credenciales inválidas\n(intentos < 3)
+  SinSesion --> Bloqueado : CU1 tercer intento fallido
+  Bloqueado --> SinSesion : pasan 60 segundos
+  ConSesion --> SinSesion : CU2 cerrar sesión /\nsesión expirada
+  state "Sin sesión" as SinSesion
+  state "Con sesión" as ConSesion
+  state "Bloqueado temporalmente" as Bloqueado
+}
+Activo --> Inactivo : CU3 desactivar
+Inactivo --> Activo : CU3 activar
+
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam RectangleBackgroundColor #F3F8FD
+skinparam RectangleBorderColor #1F4E79
+skinparam roundcorner 12
+skinparam ArrowColor #1F4E79
+
+title Ciclo I – Portal público y paciente
+rectangle "Portal de la clínica\n(inicio)" as P0
+rectangle "Horarios disponibles\nCU9" as P1
+rectangle "Registrarse\nCU8" as P2
+rectangle "Iniciar sesión\nCU1" as P3
+rectangle "Panel del paciente" as P4
+rectangle "Reservar ficha\nCU10" as P5
+rectangle "Comprobante de la cita" as P6
+rectangle "Mis citas" as P7
+P0 --> P1 : Ver horarios
+P0 --> P2 : Registrarse
+P0 --> P3 : Ingresar
+P1 --> P3 : Reservar (requiere sesión)
+P2 --> P4 : cuenta creada
+P3 --> P4 : perfil Paciente
+P4 --> P5 : + Reservar ficha
+P5 --> P6 : Confirmar cita
+P4 --> P7 : Mis citas
+P7 --> P6 : ver cita
+P4 --> P3 : Cerrar sesión (CU2)
+
+@enduml

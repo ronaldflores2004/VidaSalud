@@ -1,0 +1,50 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+title CU20 – Generar reportes
+actor "Administrador" as A
+boundary "Pantalla Reportes" as B
+control "Control Reportes" as C
+entity "Cita" as E0
+entity "Paciente" as E1
+entity "Médico" as E2
+A --> B : 1: tipo de reporte y filtros\n8: exportar PDF / Excel
+B --> C : 2: generar(filtros)\n9: exportar(formato)
+C --> E0 : 3: obtener citas del período
+C --> E1 : 4: obtener pacientes registrados
+C --> E2 : 5: agrupar atenciones por médico
+B <-- C : 6: datos y totales\n10: archivo
+A <-- B : 7: mostrar vista previa\n11: descargar archivo
+@enduml

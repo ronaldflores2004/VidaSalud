@@ -1,0 +1,52 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam StateBackgroundColor #F3F8FD
+skinparam StateBorderColor #1F4E79
+hide empty description
+
+title Ficha de 15 minutos (CU9 Consultar disponibilidad, CU10 Reservar ficha)
+state "Libre" as Libre
+state "Ocupada" as Ocupada
+state "Bloqueada\n(feriado / bloqueo)" as Bloqueada
+state "Vencida" as Vencida
+[*] --> Libre : CU6 horario activo\n(cada 15 min)
+[*] --> Bloqueada : feriado registrado
+Libre --> Ocupada : CU10 reservar
+Ocupada --> Libre : CU12 cancelar /\nCU11 reprogramar a otra hora
+Libre --> Vencida : pasa la hora
+Ocupada --> [*] : la cita se atiende o\nse registra inasistencia
+Vencida --> [*]
+
+@enduml

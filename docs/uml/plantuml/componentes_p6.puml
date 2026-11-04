@@ -1,0 +1,70 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU20 FGenerarReportes\n(index.blade.php)" as F_CU20_0 #E3EEFB
+  component "«report»\nCU20 RReportePDF\n(.pdf – PdfSimple.php)" as F_CU20_1 #E3EEFB
+  component "«report»\nCU20 RReporteExcel\n(.xlsx – XlsxSimple.php)" as F_CU20_2 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGGenerarReportes\n(ReporteController.php,\nReporteService.php)" as C_CU20_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\ncitas" as T_citas #FCE8E8
+  component "«table»\npacientes" as T_pacientes #FCE8E8
+  component "«table»\nmedicos" as T_medicos #FCE8E8
+  component "«table»\nespecialidades" as T_especialidades #FCE8E8
+  component "«table»\nbitacora" as T_bitacora #FCE8E8
+}
+F_CU20_0 -[hidden]right- F_CU20_1
+F_CU20_1 -[hidden]right- F_CU20_2
+F_CU20_0 ..> C_CU20_0
+F_CU20_1 ..> C_CU20_0
+F_CU20_2 ..> C_CU20_0
+C_CU20_0 ..> T_citas
+C_CU20_0 ..> T_pacientes
+C_CU20_0 ..> T_medicos
+C_CU20_0 ..> T_especialidades
+C_CU20_0 ..> T_bitacora
+@enduml

@@ -1,0 +1,70 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU18 FGestionarEstudios\n(index, resultado,\n_solicitar.blade.php)" as F_CU18_0 #E3EEFB
+  component "«form»\nCU19 FMiHistorial\n(index.blade.php)" as F_CU19_0 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGGestionarEstudios\n(EstudioController.php,\nEstudioService.php)" as C_CU18_0 #E6F5EC
+  component "«class»\nGMiHistorial\n(MiHistorialController.php)" as C_CU19_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\nestudios" as T_estudios #FCE8E8
+  component "«table»\ncatalogo_estudios" as T_catalogo_estudios #FCE8E8
+  component "«table»\nnotificaciones" as T_notificaciones #FCE8E8
+  component "«table»\nconsultas" as T_consultas #FCE8E8
+  component "«table»\ntratamientos" as T_tratamientos #FCE8E8
+}
+F_CU18_0 -[hidden]right- F_CU19_0
+F_CU18_0 ..> C_CU18_0
+C_CU18_0 ..> T_estudios
+C_CU18_0 ..> T_catalogo_estudios
+C_CU18_0 ..> T_notificaciones
+F_CU19_0 ..> C_CU19_0
+C_CU19_0 ..> T_consultas
+C_CU19_0 ..> T_estudios
+C_CU19_0 ..> T_tratamientos
+C_CU19_0 ..> T_notificaciones
+@enduml

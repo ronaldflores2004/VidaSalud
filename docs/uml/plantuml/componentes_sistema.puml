@@ -1,0 +1,114 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam nodesep 18
+skinparam ranksep 55
+component "«main»\nSistema Web\nClínica Vida Salud\n(public/index.php)" as MAIN #FFF4D6
+folder "P1. Seguridad y Acceso" as P1
+folder "P2. Gestión Médica" as P2
+folder "P3. Gestión de Pacientes" as P3
+folder "P4. Gestión de Citas" as P4
+folder "P5. Atención Médica e\nHistorial Clínico" as P5
+folder "P6. Reportes" as P6
+component "«file»\n.env\n(configuración)" as ENV #EEEEEE
+component "«file»\nroutes/web.php\n(rutas P1…P6, CU1…CU20)" as RT #EEEEEE
+component "«file»\nlayouts/app.blade.php\n(plantilla y menú por rol)" as LY #EEEEEE
+component "«file»\napp.css · app.js" as CSS #EEEEEE
+component "«library»\nLaravel 12\n(framework PHP)" as LV #E3EEFB
+component "«library»\nPDO pdo_pgsql" as PDO #E3EEFB
+package "B.D." as BD {
+  component "«engine»\nPostgreSQL 16" as PG #E3EEFB
+  component "«file»\nclinica_vida_salud.sql\n(script)" as SQL #EEEEEE
+  component "«table»\nusers · roles · bitacora" as T1 #FCE8E8
+  component "«table»\nmedicos · especialidades\nespecialidad_medico · horarios" as T2 #FCE8E8
+  component "«table»\npacientes ·\ncontactos_emergencia" as T3 #FCE8E8
+  component "«table»\ncitas · historial_citas\nestados_cita · notificaciones" as T4 #FCE8E8
+  component "«table»\nhistorias_clinicas · consultas\ntratamientos · medicamentos\nestudios · catalogo_estudios" as T5 #FCE8E8
+  component "«table»\nconfiguracion ·\nbloqueos_agenda" as T6 #FCE8E8
+}
+package "Reportes" as RP {
+  component "«PDF»\nreporte_citas.pdf\nreporte_atenciones.pdf" as RPDF #F3E8FA
+  component "«MS Excel»\nreporte_pacientes.xlsx\nreporte_atenciones.xlsx" as RXLS #E6F5EC
+  component "«file»\nReporteService.php" as RS #EEEEEE
+  component "«file»\nPdfSimple.php" as PS #EEEEEE
+  component "«file»\nXlsxSimple.php" as XS #EEEEEE
+}
+MAIN .up.> P1
+MAIN .up.> P2
+MAIN .up.> P3
+MAIN .up.> P4
+MAIN .up.> P5
+MAIN .up.> P6
+MAIN .left.> ENV
+MAIN .left.> RT
+MAIN .left.> LY
+MAIN .left.> CSS
+ENV -[hidden]down- RT
+RT -[hidden]down- LY
+LY -[hidden]down- CSS
+MAIN .right.> LV
+MAIN .right.> PDO
+LV -[hidden]down- PDO
+MAIN .down.> BD
+MAIN .down.> RP
+T1 -[hidden]right- T2
+T2 -[hidden]right- T3
+T4 -[hidden]right- T5
+T5 -[hidden]right- T6
+T1 -[hidden]down- T4
+PG ..> SQL
+SQL ..> T1
+SQL ..> T2
+SQL ..> T3
+SQL ..> T4
+SQL ..> T5
+SQL ..> T6
+P1 -[hidden]right- P2
+P2 -[hidden]right- P3
+P3 -[hidden]right- P4
+P4 -[hidden]right- P5
+P5 -[hidden]right- P6
+RS ..> PS
+RS ..> XS
+PS ..> RPDF
+XS ..> RXLS
+
+@enduml

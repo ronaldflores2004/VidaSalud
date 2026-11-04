@@ -1,0 +1,51 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+title CU18 – Gestionar estudios médicos
+actor "Médico" as A
+boundary "Pantalla Estudios" as B
+control "Control Estudios" as C
+entity "Consulta" as E0
+entity "Catálogo Estudio" as E1
+entity "Estudio" as E2
+entity "Notificación" as E3
+A --> B : 1: solicitar estudio / registrar resultado
+B --> C : 2: solicitar(consulta, estudio)\n6: registrarResultado(estudio, datos, archivo)
+C --> E1 : 3: validar estudio del catálogo
+C --> E2 : 4: verificar que no esté pendiente\n5: guardar estudio SOLICITADO\n7: guardar resultado y archivo
+C --> E3 : 8: avisar al paciente
+B <-- C : 9: resultado
+A <-- B : 10: mostrar estudios
+@enduml

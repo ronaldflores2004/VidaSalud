@@ -1,0 +1,82 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+skinparam ActivityBackgroundColor #F3F8FD
+skinparam ActivityBorderColor #1F4E79
+skinparam ActivityDiamondBackgroundColor #FFF8E1
+skinparam SwimlaneTitleFontStyle bold
+|Paciente|
+start
+:Llama por teléfono o se presenta\nen la recepción de la clínica;
+:Indica la especialidad y el día\nque prefiere;
+|Recepcionista|
+:Busca al paciente en el cuaderno\no en la hoja de cálculo;
+if (¿Paciente registrado?) then (no)
+  :Anota sus datos a mano\n(nombre, CI, teléfono);
+else (sí)
+endif
+:Revisa el cuaderno de citas del médico\n(sin ver los horarios reales);
+if (¿Hay espacio libre?) then (no)
+  :Ofrece otro día u otro médico;
+  |Paciente|
+  if (¿Acepta?) then (no)
+    :Se retira sin ficha;
+    stop
+  else (sí)
+  endif
+  |Recepcionista|
+else (sí)
+endif
+:Anota la cita en el cuaderno\n(a veces se cruza con otra);
+:Comunica la fecha y la hora\nal paciente;
+|Paciente|
+:Llega a la clínica el día de la cita;
+|Recepcionista|
+:Busca la cita en el cuaderno y\nentrega la historia en papel al médico;
+|Médico|
+:Atiende al paciente y escribe\nel diagnóstico en la historia de papel;
+if (¿Necesita estudios?) then (sí)
+  :Entrega órdenes de estudio en papel;
+  |Paciente|
+  :Realiza los estudios y vuelve\ncon los resultados impresos;
+  |Médico|
+else (no)
+endif
+:Entrega la receta escrita a mano;
+|Recepcionista|
+:Archiva la historia; al fin de mes cuenta\nlas atenciones a mano para el informe;
+stop
+
+@enduml

@@ -1,0 +1,99 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam defaultFontSize 12
+title Diagrama de tiempo – CU19 Consultar historial y resultados
+scale 10 as 75 pixels
+concise "Paciente" as A
+concise ":MiHistorial" as F
+concise ":CtrlMiHistorial" as C
+concise ":Paciente" as E1
+concise ":Consulta" as E2
+concise ":Estudio" as E3
+concise ":Notificacion" as E4
+@0
+A is "Inactivo"
+F is "Inactivo"
+C is "Inactivo"
+E1 is "Inactivo"
+E2 is "Inactivo"
+E3 is "Inactivo"
+E4 is "Inactivo"
+@10
+A is "Espera"
+F is "Captura"
+@20
+C is "Procesa"
+@30
+E1 is "Lee"
+@40
+E1 is "Inactivo"
+@50
+E2 is "Lee"
+@60
+E2 is "Inactivo"
+@70
+E3 is "Lee"
+@80
+E3 is "Inactivo"
+@90
+E4 is "Lee"
+@100
+E4 is "Inactivo"
+@110
+E4 is "Escribe"
+@120
+F is "Muestra"
+C is "Inactivo"
+@130
+A is "Ve resultado"
+F is "Inactivo"
+@140
+A is "Espera"
+F is "Captura"
+@150
+C is "Procesa"
+@160
+E3 is "Lee"
+@170
+E3 is "Inactivo"
+@180
+F is "Muestra"
+C is "Inactivo"
+@190
+A is "Fin"
+F is "Inactivo"
+E4 is "Inactivo"
+@0 <-> @190 : 190 ms (aprox.)
+@enduml

@@ -1,0 +1,79 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Administrador" as A
+class "Pantalla Usuarios" as B <<boundary>> {
+  name
+  username
+  email
+  rol_id
+  password
+  password_confirmation
+}
+class "Control Usuarios" as C <<control>> {
+  + listar(filtro)
+  + registrar(datos)
+  + modificar(id, datos)
+  + cambiarEstado(id)
+  + validar(datos)
+}
+class "Usuario" as E0 <<entity>> {
+  id: int
+  name: string
+  username: string
+  email: string
+  password: string
+  activo: bool
+  ultimo_acceso: datetime
+  --
+  + tieneRol(roles): bool
+  + estaActivo(): bool
+}
+class "Rol" as E1 <<entity>> {
+  id: int
+  nombre: string
+  descripcion: string
+  --
+  + usuarios(): Usuario[*]
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+E0 "1..*" -- "1" E1 : tiene
+@enduml

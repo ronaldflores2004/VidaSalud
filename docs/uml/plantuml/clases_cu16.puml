@@ -1,0 +1,108 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Médico" as A
+class "Pantalla Historial Clínico" as B <<boundary>> {
+  alergias
+  enfermedades_cronicas
+  medicacion_habitual
+  antecedentes_personales
+  antecedentes_familiares
+}
+class "Control Historial" as C <<control>> {
+  + misPacientes(medico)
+  + mostrar(paciente)
+  + actualizar(paciente, datos)
+}
+class "Paciente" as E0 <<entity>> {
+  id: int
+  codigo: string
+  ci: string
+  nombres: string
+  apellidos: string
+  fecha_nacimiento: date
+  sexo: char
+  telefono: string
+  email: string
+  direccion: string
+  tipo_sangre: string
+  acepta_notificaciones: bool
+  activo: bool
+  --
+  + buscar(texto)
+  + siguienteCodigo(): string
+  + asegurarHistoria(): HistoriaClinica
+  + contactos(): ContactoEmergencia[*]
+}
+class "Historia Clínica" as E1 <<entity>> {
+  id: int
+  numero: string
+  antecedentes_personales: text
+  antecedentes_familiares: text
+  alergias: string
+  enfermedades_cronicas: string
+  medicacion_habitual: string
+  --
+  + siguienteNumero(): string
+  + actualizar(datos)
+}
+class "Consulta" as E2 <<entity>> {
+  id: int
+  fecha_hora: datetime
+  motivo_consulta: string
+  peso_kg: decimal
+  talla_cm: decimal
+  presion_arterial: string
+  temperatura_c: decimal
+  frecuencia_cardiaca: int
+  examen_fisico: text
+  diagnostico: text
+  observaciones: text
+  --
+  + imc(): decimal
+  + tratamientos()
+  + estudios()
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+E0 "1" -- "1" E1 : tiene
+E0 "1" -- "0..*" E2 : recibe
+@enduml

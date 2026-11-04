@@ -1,0 +1,78 @@
+@startchen
+entity ROL {
+}
+entity USUARIO {
+}
+entity MEDICO {
+}
+entity ESPECIALIDAD {
+}
+entity HORARIO {
+}
+entity PACIENTE {
+}
+entity CITA {
+}
+entity HISTORIA_CLINICA {
+}
+entity CONSULTA {
+}
+entity TRATAMIENTO {
+}
+entity MEDICAMENTO {
+}
+entity ESTUDIO {
+}
+entity CATALOGO_ESTUDIO {
+}
+entity NOTIFICACION {
+}
+relationship TIENE_ROL {
+}
+relationship ATIENDE_ESP {
+}
+relationship TIENE_HORARIO {
+}
+relationship RESERVA {
+}
+relationship ATIENDE {
+}
+relationship POSEE {
+}
+relationship GENERA {
+}
+relationship INDICA {
+}
+relationship USA {
+}
+relationship SOLICITA {
+}
+relationship CLASIFICA {
+}
+relationship AVISA {
+}
+ROL -1- TIENE_ROL
+TIENE_ROL -N- USUARIO
+MEDICO -N- ATIENDE_ESP
+ATIENDE_ESP -N- ESPECIALIDAD
+MEDICO -1- TIENE_HORARIO
+TIENE_HORARIO -N- HORARIO
+PACIENTE -1- RESERVA
+RESERVA -N- CITA
+MEDICO -1- ATIENDE
+ATIENDE -N- CITA
+PACIENTE -1- POSEE
+POSEE -1- HISTORIA_CLINICA
+CITA -1- GENERA
+GENERA -1- CONSULTA
+CONSULTA -1- INDICA
+INDICA -N- TRATAMIENTO
+TRATAMIENTO -N- USA
+USA -1- MEDICAMENTO
+CONSULTA -1- SOLICITA
+SOLICITA -N- ESTUDIO
+ESTUDIO -N- CLASIFICA
+CLASIFICA -1- CATALOGO_ESTUDIO
+CITA -1- AVISA
+AVISA -N- NOTIFICACION
+@endchen

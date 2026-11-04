@@ -1,0 +1,77 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU14_ConsultarAgendaMédica**
+actor "Medico" as A
+participant ":MiAgenda" as F <<frm>>
+participant ":CtrlAgenda" as C <<ctrl>>
+participant ":Medico" as E1 <<entidad>>
+participant ":Cita" as E2 <<entidad>>
+participant ":Paciente" as E3 <<entidad>>
+A -> F : seleccionarDia(fecha)
+activate F
+F -> C : agenda(fecha)
+activate C
+C -> E1 : medicoDelUsuario()
+activate E1
+E1 --> C : médico
+C -> E2 : citasDelDia(medico, fecha)
+activate E2
+E2 --> C : citas
+C -> E2 : resumenSemana(medico, fecha)
+E2 --> C : totales por día
+loop por cada cita
+C -> E3 : datos(edad, codigo)
+activate E3
+E3 --> C : paciente
+end
+C --> F : agenda
+F --> A : mostrarAgenda(Atender | Ver consulta | Historial)
+deactivate F
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

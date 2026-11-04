@@ -1,0 +1,67 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+left to right direction
+skinparam usecase {
+  BackgroundColor #FFF8E1
+  BorderColor #8D6E00
+}
+actor/ "Paciente" as PAC
+rectangle "Clínica Vida Salud (negocio)" {
+  usecase/ "Solicitar ficha médica" as N1
+  usecase/ "Reprogramar o cancelar ficha" as N2
+  usecase/ "Recibir atención médica" as N3
+  usecase/ "Realizar estudios y\nrecibir resultados" as N4
+  usecase/ "Consultar historial y resultados" as N5
+  usecase/ "Administrar médicos,\nespecialidades y horarios" as N6
+  usecase/ "Elaborar informes de atención" as N7
+}
+actor "Recepcionista" as REC
+actor "Médico" as MED
+actor "Administrador" as ADM
+PAC -- N1
+PAC -- N2
+PAC -- N3
+PAC -- N4
+PAC -- N5
+N1 -- REC
+N2 -- REC
+N3 -- MED
+N4 -- MED
+N5 -- MED
+N6 -- ADM
+N7 -- ADM
+
+@enduml

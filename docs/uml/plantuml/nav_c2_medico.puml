@@ -1,0 +1,66 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam RectangleBackgroundColor #F3F8FD
+skinparam RectangleBorderColor #1F4E79
+skinparam roundcorner 12
+skinparam ArrowColor #1F4E79
+
+title Ciclo II – Médico
+rectangle "Panel del médico\n(agenda de hoy)" as D
+rectangle "Mi agenda\nCU14" as A
+rectangle "Registrar consulta\nCU15" as C1
+rectangle "Consulta registrada" as C2
+rectangle "Agregar medicamento\nCU17" as T
+rectangle "Registrar resultado\nCU18" as R
+rectangle "Estudios solicitados\nCU18" as E
+rectangle "Mis pacientes" as P
+rectangle "Historial clínico\nCU16" as H
+D --> A : Mi agenda
+D --> C1 : Atender
+A --> C1 : Atender
+A --> C2 : Ver consulta
+A --> H : Historial
+C1 --> C2 : Guardar consulta
+C1 --> H : ver historial completo
+C2 --> T : Agregar
+C2 --> R : Registrar resultado
+R --> C2 : Guardar
+D --> E : Estudios
+E --> R : Registrar resultado
+D --> P : Mis pacientes
+P --> H : Ver historial
+H --> C2 : Abrir consulta
+
+@enduml

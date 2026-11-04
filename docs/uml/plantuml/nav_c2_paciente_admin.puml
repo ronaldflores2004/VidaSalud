@@ -1,0 +1,62 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam RectangleBackgroundColor #F3F8FD
+skinparam RectangleBorderColor #1F4E79
+skinparam roundcorner 12
+skinparam ArrowColor #1F4E79
+
+title Ciclo II – Paciente y administrador
+rectangle "Panel del paciente\n(avisos nuevos)" as PD
+rectangle "Mi historial\nCU19" as PH
+rectangle "Archivo del resultado\n(PDF / imagen)" as PF
+rectangle "Mis citas" as PC
+rectangle "Detalle de la cita" as PCD
+rectangle "Cancelar cita\nCU12" as PX
+rectangle "Panel del administrador" as AD
+rectangle "Reportes\nCU20 (vista previa)" as AR
+rectangle "Reporte .pdf" as AP
+rectangle "Reporte .xlsx" as AE
+PD --> PH : Mi historial
+PH --> PF : Descargar archivo
+PD --> PC : Mis citas
+PC --> PCD : ver cita
+PCD --> PX : Cancelar cita
+PX --> PCD : Confirmar
+AD --> AR : Reportes
+AR --> AR : Ver reporte (filtros)
+AR --> AP : Exportar PDF
+AR --> AE : Exportar Excel
+
+@enduml

@@ -1,0 +1,92 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Médico" as A
+class "Pantalla Consulta (tratamiento)" as B <<boundary>> {
+  medicamento_id
+  dosis
+  frecuencia
+  duracion
+  indicaciones
+}
+class "Control Tratamiento" as C <<control>> {
+  + agregar(consulta, datos)
+  + quitar(tratamiento)
+}
+class "Consulta" as E0 <<entity>> {
+  id: int
+  fecha_hora: datetime
+  motivo_consulta: string
+  peso_kg: decimal
+  talla_cm: decimal
+  presion_arterial: string
+  temperatura_c: decimal
+  frecuencia_cardiaca: int
+  examen_fisico: text
+  diagnostico: text
+  observaciones: text
+  --
+  + imc(): decimal
+  + tratamientos()
+  + estudios()
+}
+class "Medicamento" as E1 <<entity>> {
+  id: int
+  nombre: string
+  presentacion: string
+  activo: bool
+  --
+  + activos()
+}
+class "Tratamiento" as E2 <<entity>> {
+  id: int
+  dosis: string
+  frecuencia: string
+  duracion: string
+  indicaciones: string
+  --
+  + medicamento()
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+E0 "1" -- "0..*" E2 : indica
+E1 "1" -- "0..*" E2 : se usa en
+@enduml

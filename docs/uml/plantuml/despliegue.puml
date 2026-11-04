@@ -1,0 +1,69 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+left to right direction
+node "PC / Laptop de Recepción y Administración" <<device>> as PC {
+  node "Navegador Web\n(Chrome, Edge, Firefox)" <<execution environment>> as NAV {
+    artifact "HTML5 / CSS3 / JavaScript" as UI
+  }
+}
+node "Celular / PC del Paciente o Médico" <<device>> as MOV {
+  node "Navegador móvil" <<execution environment>> as NAV2
+}
+node "Servidor de Aplicaciones" <<device>> as SA {
+  node "Apache 2.4 (XAMPP) / PHP 8.3" <<execution environment>> as AP {
+    artifact "backend/\n(Laravel 12)" as APP
+    artifact "frontend/\n(views + assets)" as FEA
+    component "Controladores HTTP" as CT
+    component "Servicios de negocio" as SV
+    component "Modelos Eloquent (PDO pdo_pgsql)" as MD
+  }
+}
+node "Servidor de Base de Datos" <<device>> as SBD {
+  node "PostgreSQL 16" <<execution environment>> as PG {
+    database "clinica_vida_salud" as DB
+  }
+}
+node "GitHub" <<cloud>> as GH {
+  artifact "Repositorio del código fuente" as REPO
+}
+PC -- SA : HTTP/HTTPS\nTCP 80/443 (LAN)
+MOV -- SA : Internet\nHTTPS 443
+SA -- SBD : TCP/IP 5432\n(PDO pgsql)
+SA ..> GH : git (despliegue)
+CT --> SV
+SV --> MD
+
+@enduml

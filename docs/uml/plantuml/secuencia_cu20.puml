@@ -1,0 +1,87 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU20_GenerarReportes**
+actor "Administrador" as A
+participant ":GenerarReportes" as F <<frm>>
+participant ":CtrlReportes" as C <<ctrl>>
+participant ":Cita" as E1 <<entidad>>
+participant ":Paciente" as E2 <<entidad>>
+participant ":Medico" as E3 <<entidad>>
+A -> F : elegirReporte(tipo, desde, hasta, filtros)
+activate F
+F -> C : generar(filtros)
+activate C
+C -> C : validar(hasta >= desde)
+alt tipo = citas
+C -> E1 : citasDelPeriodo(filtros)
+activate E1
+E1 --> C : citas
+else tipo = pacientes
+C -> E2 : registradosEnPeriodo(desde, hasta)
+activate E2
+E2 --> C : pacientes
+else tipo = atenciones
+C -> E1 : agruparPorMedico(filtros)
+E1 --> C : totales
+C -> E3 : nombresYEspecialidades()
+activate E3
+E3 --> C : médicos
+end
+C --> F : reporte y totales
+F --> A : mostrarVistaPrevia()
+opt exportar
+A -> F : exportar(PDF | Excel)
+F -> C : exportar(formato, filtros)
+C -> C : generarArchivo()
+C --> F : archivo .pdf / .xlsx
+F --> A : descargar()
+end
+deactivate F
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

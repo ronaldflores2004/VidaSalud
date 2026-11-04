@@ -1,0 +1,115 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+hide circle
+hide members
+skinparam classAttributeIconSize 0
+skinparam ranksep 60
+package "P1. Seguridad y Acceso" as P1 {
+  class "Pantalla Iniciar Sesión" as K0 <<boundary>>
+  class "Pantalla Usuarios" as K1 <<boundary>>
+  class "Control Autenticación" as K2 <<control>>
+  class "Control Usuarios" as K3 <<control>>
+  class "Usuario" as K4 <<entity>>
+  class "Rol" as K5 <<entity>>
+}
+package "P2. Gestión Médica" as P2 {
+  class "Pantalla Especialidades" as K6 <<boundary>>
+  class "Pantalla Médicos" as K7 <<boundary>>
+  class "Pantalla Horarios" as K8 <<boundary>>
+  class "Control Especialidades" as K9 <<control>>
+  class "Control Médicos" as K10 <<control>>
+  class "Control Horarios" as K11 <<control>>
+  class "Especialidad" as K12 <<entity>>
+  class "Médico" as K13 <<entity>>
+  class "Horario" as K14 <<entity>>
+}
+package "P3. Gestión de Pacientes" as P3 {
+  class "Pantalla Pacientes" as K15 <<boundary>>
+  class "Pantalla Registro de Paciente" as K16 <<boundary>>
+  class "Control Pacientes" as K17 <<control>>
+  class "Control Registro" as K18 <<control>>
+  class "Paciente" as K19 <<entity>>
+}
+package "P4. Gestión de Citas (Fichas)" as P4 {
+  class "Portal Horarios Disponibles" as K20 <<boundary>>
+  class "Pantalla Reservar Ficha" as K21 <<boundary>>
+  class "Pantalla Reprogramar Cita" as K22 <<boundary>>
+  class "Pantalla Cancelar Cita" as K23 <<boundary>>
+  class "Pantalla Asistencia de Hoy" as K24 <<boundary>>
+  class "Pantalla Mi Agenda" as K25 <<boundary>>
+  class "Control Disponibilidad" as K26 <<control>>
+  class "Control Citas" as K27 <<control>>
+  class "Control Reprogramación" as K28 <<control>>
+  class "Control Cancelación" as K29 <<control>>
+  class "Control Asistencia" as K30 <<control>>
+  class "Control Agenda" as K31 <<control>>
+  class "Cita" as K32 <<entity>>
+  class "Historial Cita" as K33 <<entity>>
+  class "Notificación" as K34 <<entity>>
+}
+package "P5. Atención Médica e Historial Clínico" as P5 {
+  class "Pantalla Consulta Médica" as K35 <<boundary>>
+  class "Pantalla Historial Clínico" as K36 <<boundary>>
+  class "Pantalla Estudios" as K37 <<boundary>>
+  class "Pantalla Mi Historial" as K38 <<boundary>>
+  class "Control Consulta" as K39 <<control>>
+  class "Control Historial" as K40 <<control>>
+  class "Control Tratamiento" as K41 <<control>>
+  class "Control Estudios" as K42 <<control>>
+  class "Control Mi Historial" as K43 <<control>>
+  class "Historia Clínica" as K44 <<entity>>
+  class "Consulta" as K45 <<entity>>
+  class "Tratamiento" as K46 <<entity>>
+  class "Medicamento" as K47 <<entity>>
+  class "Estudio" as K48 <<entity>>
+  class "Catálogo Estudio" as K49 <<entity>>
+}
+package "P6. Reportes" as P6 {
+  class "Pantalla Reportes" as K50 <<boundary>>
+  class "Control Reportes" as K51 <<control>>
+  class "Reporte PDF / Excel" as K52 <<boundary>>
+}
+P4 ..> P3
+P4 ..> P2
+P5 ..> P4
+P5 ..> P3
+P2 ..> P1
+P3 ..> P1
+P4 ..> P1
+P5 ..> P1
+P6 ..> P4
+P6 ..> P1
+@enduml

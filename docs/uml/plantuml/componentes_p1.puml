@@ -1,0 +1,75 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU1 FIniciarSesion\n(login.blade.php)" as F_CU1_0 #E3EEFB
+  component "«form»\nCU2 FCerrarSesion\n(layouts/app.blade.php)" as F_CU2_0 #E3EEFB
+  component "«form»\nCU3 FGestionarUsuarios\n(index.blade.php,\nform.blade.php)" as F_CU3_0 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGIniciarSesion\n(LoginController.php)" as C_CU1_0 #E6F5EC
+  component "«class»\nGCerrarSesion\n(LogoutController.php)" as C_CU2_0 #E6F5EC
+  component "«class»\nGGestionarUsuarios\n(UsuarioController.php)" as C_CU3_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\nusers" as T_users #FCE8E8
+  component "«table»\nroles" as T_roles #FCE8E8
+  component "«table»\nbitacora" as T_bitacora #FCE8E8
+  component "«table»\nsessions" as T_sessions #FCE8E8
+}
+F_CU1_0 -[hidden]right- F_CU2_0
+F_CU2_0 -[hidden]right- F_CU3_0
+F_CU1_0 ..> C_CU1_0
+C_CU1_0 ..> T_users
+C_CU1_0 ..> T_roles
+C_CU1_0 ..> T_bitacora
+C_CU1_0 ..> T_sessions
+F_CU2_0 ..> C_CU2_0
+C_CU2_0 ..> T_sessions
+C_CU2_0 ..> T_bitacora
+F_CU3_0 ..> C_CU3_0
+C_CU3_0 ..> T_users
+C_CU3_0 ..> T_roles
+C_CU3_0 ..> T_bitacora
+@enduml

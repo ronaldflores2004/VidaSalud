@@ -1,0 +1,82 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU9 FConsultarDisponibilidad\n(inicio, horarios.blade.php\n+ horarios-publicos.js)" as F_CU9_0 #E3EEFB
+  component "«form»\nCU10 FReservarFicha\n(create, index, show.blade.php\n+ cita.js)" as F_CU10_0 #E3EEFB
+  component "«form»\nCU11 FReprogramarCita\n(form.blade.php\n+ reprogramar.js)" as F_CU11_0 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGConsultarDisponibilidad\n(PortalController.php,\nDisponibilidadController.php,\nDisponibilidadService.php)" as C_CU9_0 #E6F5EC
+  component "«class»\nGReservarFicha\n(CitaController.php,\nCitaService.php)" as C_CU10_0 #E6F5EC
+  component "«class»\nGReprogramarCita\n(ReprogramarCitaController.php,\nReprogramarCitaService.php)" as C_CU11_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\nmedicos" as T_medicos #FCE8E8
+  component "«table»\nhorarios" as T_horarios #FCE8E8
+  component "«table»\ncitas" as T_citas #FCE8E8
+  component "«table»\nbloqueos_agenda" as T_bloqueos_agenda #FCE8E8
+  component "«table»\nconfiguracion" as T_configuracion #FCE8E8
+  component "«table»\nhistorial_citas" as T_historial_citas #FCE8E8
+  component "«table»\nnotificaciones" as T_notificaciones #FCE8E8
+  component "«table»\npacientes" as T_pacientes #FCE8E8
+}
+F_CU9_0 -[hidden]right- F_CU10_0
+F_CU10_0 -[hidden]right- F_CU11_0
+F_CU9_0 ..> C_CU9_0
+C_CU9_0 ..> T_medicos
+C_CU9_0 ..> T_horarios
+C_CU9_0 ..> T_citas
+C_CU9_0 ..> T_bloqueos_agenda
+C_CU9_0 ..> T_configuracion
+F_CU10_0 ..> C_CU10_0
+C_CU10_0 ..> T_citas
+C_CU10_0 ..> T_historial_citas
+C_CU10_0 ..> T_notificaciones
+C_CU10_0 ..> T_pacientes
+F_CU11_0 ..> C_CU11_0
+C_CU11_0 ..> T_citas
+C_CU11_0 ..> T_historial_citas
+C_CU11_0 ..> T_notificaciones
+@enduml

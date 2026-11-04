@@ -1,0 +1,89 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam defaultFontSize 12
+title Diagrama de tiempo – CU16 Gestionar historial clínico
+scale 10 as 75 pixels
+concise "Medico" as A
+concise ":HistorialClinico" as F
+concise ":CtrlHistorialClinico" as C
+concise ":Medico" as E1
+concise ":HistoriaClinica" as E3
+concise ":Consulta" as E4
+@0
+A is "Inactivo"
+F is "Inactivo"
+C is "Inactivo"
+E1 is "Inactivo"
+E3 is "Inactivo"
+E4 is "Inactivo"
+@10
+A is "Espera"
+F is "Captura"
+@20
+C is "Procesa"
+@30
+E1 is "Lee"
+@40
+E1 is "Inactivo"
+@50
+E3 is "Lee"
+@60
+E3 is "Inactivo"
+@70
+E4 is "Lee"
+@80
+E4 is "Inactivo"
+@90
+F is "Muestra"
+C is "Inactivo"
+@100
+A is "Ve resultado"
+F is "Inactivo"
+@110
+A is "Espera"
+F is "Captura"
+@120
+C is "Procesa"
+@130
+E3 is "Escribe"
+@140
+F is "Muestra"
+C is "Inactivo"
+@150
+A is "Fin"
+F is "Inactivo"
+E3 is "Inactivo"
+@0 <-> @150 : 150 ms (aprox.)
+@enduml

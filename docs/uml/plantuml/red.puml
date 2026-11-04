@@ -1,0 +1,28 @@
+@startuml
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+nwdiag {
+  internet [shape = cloud, description = "Internet\n(pacientes desde casa)"];
+  internet -- firewall;
+  network WAN {
+    address = "IP pública (ISP)";
+    firewall [address = "puerto 443 → 192.168.10.10", description = "Router / Firewall"];
+  }
+  network LAN_Clinica {
+    address = "192.168.10.0/24";
+    firewall [address = "192.168.10.1"];
+    switch [address = "192.168.10.2", description = "Switch 24 puertos"];
+    servidor_app [address = "192.168.10.10", description = "Servidor de aplicaciones\nApache + PHP 8.3 + Laravel"];
+    servidor_bd [address = "192.168.10.11", description = "Servidor de base de datos\nPostgreSQL 16 (puerto 5432)"];
+    pc_recepcion [address = "192.168.10.21-22", description = "PCs de recepción (2)"];
+    pc_admin [address = "192.168.10.30", description = "PC de administración"];
+    pc_consultorios [address = "192.168.10.41-49", description = "PCs de consultorios (9)"];
+    ap_wifi [address = "192.168.10.50", description = "Punto de acceso Wi-Fi"];
+  }
+  network WiFi_Clinica {
+    address = "192.168.20.0/24";
+    ap_wifi [address = "192.168.20.1"];
+    moviles [address = "DHCP", description = "Celulares y tablets\n(médicos y pacientes)"];
+  }
+}
+@enduml

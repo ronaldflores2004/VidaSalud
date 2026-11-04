@@ -1,0 +1,130 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Médico" as A
+class "Pantalla Consulta Médica" as B <<boundary>> {
+  motivo_consulta
+  peso_kg
+  talla_cm
+  presion_arterial
+  temperatura_c
+  frecuencia_cardiaca
+  examen_fisico
+  diagnostico
+  observaciones
+  tratamientos[]
+  estudios[]
+}
+class "Control Consulta" as C <<control>> {
+  + puedeAtender(cita, medico)
+  + registrar(cita, datos, tratamientos, estudios)
+  + mostrar(consulta)
+}
+class "Cita" as E0 <<entity>> {
+  id: int
+  codigo: string
+  fecha: date
+  hora_inicio: time
+  hora_fin: time
+  modalidad: string
+  motivo: string
+  estado: EstadoCita
+  --
+  + siguienteCodigo(): string
+}
+class "Historia Clínica" as E1 <<entity>> {
+  id: int
+  numero: string
+  antecedentes_personales: text
+  antecedentes_familiares: text
+  alergias: string
+  enfermedades_cronicas: string
+  medicacion_habitual: string
+  --
+  + siguienteNumero(): string
+  + actualizar(datos)
+}
+class "Consulta" as E2 <<entity>> {
+  id: int
+  fecha_hora: datetime
+  motivo_consulta: string
+  peso_kg: decimal
+  talla_cm: decimal
+  presion_arterial: string
+  temperatura_c: decimal
+  frecuencia_cardiaca: int
+  examen_fisico: text
+  diagnostico: text
+  observaciones: text
+  --
+  + imc(): decimal
+  + tratamientos()
+  + estudios()
+}
+class "Tratamiento" as E3 <<entity>> {
+  id: int
+  dosis: string
+  frecuencia: string
+  duracion: string
+  indicaciones: string
+  --
+  + medicamento()
+}
+class "Estudio" as E4 <<entity>> {
+  id: int
+  indicaciones: string
+  estado: string
+  fecha_solicitud: date
+  fecha_resultado: date
+  resultado: text
+  archivo_resultado: string
+  --
+  + tieneResultado(): bool
+  + registrarResultado(datos)
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+C --> E3
+C --> E4
+E0 "1" -- "0..1" E2 : genera
+E2 "1" -- "0..*" E3 : indica
+E2 "1" -- "0..*" E4 : solicita
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU16_GestionarHistorialClínico**
+actor "Medico" as A
+participant ":HistorialClinico" as F <<frm>>
+participant ":CtrlHistorialClinico" as C <<ctrl>>
+participant ":Medico" as E1 <<entidad>>
+participant ":Paciente" as E2 <<entidad>>
+participant ":HistoriaClinica" as E3 <<entidad>>
+participant ":Consulta" as E4 <<entidad>>
+A -> F : abrirHistorial(paciente)
+activate F
+F -> C : mostrar(paciente)
+activate C
+C -> E1 : atiendeA(paciente)
+activate E1
+E1 --> C : resultado
+alt es su paciente
+C -> E3 : obtener()
+activate E3
+E3 --> C : antecedentes
+C -> E4 : consultasConTratamientosYEstudios()
+activate E4
+E4 --> C : consultas
+C --> F : historial
+F --> A : mostrarHistorial()
+opt actualizar antecedentes
+A -> F : editarAntecedentes(datos)
+F -> C : actualizar(paciente, datos)
+C -> E3 : actualizar(datos)
+C --> F : historial actualizado
+end
+else no es su paciente
+C --> F : acceso denegado (403)
+end
+deactivate F
+deactivate E4
+deactivate E3
+deactivate E1
+deactivate C
+@enduml

@@ -1,0 +1,85 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU18_GestionarEstudiosMédicos**
+actor "Medico" as A
+participant ":GestionarEstudios" as F <<frm>>
+participant ":CtrlEstudios" as C <<ctrl>>
+participant ":Consulta" as E1 <<entidad>>
+participant ":CatalogoEstudio" as E2 <<entidad>>
+participant ":Estudio" as E3 <<entidad>>
+participant ":Notificacion" as E4 <<entidad>>
+A -> F : solicitarEstudio(estudio, indicaciones)
+activate F
+F -> C : solicitar(consulta, estudio)
+activate C
+C -> E2 : existe(estudio)
+activate E2
+E2 --> C : estudio
+C -> E3 : pendienteEnConsulta(estudio)
+activate E3
+E3 --> C : resultado
+alt no está pendiente
+C -> E3 : crear(SOLICITADO, hoy)
+C --> F : estudio solicitado
+else ya está solicitado
+C --> F : no se repite
+end
+A -> F : registrarResultado(estado, fecha, resultado, archivo)
+F -> C : registrarResultado(estudio, datos, archivo)
+C -> C : validarArchivo(pdf | jpg | png <= 4 MB)
+C -> E3 : guardarResultado(datos, archivo)
+opt primer resultado y el paciente acepta avisos
+C -> E4 : crear(RESULTADO)
+activate E4
+end
+C --> F : resultado registrado
+F --> A : mostrarConsulta()
+deactivate F
+deactivate E4
+deactivate E3
+deactivate E2
+deactivate C
+@enduml

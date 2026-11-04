@@ -1,0 +1,98 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam defaultFontSize 12
+title Diagrama de tiempo – CU11 Reprogramar cita
+scale 10 as 75 pixels
+concise "Recepcionista" as A
+concise ":ReprogramarCita" as F
+concise ":CtrlReprogramarCita" as C
+concise ":Cita" as E1
+concise ":Horario" as E2
+concise ":HistorialCita" as E3
+concise ":Notificacion" as E4
+@0
+A is "Inactivo"
+F is "Inactivo"
+C is "Inactivo"
+E1 is "Inactivo"
+E2 is "Inactivo"
+E3 is "Inactivo"
+E4 is "Inactivo"
+@10
+A is "Espera"
+F is "Captura"
+@20
+C is "Procesa"
+@30
+E1 is "Lee"
+@40
+E1 is "Inactivo"
+@50
+F is "Muestra"
+C is "Inactivo"
+@60
+F is "Captura"
+@70
+C is "Procesa"
+@80
+E2 is "Lee"
+@90
+E2 is "Inactivo"
+@100
+F is "Muestra"
+C is "Inactivo"
+@110
+F is "Captura"
+@120
+C is "Procesa"
+@140
+E1 is "Escribe"
+@150
+E3 is "Escribe"
+@160
+E4 is "Escribe"
+@170
+F is "Muestra"
+C is "Inactivo"
+@180
+A is "Ve resultado"
+F is "Inactivo"
+@190
+A is "Fin"
+E1 is "Inactivo"
+E3 is "Inactivo"
+E4 is "Inactivo"
+@0 <-> @190 : 190 ms (aprox.)
+@enduml

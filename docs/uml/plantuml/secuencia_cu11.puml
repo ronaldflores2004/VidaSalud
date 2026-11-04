@@ -1,0 +1,91 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU11_ReprogramarCita**
+actor "Recepcionista" as A
+participant ":ReprogramarCita" as F <<frm>>
+participant ":CtrlReprogramarCita" as C <<ctrl>>
+participant ":Cita" as E1 <<entidad>>
+participant ":Horario" as E2 <<entidad>>
+participant ":HistorialCita" as E3 <<entidad>>
+participant ":Notificacion" as E4 <<entidad>>
+A -> F : seleccionarReprogramar(cita)
+activate F
+F -> C : mostrarFormulario(cita)
+activate C
+C -> E1 : estaVigente()
+activate E1
+E1 --> C : true
+C --> F : cita actual
+A -> F : elegirNuevaFecha(fecha)
+F -> C : fichasLibres(medico, fecha, ignorar = cita) <<include>> CU9
+C -> E2 : horariosDelDia(fecha)
+activate E2
+E2 --> C : fichas
+C --> F : fichas libres
+A -> F : elegirFicha(hora, motivo)
+F -> C : reprogramar(cita, fecha, hora, motivo)
+C -> C : bloqueLibre(...)
+alt ficha libre
+C -> E1 : actualizar(fecha, hora, PROGRAMADA)
+C -> E3 : registrar(REPROGRAMADA, anterior, nueva, motivo)
+activate E3
+opt el paciente acepta avisos
+C -> E4 : crear(REPROGRAMACION)
+activate E4
+end
+C --> F : cita reprogramada
+F --> A : mostrarCita()
+else ficha ocupada o fecha pasada
+C --> F : no disponible
+F --> A : mostrarMensaje(error)
+end
+deactivate F
+deactivate E4
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

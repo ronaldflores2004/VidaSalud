@@ -1,0 +1,71 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam RectangleBackgroundColor #F3F8FD
+skinparam RectangleBorderColor #1F4E79
+skinparam roundcorner 12
+skinparam ArrowColor #1F4E79
+
+title Ciclo I – Administrador y recepcionista
+rectangle "Iniciar sesión\nCU1" as L
+rectangle "Panel de inicio" as D
+rectangle "Usuarios\n(lista)" as U1
+rectangle "Formulario de usuario\nCU3" as U2
+rectangle "Especialidades\nCU4" as E1
+rectangle "Médicos\n(lista)" as M1
+rectangle "Formulario de médico\nCU5" as M2
+rectangle "Ficha del médico" as M3
+rectangle "Horarios de atención\nCU6" as M4
+rectangle "Pacientes\n(lista)" as P1
+rectangle "Formulario de paciente\nCU7" as P2
+rectangle "Ficha del paciente" as P3
+rectangle "Programar cita\nCU10 (incluye CU9)" as C1
+rectangle "Comprobante de cita" as C2
+L --> D : credenciales válidas
+D --> U1 : Usuarios (Admin)
+U1 --> U2 : Nuevo / Editar
+D --> E1 : Especialidades (Admin)
+D --> M1 : Médicos
+M1 --> M2 : Nuevo / Editar
+M1 --> M3 : Ver
+M3 --> M4 : Horarios
+D --> P1 : Pacientes
+P1 --> P2 : Nuevo / Editar
+P1 --> P3 : Ver
+P3 --> C1 : Programar cita
+D --> C1 : Programar cita
+C1 --> C2 : Confirmar
+D --> L : Cerrar sesión (CU2)
+
+@enduml

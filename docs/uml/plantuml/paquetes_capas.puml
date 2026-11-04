@@ -1,0 +1,108 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+
+skinparam packageStyle folder
+skinparam ranksep 45
+skinparam nodesep 25
+package "FRONTEND  (frontend/)  –  Capa de Presentación" as FE {
+  folder "views/compartido\n(layouts, partials, paneles)" as FC
+  folder "views/P1_SeguridadAcceso" as F1
+  folder "views/P2_GestionMedica" as F2
+  folder "views/P3_GestionPacientes" as F3
+  folder "views/P4_GestionCitas" as F4
+  folder "views/P5_AtencionMedica" as F5
+  folder "views/P6_Reportes" as F6
+  folder "assets: css/compartido · js/compartido · js/P4_GestionCitas · js/P5_AtencionMedica" as FA
+}
+package "BACKEND  (backend/)" as BE {
+  package "Capa de Control  (app/Http)" as CC {
+    folder "routes/web.php\n(ordenado P1…P6)" as RT
+    folder "Middleware/\nP1_SeguridadAcceso" as MW
+    folder "Controllers/\nP1_SeguridadAcceso" as C1
+    folder "Controllers/\nP2_GestionMedica" as C2
+    folder "Controllers/\nP3_GestionPacientes" as C3
+    folder "Controllers/\nP4_GestionCitas" as C4
+    folder "Controllers/\nP5_AtencionMedica" as C5
+    folder "Controllers/\nP6_Reportes" as C6
+  }
+  package "Capa de Negocio  (app/Services)" as CN {
+    folder "Services/P4_GestionCitas\nDisponibilidad · Cita · ReprogramarCita\nCancelarCita · Asistencia" as S4
+    folder "Services/P5_AtencionMedica\nConsultaService · EstudioService" as S5
+    folder "Services/P6_Reportes\nReporteService" as S6
+    folder "Support\nPdfSimple · XlsxSimple" as SP
+    folder "Exceptions\nReglaNegocioException" as EX
+  }
+  package "Capa de Datos  (app/Models, database)" as CD {
+    folder "Models/\nP1_SeguridadAcceso" as M1
+    folder "Models/\nP2_GestionMedica" as M2
+    folder "Models/\nP3_GestionPacientes" as M3
+    folder "Models/\nP4_GestionCitas" as M4
+    folder "Models/\nP5_AtencionMedica" as M5
+    folder "database/\nmigrations · seeders · sql" as MG
+  }
+}
+rectangle "Framework Laravel 12 · PDO pdo_pgsql" as FW
+database "PostgreSQL 16" as PG
+FC -[hidden]right- F1
+F1 -[hidden]right- F2
+F2 -[hidden]right- F3
+F3 -[hidden]down- F4
+F4 -[hidden]right- F5
+F5 -[hidden]right- F6
+F4 -[hidden]down- FA
+RT -[hidden]right- MW
+MW -[hidden]right- C1
+C1 -[hidden]down- C2
+C2 -[hidden]right- C3
+C3 -[hidden]right- C4
+C4 -[hidden]right- C5
+C5 -[hidden]right- C6
+S4 -[hidden]right- S5
+S5 -[hidden]right- S6
+S6 -[hidden]down- SP
+SP -[hidden]right- EX
+M1 -[hidden]right- M2
+M2 -[hidden]right- M3
+M3 -[hidden]down- M4
+M4 -[hidden]right- M5
+M5 -[hidden]right- MG
+FE -down-> CC : HTTP (formularios,\nfetch JSON)
+CC -down-> CN
+CC -down-> CD
+CN -down-> CD
+CD -down-> FW
+FW -down-> PG
+
+@enduml

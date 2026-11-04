@@ -1,0 +1,81 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU1_IniciarSesión**
+actor "Usuario" as A
+participant ":IniciarSesion" as F <<frm>>
+participant ":CtrlIniciarSesion" as C <<ctrl>>
+participant ":Usuario" as E1 <<entidad>>
+participant ":Rol" as E2 <<entidad>>
+A -> F : ingresarCredenciales(login, clave)
+activate F
+F -> F : validarCampos()
+F -> C : iniciarSesion(login, clave)
+activate C
+C -> E1 : buscarPorUsuarioOCorreo(login)
+activate E1
+E1 --> C : usuario
+alt credenciales válidas y cuenta activa
+C -> E1 : verificarPassword(clave)
+E1 --> C : true
+C -> E2 : obtenerRol()
+activate E2
+E2 --> C : rol
+C -> C : regenerarSesion()
+C -> E1 : registrarUltimoAcceso()
+C --> F : acceso concedido
+F --> A : mostrarPanel(rol)
+else credenciales incorrectas, intentos < 3
+C --> F : credenciales inválidas
+F --> A : mostrarMensaje(error genérico)
+else 3 intentos fallidos
+C --> F : acceso bloqueado 60 s
+F --> A : mostrarMensaje(bloqueo)
+end
+deactivate F
+deactivate E2
+deactivate E1
+deactivate C
+@enduml
