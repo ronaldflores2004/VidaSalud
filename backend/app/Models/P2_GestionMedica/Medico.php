@@ -34,6 +34,15 @@ class Medico extends Model
         return $this->hasMany(Cita::class);
     }
 
+    /**
+     * RN: el médico solo ve a sus propios pacientes, es decir, a los que tienen
+     * o tuvieron una cita con él.
+     */
+    public function atiendeA(\App\Models\P3_GestionPacientes\Paciente $paciente): bool
+    {
+        return $this->citas()->where('paciente_id', $paciente->id)->where('estado', '<>', Cita::CANCELADA)->exists();
+    }
+
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -24,9 +24,10 @@ class DatabaseSeeder extends Seeder
             P2_MedicoSeeder::class,          //    9 médicos con especialidades y horarios
             P2_BloqueoAgendaSeeder::class,   //    feriados
             P3_PacienteSeeder::class,        // P3 Gestión de Pacientes: 5 pacientes + historial + contacto
-            P4_CitaSeeder::class,            // P4 Gestión de Citas: 3 citas de ejemplo
+            P4_CitaSeeder::class,            // P4 Gestión de Citas: citas de ejemplo (próximas y de hoy)
             P5_MedicamentoSeeder::class,     // P5 Atención Médica: catálogo de medicamentos
             P5_CatalogoEstudioSeeder::class, //    catálogo de estudios
+            P5_AtencionMedicaSeeder::class,  //    historial de atenciones de las últimas 3 semanas
         ]);
     }
 }

@@ -21,4 +21,16 @@ class Notificacion extends Model
     {
         return $this->belongsTo(Cita::class);
     }
+
+    public const TIPOS = ['RECORDATORIO' => 'Recordatorio', 'CANCELACION' => 'Cancelación', 'REPROGRAMACION' => 'Reprogramación', 'RESULTADO' => 'Resultado'];
+
+    public function getTipoTextoAttribute(): string
+    {
+        return self::TIPOS[$this->tipo] ?? $this->tipo;
+    }
+
+    public function estudio(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\P5_AtencionMedica\Estudio::class);
+    }
 }

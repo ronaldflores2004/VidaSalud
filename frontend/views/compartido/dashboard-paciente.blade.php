@@ -21,5 +21,8 @@
         <p class="vacio">No tiene fichas reservadas. <a href="{{ route('citas.create') }}">Reserve una</a>.</p>
     @endforelse
 </div>
-<p class="ayuda">Su historial clínico, tratamientos y resultados de estudios estarán disponibles aquí en el Ciclo II.</p>
+<div class="card">
+    <div class="card-cab"><h2>Mi historial clínico</h2><a href="{{ route('mi-historial') }}" class="enlace">Ver mi historial</a></div>
+    <p class="ayuda">Consulte sus diagnósticos, tratamientos y los resultados de sus estudios.@if($nuevos) Tiene <strong>{{ $nuevos }}</strong> aviso(s) nuevo(s).@endif</p>
+</div>
 @endsection

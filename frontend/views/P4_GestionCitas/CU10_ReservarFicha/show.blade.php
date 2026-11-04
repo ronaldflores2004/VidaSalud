@@ -41,10 +41,25 @@
 </div>
 @endunless
 <div class="botones">
-    <a href="{{ route('citas.index') }}" class="btn btn-ghost">Volver a {{ auth()->user()->tieneRol('Paciente') ? 'mis citas' : 'citas' }}</a>
-    @if(auth()->user()->tieneRol('Administrador', 'Recepcionista'))
-        <a href="{{ route('pacientes.show', $cita->paciente) }}" class="btn btn-sec">Ver paciente</a>
-        <a href="{{ route('citas.create') }}" class="btn btn-primario">Programar otra cita</a>
+    @php($u = auth()->user())
+    <a href="{{ $u->tieneRol('Medico') ? route('agenda', ['fecha' => $cita->fecha->toDateString()]) : route('citas.index') }}" class="btn btn-ghost">Volver</a>
+    @if($cita->estaVigente() && $cita->inicio->gt(now()))
+        @if($u->tieneRol('Administrador', 'Recepcionista'))
+            <a href="{{ route('citas.reprogramar', $cita) }}" class="btn btn-sec">Reprogramar (CU11)</a>
+        @endif
+        @if($u->tieneRol('Administrador', 'Recepcionista', 'Paciente'))
+            <a href="{{ route('citas.cancelar', $cita) }}" class="btn btn-ghost">Cancelar cita (CU12)</a>
+        @endif
+    @endif
+    @if($u->tieneRol('Medico'))
+        @if($cita->consulta)
+            <a href="{{ route('consultas.show', $cita->consulta) }}" class="btn btn-primario">Ver consulta</a>
+        @elseif($cita->estaVigente() && $cita->fecha->isToday())
+            <a href="{{ route('consultas.create', $cita) }}" class="btn btn-primario">Atender (CU15)</a>
+        @endif
+    @endif
+    @if($u->tieneRol('Administrador', 'Recepcionista'))
+        <a href="{{ route('pacientes.show', $cita->paciente) }}" class="btn btn-ghost">Ver paciente</a>
     @endif
 </div>
 @endsection

@@ -22,6 +22,16 @@ use App\Http\Controllers\P3_GestionPacientes\CU8_RegistrarsePaciente\RegistroPac
 use App\Http\Controllers\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadController;
 use App\Http\Controllers\P4_GestionCitas\CU9_ConsultarDisponibilidad\PortalController;
 use App\Http\Controllers\P4_GestionCitas\CU10_ReservarFicha\CitaController;
+use App\Http\Controllers\P4_GestionCitas\CU11_ReprogramarCita\ReprogramarCitaController;
+use App\Http\Controllers\P4_GestionCitas\CU12_CancelarCita\CancelarCitaController;
+use App\Http\Controllers\P4_GestionCitas\CU13_RegistrarAsistencia\AsistenciaController;
+use App\Http\Controllers\P4_GestionCitas\CU14_ConsultarAgendaMedica\AgendaController;
+use App\Http\Controllers\P5_AtencionMedica\CU15_RegistrarConsultaMedica\ConsultaController;
+use App\Http\Controllers\P5_AtencionMedica\CU16_GestionarHistorialClinico\HistorialClinicoController;
+use App\Http\Controllers\P5_AtencionMedica\CU17_RegistrarTratamiento\TratamientoController;
+use App\Http\Controllers\P5_AtencionMedica\CU18_GestionarEstudiosMedicos\EstudioController;
+use App\Http\Controllers\P5_AtencionMedica\CU19_ConsultarHistorialResultados\MiHistorialController;
+use App\Http\Controllers\P6_Reportes\CU20_GenerarReportes\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 // Archivos estáticos del frontend (frontend/assets)
@@ -100,10 +110,63 @@ Route::middleware(['auth', 'rol:Administrador,Recepcionista,Medico,Paciente'])->
     Route::get('citas/{cita}', [CitaController::class, 'show'])->name('citas.show')->whereNumber('cita');
 });
 
-// CU11 Reprogramar cita · CU12 Cancelar cita · CU13 Registrar asistencia · CU14 Consultar agenda médica — Ciclo II
+Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function () {
+    // CU11 Reprogramar cita (incluye CU9: fichas libres del mismo médico)
+    Route::get('citas/{cita}/reprogramar', [ReprogramarCitaController::class, 'edit'])->name('citas.reprogramar');
+    Route::put('citas/{cita}/reprogramar', [ReprogramarCitaController::class, 'update'])->name('citas.reprogramar.guardar');
 
-/* ======================= P5 Atención Médica e Historial Clínico — Ciclo II ======================= */
-// CU15 Registrar consulta médica · CU16 Gestionar historial clínico · CU17 Registrar tratamiento
-// CU18 Gestionar estudios médicos · CU19 Consultar historial y resultados
-/* ======================= P6 Reportes — Ciclo II ======================= */
-// CU20 Generar reportes
+    // CU13 Registrar asistencia (citas del día)
+    Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::post('citas/{cita}/asistencia', [AsistenciaController::class, 'store'])->name('asistencia.store');
+});
+
+Route::middleware(['auth', 'rol:Administrador,Recepcionista,Paciente'])->group(function () {
+    // CU12 Cancelar cita (el paciente, solo las suyas)
+    Route::get('citas/{cita}/cancelar', [CancelarCitaController::class, 'create'])->name('citas.cancelar');
+    Route::post('citas/{cita}/cancelar', [CancelarCitaController::class, 'store'])->name('citas.cancelar.guardar');
+});
+
+Route::middleware(['auth', 'rol:Medico'])->group(function () {
+    // CU14 Consultar agenda médica (solo sus citas y sus pacientes)
+    Route::get('agenda', AgendaController::class)->name('agenda');
+});
+
+/* ======================= P5 Atención Médica e Historial Clínico ======================= */
+Route::middleware(['auth', 'rol:Medico'])->group(function () {
+    // CU15 Registrar consulta médica (incluye CU16; CU17 y CU18 la extienden)
+    Route::get('citas/{cita}/consulta', [ConsultaController::class, 'create'])->name('consultas.create');
+    Route::post('citas/{cita}/consulta', [ConsultaController::class, 'store'])->name('consultas.store');
+    Route::get('consultas/{consulta}', [ConsultaController::class, 'show'])->name('consultas.show');
+
+    // CU16 Gestionar historial clínico (solo de sus pacientes)
+    Route::get('mis-pacientes', [HistorialClinicoController::class, 'index'])->name('historial.index');
+    Route::get('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'show'])->name('historial.show');
+    Route::put('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'update'])->name('historial.update');
+
+    // CU17 Registrar tratamiento
+    Route::post('consultas/{consulta}/tratamientos', [TratamientoController::class, 'store'])->name('tratamientos.store');
+    Route::delete('tratamientos/{tratamiento}', [TratamientoController::class, 'destroy'])->name('tratamientos.destroy');
+
+    // CU18 Gestionar estudios médicos (varios por consulta) y su resultado
+    Route::get('estudios', [EstudioController::class, 'index'])->name('estudios.index');
+    Route::post('consultas/{consulta}/estudios', [EstudioController::class, 'store'])->name('estudios.store');
+    Route::get('estudios/{estudio}/resultado', [EstudioController::class, 'edit'])->name('estudios.resultado');
+    Route::put('estudios/{estudio}/resultado', [EstudioController::class, 'update'])->name('estudios.resultado.guardar');
+});
+
+Route::middleware(['auth', 'rol:Medico,Paciente'])->group(function () {
+    // CU18 / CU19 Archivo del resultado: el médico que lo pidió o el propio paciente
+    Route::get('estudios/{estudio}/archivo', [EstudioController::class, 'archivo'])->name('estudios.archivo');
+});
+
+Route::middleware(['auth', 'rol:Paciente'])->group(function () {
+    // CU19 Consultar historial y resultados (solo su propia información)
+    Route::get('mi-historial', MiHistorialController::class)->name('mi-historial');
+});
+
+/* ======================= P6 Reportes ======================= */
+Route::middleware(['auth', 'rol:Administrador'])->group(function () {
+    // CU20 Generar reportes (vista previa, PDF y Excel)
+    Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('reportes/exportar/{formato}', [ReporteController::class, 'exportar'])->name('reportes.exportar');
+});

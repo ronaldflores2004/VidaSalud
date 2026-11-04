@@ -21,7 +21,7 @@ class P2_MedicoSeeder extends Seeder
 
         // [nombres, apellidos, registro profesional, especialidades, usuario, horarios [día (1=lunes), inicio, fin]]
         $medicos = [
-            ['Juan', 'Pérez Vargas', 'CMB-10234', ['Medicina general'], 'dr.perez', [[1, '08:00', '12:00'], [3, '14:00', '18:00'], [5, '08:00', '12:00']]],
+            ['Juan', 'Pérez Vargas', 'CMB-10234', ['Medicina general'], 'dr.perez', [[1, '08:00', '12:00'], [2, '08:00', '12:00'], [3, '08:00', '12:00'], [3, '14:00', '18:00'], [4, '08:00', '12:00'], [5, '08:00', '12:00']]],
             ['Lucía', 'Fernández Arce', 'CMB-11870', ['Pediatría'], null, [[2, '09:00', '12:00'], [4, '09:00', '12:00']]],
             ['Roberto', 'Salvatierra Chávez', 'CMB-09455', ['Cardiología', 'Medicina general'], null, [[1, '14:00', '18:00'], [4, '14:00', '18:00']]],
             ['María José', 'Antelo Rivero', 'CMB-12011', ['Ginecología'], null, [[2, '14:00', '18:00'], [5, '14:00', '18:00']]],

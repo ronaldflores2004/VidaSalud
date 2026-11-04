@@ -38,14 +38,15 @@ class DisponibilidadController extends Controller
     /** Bloques de horario de un médico para una fecha. */
     public function bloques(Request $request, Medico $medico): JsonResponse
     {
-        $request->validate(['fecha' => ['required', 'date_format:Y-m-d']]);
+        $request->validate(['fecha' => ['required', 'date_format:Y-m-d'], 'ignorar' => ['nullable', 'integer']]);
         $fecha = Carbon::parse($request->fecha);
 
         if ($fecha->lt(Carbon::today())) {
             return response()->json(['bloques' => [], 'mensaje' => 'No se pueden elegir fechas pasadas.']);
         }
 
-        $bloques = $this->disponibilidad->bloques($medico, $fecha);
+        // CU11: al reprogramar se ignora la propia cita, así su horario actual se ve libre
+        $bloques = $this->disponibilidad->bloques($medico, $fecha, $request->integer('ignorar') ?: null);
 
         return response()->json([
             'bloques' => $bloques,

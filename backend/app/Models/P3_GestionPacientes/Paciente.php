@@ -42,6 +42,12 @@ class Paciente extends Model
         return $this->historia()->firstOrCreate([], $datos + ['numero' => \App\Models\P5_AtencionMedica\HistoriaClinica::siguienteNumero()]);
     }
 
+    /** Consultas del paciente (a través de sus citas): forman su historial clínico (CU16, CU19). */
+    public function consultas(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(\App\Models\P5_AtencionMedica\Consulta::class, \App\Models\P4_GestionCitas\Cita::class);
+    }
+
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

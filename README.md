@@ -13,25 +13,34 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 
 **Stack Full Stack:** Backend PHP 8.2+ · Laravel 12 · PostgreSQL 16 — Frontend HTML5 (Blade) · CSS3 · JavaScript
 
-## Avance – Ciclo I (Presentación 1)
+## Avance – Ciclo I y Ciclo II (100 %)
 
-| CU | Caso de uso | Estado |
-|----|-------------|--------|
-| CU1 | Iniciar sesión (usuario, CI o correo; bloqueo tras 3 intentos) | ✅ |
-| CU2 | Cerrar sesión | ✅ |
-| CU3 | Gestionar usuarios y roles (4 perfiles) | ✅ |
-| CU4 | Gestionar especialidades | ✅ |
-| CU5 | Gestionar médicos y sus especialidades | ✅ |
-| CU6 | Gestionar horarios de atención (fichas de 15 min) | ✅ |
-| CU7 | Gestionar pacientes (recepción) | ✅ |
-| CU8 | Registrarse como paciente desde la web | ✅ |
-| CU9 | Consultar disponibilidad de horarios (portal público) | ✅ |
-| CU10 | Reservar / programar ficha | ✅ |
-| CU11–CU20 | Reprogramar, cancelar, asistencia, agenda del médico, consulta, historial clínico, tratamiento, estudios, resultados, reportes | Ciclo II |
+| CU | Caso de uso | Paquete | Ciclo |
+|----|-------------|---------|-------|
+| CU1 | Iniciar sesión (usuario, CI o correo; bloqueo tras 3 intentos) | P1 | I ✅ |
+| CU2 | Cerrar sesión | P1 | I ✅ |
+| CU3 | Gestionar usuarios y roles (4 perfiles) | P1 | I ✅ |
+| CU4 | Gestionar especialidades | P2 | I ✅ |
+| CU5 | Gestionar médicos y sus especialidades | P2 | I ✅ |
+| CU6 | Gestionar horarios de atención (fichas de 15 min) | P2 | I ✅ |
+| CU7 | Gestionar pacientes (recepción) | P3 | I ✅ |
+| CU8 | Registrarse como paciente desde la web | P3 | I ✅ |
+| CU9 | Consultar disponibilidad de horarios (portal público) | P4 | I ✅ |
+| CU10 | Reservar ficha médica | P4 | I ✅ |
+| CU11 | Reprogramar cita (mismo médico, sin cruces) | P4 | II ✅ |
+| CU12 | Cancelar cita (libera la ficha, guarda el motivo) | P4 | II ✅ |
+| CU13 | Registrar asistencia (llegada / inasistencia) | P4 | II ✅ |
+| CU14 | Consultar agenda médica (solo sus pacientes) | P4 | II ✅ |
+| CU15 | Registrar consulta médica (signos vitales y diagnóstico) | P5 | II ✅ |
+| CU16 | Gestionar historial clínico | P5 | II ✅ |
+| CU17 | Registrar tratamiento | P5 | II ✅ |
+| CU18 | Gestionar estudios médicos (varios por consulta, resultado y archivo) | P5 | II ✅ |
+| CU19 | Consultar historial y resultados (paciente) | P5 | II ✅ |
+| CU20 | Generar reportes (vista previa, PDF y Excel) | P6 | II ✅ |
 
 ### Base de datos
 La base de datos está **diseñada completa desde el Ciclo I y normalizada en 3FN: 21 tablas**, incluidas las que se
-usan en el Ciclo II (historial clínico, consultas, tratamientos, estudios y sus catálogos), el historial de cada cita,
+usan en la atención médica (historial clínico, consultas, tratamientos, estudios y sus catálogos), el historial de cada cita,
 feriados/bloqueos de agenda, recordatorios (notificaciones) y la bitácora de auditoría.
 
 Normalización aplicada:
@@ -75,12 +84,23 @@ clinica-vida-salud/
 │   │   ├── P4_GestionCitas/
 │   │   │   ├── CU9_ConsultarDisponibilidad/       PortalController, DisponibilidadController
 │   │   │   ├── CU10_ReservarFicha/                CitaController
-│   │   │   └── CU11 … CU14                        Ciclo II
-│   │   ├── P5_AtencionMedica/  CU15 … CU19        Ciclo II
-│   │   └── P6_Reportes/        CU20               Ciclo II
-│   ├── app/Services/P4_GestionCitas/
-│   │   ├── CU9_ConsultarDisponibilidad/           DisponibilidadService
-│   │   └── CU10_ReservarFicha/                    CitaService (CU10 incluye a CU9)
+│   │   │   ├── CU11_ReprogramarCita/              ReprogramarCitaController
+│   │   │   ├── CU12_CancelarCita/                 CancelarCitaController
+│   │   │   ├── CU13_RegistrarAsistencia/          AsistenciaController
+│   │   │   └── CU14_ConsultarAgendaMedica/        AgendaController
+│   │   ├── P5_AtencionMedica/
+│   │   │   ├── CU15_RegistrarConsultaMedica/      ConsultaController
+│   │   │   ├── CU16_GestionarHistorialClinico/    HistorialClinicoController
+│   │   │   ├── CU17_RegistrarTratamiento/         TratamientoController
+│   │   │   ├── CU18_GestionarEstudiosMedicos/     EstudioController
+│   │   │   └── CU19_ConsultarHistorialResultados/ MiHistorialController
+│   │   └── P6_Reportes/
+│   │       └── CU20_GenerarReportes/              ReporteController
+│   ├── app/Services/                              reglas de negocio, una carpeta por caso de uso
+│   │   ├── P4_GestionCitas/CU9 … CU13/            Disponibilidad, Cita, ReprogramarCita, CancelarCita, Asistencia
+│   │   ├── P5_AtencionMedica/CU15, CU18/          ConsultaService, EstudioService
+│   │   └── P6_Reportes/CU20_GenerarReportes/      ReporteService (PDF y Excel)
+│   ├── app/Support/                               PdfSimple y XlsxSimple (PDF y .xlsx sin librerías)
 │   ├── app/Http/Middleware/P1_SeguridadAcceso/    VerificarRol (control de acceso por perfil)
 │   ├── app/Models/P1_SeguridadAcceso … P5_AtencionMedica/   entidades compartidas
 │   ├── app/Exceptions/                            ReglaNegocioException
@@ -92,9 +112,9 @@ clinica-vida-salud/
     │   ├── P1_SeguridadAcceso/  CU1_IniciarSesion · CU3_GestionarUsuarios
     │   ├── P2_GestionMedica/    CU4_GestionarEspecialidades · CU5_GestionarMedicos · CU6_GestionarHorarios
     │   ├── P3_GestionPacientes/ CU7_GestionarPacientes · CU8_RegistrarsePaciente
-    │   ├── P4_GestionCitas/     CU9_ConsultarDisponibilidad · CU10_ReservarFicha · CU11 … CU14 (Ciclo II)
-    │   ├── P5_AtencionMedica/   CU15 … CU19 (Ciclo II)
-    │   └── P6_Reportes/         CU20 (Ciclo II)
+    │   ├── P4_GestionCitas/     CU9 … CU14 (disponibilidad, reservar, reprogramar, cancelar, asistencia, agenda)
+    │   ├── P5_AtencionMedica/   CU15 … CU19 (consulta, historial, tratamiento, estudios, mi historial)
+    │   └── P6_Reportes/         CU20_GenerarReportes
     └── assets/
         ├── css/compartido/app.css
         └── js/compartido/app.js
@@ -163,9 +183,10 @@ Están en `backend/database/seeders/P1_UsuarioSeeder.php`.
 | `P2_MedicoSeeder` | 9 médicos con sus especialidades y horarios |
 | `P2_BloqueoAgendaSeeder` | Feriado del 2 de noviembre |
 | `P3_PacienteSeeder` | 5 pacientes con historial clínico y contacto de emergencia |
-| `P4_CitaSeeder` | 3 citas de ejemplo con su historial |
-| `P5_MedicamentoSeeder` | Catálogo de medicamentos (Ciclo II) |
-| `P5_CatalogoEstudioSeeder` | Catálogo de estudios (Ciclo II) |
+| `P4_CitaSeeder` | Citas de ejemplo: 3 próximas y 3 para hoy (asistencia y consulta) |
+| `P5_MedicamentoSeeder` | Catálogo de medicamentos |
+| `P5_CatalogoEstudioSeeder` | Catálogo de estudios |
+| `P5_AtencionMedicaSeeder` | Historial de atenciones de las últimas 3 semanas (consultas, tratamientos, estudios) |
 
 ```bash
 php artisan migrate:fresh --seed                 # borra todo, crea las tablas y carga todos los seeders

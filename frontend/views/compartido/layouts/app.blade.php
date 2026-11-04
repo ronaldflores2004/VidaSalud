@@ -22,20 +22,24 @@
             @if($u->tieneRol('Administrador', 'Recepcionista'))
                 <span class="menu-grupo">Atención</span>
                 <a href="{{ route('citas.create') }}" class="{{ request()->routeIs('citas.create') ? 'activo' : '' }}">Programar cita</a>
-                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.index', 'citas.show') ? 'activo' : '' }}">Citas</a>
+                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.index', 'citas.show', 'citas.reprogramar', 'citas.cancelar') ? 'activo' : '' }}">Citas</a>
+                <a href="{{ route('asistencia.index') }}" class="{{ request()->routeIs('asistencia.*') ? 'activo' : '' }}">Asistencia de hoy</a>
                 <a href="{{ route('pacientes.index') }}" class="{{ request()->routeIs('pacientes.*') ? 'activo' : '' }}">Pacientes</a>
                 <a href="{{ route('medicos.index') }}" class="{{ request()->routeIs('medicos.*', 'horarios.*') ? 'activo' : '' }}">Médicos</a>
             @endif
 
             @if($u->tieneRol('Medico'))
                 <span class="menu-grupo">Mi consulta</span>
-                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.*') ? 'activo' : '' }}">Mi agenda</a>
+                <a href="{{ route('agenda') }}" class="{{ request()->routeIs('agenda', 'consultas.*', 'citas.*') ? 'activo' : '' }}">Mi agenda</a>
+                <a href="{{ route('historial.index') }}" class="{{ request()->routeIs('historial.*') ? 'activo' : '' }}">Mis pacientes</a>
+                <a href="{{ route('estudios.index') }}" class="{{ request()->routeIs('estudios.*') ? 'activo' : '' }}">Estudios</a>
             @endif
 
             @if($u->tieneRol('Paciente'))
                 <span class="menu-grupo">Mis fichas</span>
                 <a href="{{ route('citas.create') }}" class="{{ request()->routeIs('citas.create') ? 'activo' : '' }}">Reservar ficha</a>
-                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.index', 'citas.show') ? 'activo' : '' }}">Mis citas</a>
+                <a href="{{ route('citas.index') }}" class="{{ request()->routeIs('citas.index', 'citas.show', 'citas.cancelar') ? 'activo' : '' }}">Mis citas</a>
+                <a href="{{ route('mi-historial') }}" class="{{ request()->routeIs('mi-historial') ? 'activo' : '' }}">Mi historial</a>
                 <a href="{{ route('portal.horarios') }}">Horarios de médicos</a>
             @endif
 
@@ -43,6 +47,7 @@
                 <span class="menu-grupo">Administración</span>
                 <a href="{{ route('especialidades.index') }}" class="{{ request()->routeIs('especialidades.*') ? 'activo' : '' }}">Especialidades</a>
                 <a href="{{ route('usuarios.index') }}" class="{{ request()->routeIs('usuarios.*') ? 'activo' : '' }}">Usuarios</a>
+                <a href="{{ route('reportes.index') }}" class="{{ request()->routeIs('reportes.*') ? 'activo' : '' }}">Reportes</a>
             @endif
         </nav>
         <div class="sidebar-pie">

@@ -21,12 +21,12 @@
 </div>
 
 <div class="card">
-    <div class="card-cab"><h2>Agenda de hoy</h2><a href="{{ route('citas.index', ['fecha' => today()->toDateString()]) }}" class="enlace">Ver todas</a></div>
+    <div class="card-cab"><h2>Agenda de hoy</h2><a href="{{ auth()->user()->tieneRol('Medico') ? route('agenda') : route('asistencia.index') }}" class="enlace">{{ auth()->user()->tieneRol('Medico') ? 'Ver mi agenda' : 'Registrar asistencia' }}</a></div>
     @if($citasHoy->isEmpty())
         <p class="vacio">No hay citas programadas para hoy.</p>
     @else
         <table class="tabla">
-            <thead><tr><th>Hora</th><th>Código</th><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Hora</th><th>Código</th><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>Estado</th>@if(auth()->user()->tieneRol('Medico'))<th></th>@endif</tr></thead>
             <tbody>
             @foreach($citasHoy as $c)
                 <tr>
@@ -36,6 +36,9 @@
                     <td>{{ $c->medico->nombre_completo }}</td>
                     <td>{{ $c->especialidad->nombre }}</td>
                     <td>@include('compartido.partials.estado-cita', ['estado' => $c->estado])</td>
+                    @if(auth()->user()->tieneRol('Medico'))
+                    <td>@if($c->estaVigente())<a href="{{ route('consultas.create', $c) }}" class="btn btn-primario btn-sm">Atender</a>@endif</td>
+                    @endif
                 </tr>
             @endforeach
             </tbody>

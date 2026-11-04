@@ -33,6 +33,11 @@ class DashboardController extends Controller
                     ->whereDate('fecha', '>=', $hoy)
                     ->whereIn('estado', [Cita::PROGRAMADA, Cita::CONFIRMADA])
                     ->orderBy('fecha')->orderBy('hora_inicio')->get(),
+                // Avisos (cancelación, reprogramación, resultados) aún no leídos
+                'nuevos' => $usuario->paciente ? \App\Models\P4_GestionCitas\Notificacion::whereNull('leida_en')
+                    ->where('programada_para', '<=', now())->whereIn('tipo', ['CANCELACION', 'REPROGRAMACION', 'RESULTADO'])
+                    ->where(fn ($q) => $q->whereHas('cita', fn ($c) => $c->where('paciente_id', $usuario->paciente->id))
+                        ->orWhereHas('estudio.consulta.cita', fn ($c) => $c->where('paciente_id', $usuario->paciente->id)))->count() : 0,
             ]);
         }
 

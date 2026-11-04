@@ -55,6 +55,24 @@ class Cita extends Model
         return $this->hasMany(HistorialCita::class)->orderBy('created_at');
     }
 
+    /** CU15: la consulta registrada cuando la cita fue atendida. */
+    public function consulta(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\P5_AtencionMedica\Consulta::class);
+    }
+
+    /** La cita todavía puede reprogramarse, cancelarse o atenderse. */
+    public function estaVigente(): bool
+    {
+        return in_array($this->estado, [self::PROGRAMADA, self::CONFIRMADA], true);
+    }
+
+    /** Fecha y hora de inicio como un solo instante. */
+    public function getInicioAttribute(): \Carbon\Carbon
+    {
+        return \Carbon\Carbon::parse($this->fecha->toDateString() . ' ' . $this->hora_inicio);
+    }
+
     public function registradoPor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'registrado_por');
