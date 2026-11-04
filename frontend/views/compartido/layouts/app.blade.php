@@ -26,6 +26,7 @@
                 <a href="{{ route('asistencia.index') }}" class="{{ request()->routeIs('asistencia.*') ? 'activo' : '' }}">Asistencia de hoy</a>
                 <a href="{{ route('pacientes.index') }}" class="{{ request()->routeIs('pacientes.*') ? 'activo' : '' }}">Pacientes</a>
                 <a href="{{ route('medicos.index') }}" class="{{ request()->routeIs('medicos.*', 'horarios.*') ? 'activo' : '' }}">Médicos</a>
+                <a href="{{ route('pagos.index') }}" class="{{ request()->routeIs('pagos.*') ? 'activo' : '' }}">Pagos</a>
             @endif
 
             @if($u->tieneRol('Medico'))
@@ -33,6 +34,11 @@
                 <a href="{{ route('agenda') }}" class="{{ request()->routeIs('agenda', 'consultas.*', 'citas.*') ? 'activo' : '' }}">Mi agenda</a>
                 <a href="{{ route('historial.index') }}" class="{{ request()->routeIs('historial.*') ? 'activo' : '' }}">Mis pacientes</a>
                 <a href="{{ route('estudios.index') }}" class="{{ request()->routeIs('estudios.*') ? 'activo' : '' }}">Estudios</a>
+            @endif
+
+            @if($u->tieneRol('Medico', 'Paciente'))
+                @php($sinLeer = \App\Models\P7_PagosNotificaciones\Notificacion::delUsuario($u)->whereNull('leida_en')->count())
+                <a href="{{ route('notificaciones.index') }}" class="{{ request()->routeIs('notificaciones.*') ? 'activo' : '' }}">Notificaciones @if($sinLeer)<span class="contador">{{ $sinLeer }}</span>@endif</a>
             @endif
 
             @if($u->tieneRol('Paciente'))
@@ -60,6 +66,9 @@
         <header class="topbar">
             <button class="btn-menu" type="button" data-toggle-menu aria-label="Menú">☰</button>
             <div class="migas">@yield('migas')</div>
+            @if($u->tieneRol('Medico', 'Paciente'))
+                <a href="{{ route('notificaciones.index') }}" class="campana" title="Notificaciones" aria-label="Notificaciones">🔔@if($sinLeer)<span class="contador">{{ $sinLeer }}</span>@endif</a>
+            @endif
             <form method="POST" action="{{ route('logout') }}" data-confirmar="¿Desea cerrar la sesión?">
                 @csrf
                 <button class="btn btn-ghost btn-sm" type="submit">Cerrar sesión</button>

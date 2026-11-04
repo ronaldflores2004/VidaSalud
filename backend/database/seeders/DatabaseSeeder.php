@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             P5_MedicamentoSeeder::class,     // P5 Atención Médica: catálogo de medicamentos
             P5_CatalogoEstudioSeeder::class, //    catálogo de estudios
             P5_AtencionMedicaSeeder::class,  //    historial de atenciones de las últimas 3 semanas
+            P7_PagoNotificacionSeeder::class, // P7 Pagos y Notificaciones: pagos de las fichas y avisos
         ]);
     }
 }

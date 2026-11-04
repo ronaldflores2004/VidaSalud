@@ -33,6 +33,9 @@ class ConsultaService
         if (! $cita->fecha->isToday()) {
             return 'La consulta se registra el día de la cita (' . $cita->fecha->format('d/m/Y') . ').';
         }
+        if (! $cita->pago()->exists()) {
+            return 'La ficha está pendiente de pago; el paciente debe pagarla en recepción (RN14).';
+        }
 
         return null;
     }

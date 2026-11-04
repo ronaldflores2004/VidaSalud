@@ -8,9 +8,10 @@ use App\Models\P1_SeguridadAcceso\User;
 use App\Models\P2_GestionMedica\Medico;
 use App\Models\P4_GestionCitas\Cita;
 use App\Models\P4_GestionCitas\HistorialCita;
-use App\Models\P4_GestionCitas\Notificacion;
+use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Services\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadService; // CU11 incluye a CU9
 use Carbon\Carbon;
+use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -70,8 +71,8 @@ class ReprogramarCitaService
                 Notificacion::where('cita_id', $cita->id)->where('tipo', 'RECORDATORIO')->whereNull('enviada_en')
                     ->update(['programada_para' => $cita->inicio->copy()->subDay()]);
                 if ($cita->paciente->acepta_notificaciones) {
-                    Notificacion::create([
-                        'cita_id' => $cita->id, 'tipo' => 'REPROGRAMACION', 'programada_para' => now(),
+                    app(NotificacionService::class)->crear([
+                        'cita_id' => $cita->id, 'tipo' => 'REPROGRAMACION',
                         'mensaje' => "Su cita {$cita->codigo} fue reprogramada al " . $cita->fecha->format('d/m/Y') . ' a las ' . substr($cita->hora_inicio, 0, 5) . '.',
                     ]);
                 }

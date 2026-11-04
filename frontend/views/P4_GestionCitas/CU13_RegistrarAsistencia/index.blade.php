@@ -19,7 +19,7 @@
 </form>
 <div class="card">
     <table class="tabla">
-        <thead><tr><th>Hora</th><th>Código</th><th>Paciente</th><th>Médico</th><th>Estado</th><th>Registrar</th></tr></thead>
+        <thead><tr><th>Hora</th><th>Código</th><th>Paciente</th><th>Médico</th><th>Estado</th><th>Pago</th><th>Registrar</th></tr></thead>
         <tbody>
         @forelse($citas as $c)
             <tr>
@@ -28,9 +28,18 @@
                 <td>{{ $c->paciente->nombre_completo }}</td>
                 <td>{{ $c->medico->nombre_completo }}<br><small class="sub">{{ $c->especialidad->nombre }}</small></td>
                 <td>@include('compartido.partials.estado-cita', ['estado' => $c->estado])</td>
+                <td>
+                    @if(! $c->pago && $c->estaVigente())
+                        @include('P7_PagosNotificaciones.CU21_PagarFicha._cobrar', ['cita' => $c])
+                    @else
+                        @include('compartido.partials.estado-pago', ['cita' => $c])
+                    @endif
+                </td>
                 <td class="acciones">
                     @if($c->estado === 'PROGRAMADA')
+                        @if($c->pago)
                         <form method="POST" action="{{ route('asistencia.store', $c) }}">@csrf<input type="hidden" name="tipo" value="LLEGADA"><button class="btn btn-primario btn-sm">Llegó</button></form>
+                        @endif
                         @if($c->inicio->lte(now()))
                         <form method="POST" action="{{ route('asistencia.store', $c) }}" data-confirmar="¿Registrar inasistencia de {{ $c->paciente->nombre_completo }}?">@csrf<input type="hidden" name="tipo" value="INASISTENCIA"><button class="btn btn-ghost btn-sm">No asistió</button></form>
                         @endif
@@ -40,7 +49,7 @@
                 </td>
             </tr>
         @empty
-            <tr><td colspan="6" class="vacio">No hay citas para hoy.</td></tr>
+            <tr><td colspan="7" class="vacio">No hay citas para hoy.</td></tr>
         @endforelse
         </tbody>
     </table>

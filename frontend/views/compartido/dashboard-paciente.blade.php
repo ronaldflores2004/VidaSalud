@@ -15,7 +15,7 @@
             <div class="ficha-fecha"><strong>{{ $c->fecha->format('d') }}</strong><span>{{ $c->fecha->locale('es')->isoFormat('MMM') }}</span></div>
             <div><strong>{{ $c->especialidad->nombre }}</strong><span class="sub"> · {{ $c->medico->nombre_completo }}</span><br>
                 <span class="mono">{{ $c->horario }}</span> · {{ $c->codigo }}</div>
-            @include('compartido.partials.estado-cita', ['estado' => $c->estado])
+            <span>@include('compartido.partials.estado-cita', ['estado' => $c->estado]) @include('compartido.partials.estado-pago', ['cita' => $c])</span>
         </a>
     @empty
         <p class="vacio">No tiene fichas reservadas. <a href="{{ route('citas.create') }}">Reserve una</a>.</p>

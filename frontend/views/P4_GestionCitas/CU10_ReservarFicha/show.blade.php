@@ -20,6 +20,25 @@
         <dt>Motivo</dt><dd>{{ $cita->motivo ?? '—' }}</dd>
     </dl>
 </div>
+{{-- CU21 Pagar ficha --}}
+<div class="card pago-ficha">
+    <div>
+        <h2>Pago de la ficha</h2>
+        @if($cita->pago)
+            <p>@include('compartido.partials.estado-pago', ['cita' => $cita])
+               <span class="sub">{{ $cita->pago->codigo }} · Bs {{ number_format($cita->pago->monto, 2) }}@if($cita->pago->monto_usd) (USD {{ number_format($cita->pago->monto_usd, 2) }})@endif · {{ $cita->pago->pagado_en->format('d/m/Y H:i') }}@if($cita->pago->referencia) · Ref. {{ $cita->pago->referencia }}@endif</span></p>
+        @else
+            <p>@include('compartido.partials.estado-pago', ['cita' => $cita]) <span class="sub">Precio de la ficha: Bs {{ number_format($cita->precio, 2) }}</span></p>
+        @endif
+    </div>
+    @if(! $cita->pago && $cita->estaVigente() && ! $cita->fecha->lt(today()))
+        @if(auth()->user()->tieneRol('Paciente'))
+            <a href="{{ route('pagos.create', $cita) }}" class="btn btn-primario">Pagar ahora (CU21)</a>
+        @elseif(auth()->user()->tieneRol('Administrador', 'Recepcionista'))
+            @include('P7_PagosNotificaciones.CU21_PagarFicha._cobrar', ['cita' => $cita])
+        @endif
+    @endif
+</div>
 @unless(auth()->user()->tieneRol('Paciente'))
 <div class="card">
     <h2>Historial de la cita</h2>

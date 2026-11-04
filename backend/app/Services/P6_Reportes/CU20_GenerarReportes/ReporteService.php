@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
  *   - CITAS: citas por fecha, médico, especialidad y estado.
  *   - PACIENTES: pacientes registrados en el período.
  *   - ATENCIONES: atendidas, canceladas e inasistencias por médico.
+ *   - PAGOS: ingresos por fichas pagadas (CU21), por método de pago.
  */
 class ReporteService
 {
@@ -25,6 +26,7 @@ class ReporteService
         'citas' => 'Citas por período',
         'pacientes' => 'Pacientes registrados',
         'atenciones' => 'Atenciones por médico',
+        'pagos' => 'Pagos e ingresos',
     ];
 
     /** @return array{titulo:string, filtros:string, columnas:array, filas:array, resumen:array} */
@@ -46,6 +48,7 @@ class ReporteService
         return match ($f['tipo']) {
             'pacientes' => $this->pacientes($desde, $hasta, $filtros),
             'atenciones' => $this->atenciones($desde, $hasta, $f, $filtros),
+            'pagos' => $this->pagos($desde, $hasta, $f, $filtros),
             default => $this->citas($desde, $hasta, $f, $filtros),
         };
     }
@@ -128,6 +131,34 @@ class ReporteService
                 ['Canceladas', $filas->sum(4)],
                 ['Inasistencias', $filas->sum(5)],
             ],
+        ];
+    }
+
+    /** Ingresos por fichas (CU21): pagos registrados en el período, por fecha de pago. */
+    private function pagos(Carbon $desde, Carbon $hasta, array $f, string $filtros): array
+    {
+        $pagos = \App\Models\P7_PagosNotificaciones\Pago::with('cita.paciente', 'cita.medico', 'cita.especialidad')
+            ->whereBetween(DB::raw('DATE(pagado_en)'), [$desde->toDateString(), $hasta->toDateString()])
+            ->whereHas('cita', fn ($c) => $c
+                ->when($f['medico_id'] ?? null, fn ($w, $m) => $w->where('medico_id', $m))
+                ->when($f['especialidad_id'] ?? null, fn ($w, $e) => $w->where('especialidad_id', $e)))
+            ->orderBy('pagado_en')->get();
+        $cobrados = $pagos->where('estado', 'PAGADO');
+        $bs = fn ($v) => 'Bs ' . number_format((float) $v, 2);
+
+        $resumen = [['Ingresos netos', $bs($cobrados->sum('monto'))], ['Pagos', $pagos->count()]];
+        foreach (\App\Models\P7_PagosNotificaciones\Pago::METODOS as $k => $t) {
+            $resumen[] = [$t, $bs($cobrados->where('metodo', $k)->sum('monto'))];
+        }
+        $resumen[] = ['Reembolsos', $bs($pagos->where('estado', '<>', 'PAGADO')->sum('monto'))];
+
+        return [
+            'titulo' => 'Reporte de pagos e ingresos',
+            'filtros' => $filtros,
+            'columnas' => [['Código', 8], ['Fecha de pago', 11], ['Ficha', 8], ['Paciente', 22], ['Especialidad', 16], ['Método', 10], ['Monto', 10], ['Estado', 11]],
+            'filas' => $pagos->map(fn ($p) => [$p->codigo, $p->pagado_en->format('d/m/Y H:i'), $p->cita->codigo, $p->cita->paciente->nombre_completo,
+                $p->cita->especialidad->nombre, $p->metodo_texto, $bs($p->monto), \App\Models\P7_PagosNotificaciones\Pago::ESTADOS[$p->estado]])->all(),
+            'resumen' => $resumen,
         ];
     }
 

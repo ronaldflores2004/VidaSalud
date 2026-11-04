@@ -13,12 +13,13 @@
 </form>
 <div class="card">
     <table class="tabla">
-        <thead><tr><th>Nombre</th><th>Descripción</th><th>Médicos</th><th>Estado</th><th></th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Descripción</th><th>Precio ficha</th><th>Médicos</th><th>Estado</th><th></th></tr></thead>
         <tbody>
         @forelse($especialidades as $e)
             <tr>
                 <td><strong>{{ $e->nombre }}</strong></td>
                 <td>{{ $e->descripcion ?? '—' }}</td>
+                <td>Bs {{ number_format($e->precio_consulta, 2) }}</td>
                 <td>{{ $e->medicos_count }}</td>
                 <td>@include('compartido.partials.estado', ['activo' => $e->activo])</td>
                 <td class="acciones">
@@ -29,7 +30,7 @@
                 </td>
             </tr>
         @empty
-            <tr><td colspan="5" class="vacio">No hay especialidades registradas.</td></tr>
+            <tr><td colspan="6" class="vacio">No hay especialidades registradas.</td></tr>
         @endforelse
         </tbody>
     </table>

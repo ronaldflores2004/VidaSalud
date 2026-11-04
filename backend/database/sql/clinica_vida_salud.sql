@@ -8,14 +8,15 @@
      2) Conectarse a la base clinica_vida_salud y ejecutar este archivo completo.
    En el proyecto Laravel las mismas tablas se crean con: php artisan migrate --seed
    -----------------------------------------------------------------------------
-   Tablas por paquete (misma numeración del documento) – 21 tablas del sistema:
+   Tablas por paquete (misma numeración del documento) – 23 tablas del sistema:
      P1 Seguridad y Acceso ............ roles, users, bitacora
      P2 Gestión Médica ................ configuracion, especialidades, medicos, especialidad_medico,
                                         horarios, bloqueos_agenda
      P3 Gestión de Pacientes .......... pacientes, contactos_emergencia
      P4 Gestión de Citas .............. estados_cita, citas, historial_citas
      P5 Atención Médica e Historial ... historias_clinicas, consultas, medicamentos, tratamientos,
-                                        catalogo_estudios, estudios, notificaciones
+                                        catalogo_estudios, estudios
+     P7 Pagos y Notificaciones ........ pagos, notificaciones, suscripciones_push
      Soporte del framework ............ sessions, password_reset_tokens, cache, cache_locks
    ============================================================================= */
 
@@ -95,7 +96,9 @@ CREATE TABLE especialidades (
     descripcion  VARCHAR(255),
     activo       BOOLEAN       NOT NULL DEFAULT TRUE,
     created_at   TIMESTAMP,
-    updated_at   TIMESTAMP
+    updated_at   TIMESTAMP,
+    precio_consulta NUMERIC(8,2) NOT NULL DEFAULT 150,              -- CU21: precio de la ficha (Bs)
+    CONSTRAINT chk_especialidad_precio CHECK (precio_consulta >= 0)
 );
 CREATE UNIQUE INDEX uq_especialidades_nombre ON especialidades (f_normalizar(nombre));
 
@@ -346,23 +349,62 @@ CREATE TABLE estudios (
     CONSTRAINT chk_estudio_fechas CHECK (fecha_resultado IS NULL OR fecha_resultado >= fecha_solicitud)
 );
 
--- Recordatorios y avisos al paciente. Se refieren a una cita o a un estudio (exactamente uno);
--- el paciente se obtiene de ellos, por eso no se guarda paciente_id (3FN).
+
+
+/* =============================================================================
+   P7 PAGOS Y NOTIFICACIONES
+   ============================================================================= */
+
+-- CU21: un pago por cita (cita_id único). Sin fila en pagos, la ficha está pendiente de pago (RN14).
+-- El monto se guarda porque es el cobrado en ese momento (dato histórico), aunque cambie el precio.
+CREATE TABLE pagos (
+    id              BIGSERIAL     PRIMARY KEY,
+    codigo          VARCHAR(12)   NOT NULL UNIQUE,                   -- PG-0001
+    cita_id         BIGINT        NOT NULL UNIQUE REFERENCES citas (id) ON DELETE RESTRICT,
+    monto           NUMERIC(8,2)  NOT NULL,                          -- bolivianos
+    monto_usd       NUMERIC(8,2),                                    -- solo PayPal (no acepta BOB)
+    metodo          VARCHAR(10)   NOT NULL,
+    estado          VARCHAR(15)   NOT NULL DEFAULT 'PAGADO',
+    referencia      VARCHAR(60),                                     -- id de captura PayPal o n.º de comprobante
+    registrado_por  BIGINT        NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
+    pagado_en       TIMESTAMP     NOT NULL,
+    created_at      TIMESTAMP,
+    updated_at      TIMESTAMP,
+    CONSTRAINT chk_pago_metodo CHECK (metodo IN ('PAYPAL','EFECTIVO','QR','TARJETA')),
+    CONSTRAINT chk_pago_estado CHECK (estado IN ('PAGADO','POR_REEMBOLSAR','REEMBOLSADO')),   -- RN15
+    CONSTRAINT chk_pago_monto  CHECK (monto > 0)
+);
+
+-- CU22: avisos al paciente o al médico. Se refieren a una cita o a un estudio (exactamente uno);
+-- el destinatario se obtiene de ellos (paciente, o el médico si para_medico), por eso no se guarda (3FN).
 CREATE TABLE notificaciones (
     id               BIGSERIAL     PRIMARY KEY,
     cita_id          BIGINT        REFERENCES citas (id) ON DELETE CASCADE,
     estudio_id       BIGINT        REFERENCES estudios (id) ON DELETE CASCADE,
-    tipo             VARCHAR(15)   NOT NULL,                         -- RECORDATORIO, CANCELACION, REPROGRAMACION, RESULTADO
-    canal            VARCHAR(10)   NOT NULL DEFAULT 'SISTEMA',       -- SISTEMA, EMAIL
+    tipo             VARCHAR(15)   NOT NULL,
+    canal            VARCHAR(10)   NOT NULL DEFAULT 'SISTEMA',       -- SISTEMA, EMAIL, PUSH
     mensaje          VARCHAR(255)  NOT NULL,
     programada_para  TIMESTAMP     NOT NULL,
     enviada_en       TIMESTAMP,
     leida_en         TIMESTAMP,
     created_at       TIMESTAMP,
     updated_at       TIMESTAMP,
-    CONSTRAINT chk_notificacion_tipo   CHECK (tipo IN ('RECORDATORIO','CANCELACION','REPROGRAMACION','RESULTADO')),
-    CONSTRAINT chk_notificacion_canal  CHECK (canal IN ('SISTEMA','EMAIL')),
+    para_medico      BOOLEAN       NOT NULL DEFAULT FALSE,
+    CONSTRAINT chk_notificacion_tipo   CHECK (tipo IN ('RECORDATORIO','CANCELACION','REPROGRAMACION','RESULTADO','PAGO','NUEVA_CITA')),
+    CONSTRAINT chk_notificacion_canal  CHECK (canal IN ('SISTEMA','EMAIL','PUSH')),
     CONSTRAINT chk_notificacion_origen CHECK ((cita_id IS NULL) <> (estudio_id IS NULL))
+);
+
+-- CU22: navegadores donde el usuario activó las notificaciones push (Web Push / VAPID)
+CREATE TABLE suscripciones_push (
+    id            BIGSERIAL     PRIMARY KEY,
+    user_id       BIGINT        NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    endpoint      TEXT          NOT NULL UNIQUE,                     -- servicio push del navegador
+    clave_p256dh  VARCHAR(120)  NOT NULL,                            -- claves para cifrar el mensaje
+    clave_auth    VARCHAR(40)   NOT NULL,
+    navegador     VARCHAR(120),
+    created_at    TIMESTAMP,
+    updated_at    TIMESTAMP
 );
 
 
@@ -405,7 +447,8 @@ CREATE TABLE cache_locks (
    ============================================================================= */
 
 INSERT INTO configuracion (clave, valor, descripcion, created_at, updated_at) VALUES
-    ('DURACION_FICHA_MIN', '15', 'Minutos de atención por paciente (una ficha)', NOW(), NOW());
+    ('DURACION_FICHA_MIN', '15', 'Minutos de atención por paciente (una ficha)', NOW(), NOW()),
+    ('TIPO_CAMBIO_USD', '6.96', 'Bolivianos por dólar para cobrar con PayPal (PayPal no acepta BOB).', NOW(), NOW());
 
 INSERT INTO estados_cita (codigo, nombre, descripcion, ocupa_horario) VALUES
     ('PROGRAMADA',   'Programada',   'La cita está reservada',                   TRUE),
@@ -427,16 +470,16 @@ SELECT 'Administrador del sistema', 'admin', 'admin@vidasalud.bo',
 FROM roles WHERE nombre = 'Administrador';
 
 -- Especialidades elegidas por el grupo (sin terapia intensiva)
-INSERT INTO especialidades (nombre, descripcion, created_at, updated_at) VALUES
-    ('Medicina general',     'Atención primaria, control y derivación',          NOW(), NOW()),
-    ('Pediatría',            'Atención de niños y adolescentes',                 NOW(), NOW()),
-    ('Geriatría',            'Atención del adulto mayor',                        NOW(), NOW()),
-    ('Cardiología',          'Enfermedades del corazón y presión arterial',      NOW(), NOW()),
-    ('Ginecología',          'Salud de la mujer',                                NOW(), NOW()),
-    ('Traumatología',        'Lesiones de huesos, músculos y articulaciones',    NOW(), NOW()),
-    ('Reumatología',         'Enfermedades de las articulaciones y autoinmunes', NOW(), NOW()),
-    ('Oftalmología',         'Salud visual',                                     NOW(), NOW()),
-    ('Otorrinolaringología', 'Oído, nariz y garganta',                           NOW(), NOW());
+INSERT INTO especialidades (nombre, descripcion, precio_consulta, created_at, updated_at) VALUES
+    ('Medicina general',     'Atención primaria, control y derivación', 100,          NOW(), NOW()),
+    ('Pediatría',            'Atención de niños y adolescentes', 150,                 NOW(), NOW()),
+    ('Geriatría',            'Atención del adulto mayor', 150,                        NOW(), NOW()),
+    ('Cardiología',          'Enfermedades del corazón y presión arterial', 200,      NOW(), NOW()),
+    ('Ginecología',          'Salud de la mujer', 180,                                NOW(), NOW()),
+    ('Traumatología',        'Lesiones de huesos, músculos y articulaciones', 180,    NOW(), NOW()),
+    ('Reumatología',         'Enfermedades de las articulaciones y autoinmunes', 200, NOW(), NOW()),
+    ('Oftalmología',         'Salud visual', 180,                                     NOW(), NOW()),
+    ('Otorrinolaringología', 'Oído, nariz y garganta', 180,                           NOW(), NOW());
 
 INSERT INTO medicamentos (nombre, presentacion, created_at, updated_at) VALUES
     ('Paracetamol', 'Tabletas 500 mg', NOW(), NOW()),

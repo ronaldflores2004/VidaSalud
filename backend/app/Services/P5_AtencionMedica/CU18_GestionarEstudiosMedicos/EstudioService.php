@@ -5,10 +5,11 @@ namespace App\Services\P5_AtencionMedica\CU18_GestionarEstudiosMedicos;
 use App\Exceptions\ReglaNegocioException;
 use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P1_SeguridadAcceso\User;
-use App\Models\P4_GestionCitas\Notificacion;
+use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Models\P5_AtencionMedica\Consulta;
 use App\Models\P5_AtencionMedica\Estudio;
 use Illuminate\Http\UploadedFile;
+use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -52,8 +53,8 @@ class EstudioService
 
             $paciente = $estudio->consulta->cita->paciente;
             if (! $teniaResultado && $paciente->acepta_notificaciones) {
-                Notificacion::create([
-                    'estudio_id' => $estudio->id, 'tipo' => 'RESULTADO', 'programada_para' => now(),
+                app(NotificacionService::class)->crear([
+                    'estudio_id' => $estudio->id, 'tipo' => 'RESULTADO',
                     'mensaje' => "El resultado de su estudio «{$estudio->catalogo->nombre}» ya está disponible en su historial.",
                 ]);
             }

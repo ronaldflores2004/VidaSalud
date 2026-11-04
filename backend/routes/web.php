@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 | Rutas web – Sistema de Gestión de Citas Médicas "Clínica Vida Salud"
 |--------------------------------------------------------------------------
-| Ordenadas por paquete y caso de uso, con la misma numeración del documento (P1 … P6, CU1 … CU20).
+| Ordenadas por paquete y caso de uso, con la misma numeración del documento (P1 … P7, CU1 … CU22).
 | Cada controlador está en la carpeta de su caso de uso: Controllers/P{n}_Paquete/CU{n}_CasoDeUso/.
 | El middleware "rol" aplica RN12: cada perfil solo ejecuta lo que le corresponde.
 */
@@ -32,6 +32,8 @@ use App\Http\Controllers\P5_AtencionMedica\CU17_RegistrarTratamiento\Tratamiento
 use App\Http\Controllers\P5_AtencionMedica\CU18_GestionarEstudiosMedicos\EstudioController;
 use App\Http\Controllers\P5_AtencionMedica\CU19_ConsultarHistorialResultados\MiHistorialController;
 use App\Http\Controllers\P6_Reportes\CU20_GenerarReportes\ReporteController;
+use App\Http\Controllers\P7_PagosNotificaciones\CU21_PagarFicha\PagoController;
+use App\Http\Controllers\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionController;
 use Illuminate\Support\Facades\Route;
 
 // Archivos estáticos del frontend (frontend/assets)
@@ -169,4 +171,31 @@ Route::middleware(['auth', 'rol:Administrador'])->group(function () {
     // CU20 Generar reportes (vista previa, PDF y Excel)
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/exportar/{formato}', [ReporteController::class, 'exportar'])->name('reportes.exportar');
+});
+
+/* ======================= P7 Pagos y Notificaciones ======================= */
+Route::middleware(['auth', 'rol:Paciente'])->group(function () {
+    // CU21 Pagar ficha en línea con PayPal (el paciente, solo sus fichas)
+    Route::get('citas/{cita}/pagar', [PagoController::class, 'create'])->name('pagos.create');
+    Route::post('citas/{cita}/pago/paypal/orden', [PagoController::class, 'orden'])->name('pagos.paypal.orden');
+    Route::post('citas/{cita}/pago/paypal/capturar', [PagoController::class, 'capturar'])->name('pagos.paypal.capturar');
+});
+
+Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function () {
+    // CU21 Cobro en recepción, lista de pagos y reembolsos (RN15)
+    Route::post('citas/{cita}/pago', [PagoController::class, 'cobrar'])->name('pagos.cobrar');
+    Route::get('pagos', [PagoController::class, 'index'])->name('pagos.index');
+    Route::patch('pagos/{pago}/reembolso', [PagoController::class, 'reembolsar'])->name('pagos.reembolsar');
+});
+
+// CU22 Service worker de las notificaciones push (debe estar en la raíz del sitio)
+Route::get('sw.js', [NotificacionController::class, 'serviceWorker'])->name('push.sw');
+
+Route::middleware(['auth', 'rol:Medico,Paciente'])->group(function () {
+    // CU22 Gestionar notificaciones: bandeja y notificaciones push
+    Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
+    Route::post('notificaciones/leidas', [NotificacionController::class, 'marcarLeidas'])->name('notificaciones.leidas');
+    Route::post('notificaciones/suscripcion', [NotificacionController::class, 'suscribir'])->name('notificaciones.suscribir');
+    Route::delete('notificaciones/suscripcion', [NotificacionController::class, 'desuscribir'])->name('notificaciones.desuscribir');
+    Route::post('notificaciones/prueba', [NotificacionController::class, 'probar'])->name('notificaciones.probar');
 });

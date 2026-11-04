@@ -35,8 +35,10 @@
                 <td class="acciones">
                     @if($c->consulta)
                         <a href="{{ route('consultas.show', $c->consulta) }}" class="btn btn-sec btn-sm">Ver consulta</a>
-                    @elseif($c->estaVigente() && $c->fecha->isToday())
+                    @elseif($c->estaVigente() && $c->fecha->isToday() && $c->pago)
                         <a href="{{ route('consultas.create', $c) }}" class="btn btn-primario btn-sm">Atender</a>
+                    @elseif($c->estaVigente() && ! $c->pago)
+                        <span class="chip chip-pendiente-pago" title="RN14: se paga antes de la atención">Pendiente de pago</span>
                     @endif
                     @if($c->estado !== 'CANCELADA')
                         <a href="{{ route('historial.show', $c->paciente) }}" class="btn btn-ghost btn-sm">Historial</a>

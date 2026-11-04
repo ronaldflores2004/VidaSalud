@@ -13,9 +13,9 @@ class Especialidad extends Model
 {
     protected $table = 'especialidades';
 
-    protected $fillable = ['nombre', 'descripcion', 'activo'];
+    protected $fillable = ['nombre', 'descripcion', 'precio_consulta', 'activo'];
 
-    protected $casts = ['activo' => 'boolean'];
+    protected $casts = ['activo' => 'boolean', 'precio_consulta' => 'decimal:2'];
 
     public function medicos(): BelongsToMany
     {

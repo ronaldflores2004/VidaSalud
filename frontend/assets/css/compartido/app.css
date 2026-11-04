@@ -271,3 +271,39 @@ span.slot { text-align: center; cursor: default; }
 .reporte-filtros { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 .8rem; align-items: end; }
 @media (max-width: 900px) { .consulta-layout, .reporte-filtros, .signos, .fila-trat { grid-template-columns: 1fr; } .semana { grid-template-columns: repeat(4, 1fr); } }
 @media print { .sidebar, .topbar, .no-imprimir { display: none !important; } .shell { display: block; } }
+
+/* ======================= P7 Pagos y Notificaciones (CU21, CU22) ======================= */
+[hidden] { display: none !important; }
+.chip-pagado { background: var(--verde-claro); color: var(--verde-osc); }
+.chip-pendiente-pago { background: var(--ambar-claro); color: var(--ambar); }
+.pago-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; align-items: start; }
+.pago-caja h2 { margin-top: 0; }
+.pago-monto { font-size: 2rem; font-weight: 700; color: var(--verde-osc); margin: .2rem 0 .4rem; font-family: var(--mono); }
+.pago-nota { font-size: .8rem; margin-top: .6rem; }
+.btn-bloque { display: block; width: 100%; text-align: center; margin-top: .6rem; }
+#paypal-botones { margin-top: .8rem; min-height: 50px; }
+.cobro { display: flex; gap: .35rem; flex-wrap: wrap; align-items: center; }
+.cobro select, .cobro input { width: auto; padding: .3rem .45rem; font-size: .85rem; }
+.cobro input { width: 9rem; }
+.pago-ficha { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.contador { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem; padding: 0 .3rem; border-radius: 999px; background: var(--rojo); color: #fff; font-size: .72rem; font-weight: 700; margin-left: .3rem; }
+.campana { position: relative; font-size: 1.15rem; margin-left: auto; margin-right: .6rem; text-decoration: none; }
+.campana .contador { position: absolute; top: -.45rem; right: -.75rem; }
+.push-card { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.push-icono { font-size: 2rem; }
+.push-texto { flex: 1; min-width: 14rem; }
+.push-texto h2 { margin: 0 0 .2rem; font-size: 1.05rem; }
+.push-botones { display: flex; gap: .4rem; flex-wrap: wrap; }
+.bandeja { list-style: none; margin: 0; padding: 0; }
+.bandeja li { display: flex; gap: .8rem; align-items: flex-start; padding: .75rem .4rem; border-bottom: 1px solid var(--linea); }
+.bandeja li:last-child { border-bottom: 0; }
+.bandeja li > div { display: flex; flex-direction: column; gap: .15rem; }
+.bandeja li.no-leida { background: #f0fdfa; }
+.bandeja li.no-leida a { font-weight: 600; }
+.bandeja .chip { flex: none; min-width: 7.5rem; text-align: center; }
+.chip-notif-recordatorio, .chip-notif-nueva_cita { background: #e0f2fe; color: #075985; }
+.chip-notif-cancelacion { background: var(--rojo-claro); color: var(--rojo); }
+.chip-notif-reprogramacion { background: var(--ambar-claro); color: var(--ambar); }
+.chip-notif-resultado, .chip-notif-pago { background: var(--verde-claro); color: var(--verde-osc); }
+@media (max-width: 900px) { .pago-layout { grid-template-columns: 1fr; } }
+.pago-aviso { background: var(--ambar-claro); color: #78350f; border-radius: 10px; padding: .7rem .85rem; font-size: .88rem; margin-top: .8rem; line-height: 1.45; }

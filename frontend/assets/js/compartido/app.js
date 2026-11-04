@@ -104,3 +104,17 @@
     // Las alertas de éxito desaparecen solas
     document.querySelectorAll('.alerta-ok').forEach(a => setTimeout(() => a.classList.add('oculta'), 5000));
 })();
+
+/* CU21: en el cobro de recepción, el n.º de comprobante se pide solo para QR y tarjeta */
+document.querySelectorAll('form.cobro').forEach((f) => {
+    const metodo = f.querySelector('[data-metodo]');
+    const ref = f.querySelector('[data-referencia]');
+    const actualizar = () => {
+        const pide = metodo.value !== 'EFECTIVO';
+        ref.hidden = !pide;
+        ref.required = pide;
+        if (!pide) ref.value = '';
+    };
+    metodo.addEventListener('change', actualizar);
+    actualizar();
+});

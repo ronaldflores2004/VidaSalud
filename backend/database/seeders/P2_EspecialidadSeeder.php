@@ -14,18 +14,19 @@ class P2_EspecialidadSeeder extends Seeder
     public function run(): void
     {
         $especialidades = [
-            'Medicina general' => 'Atención primaria, control y derivación',
-            'Pediatría' => 'Atención de niños y adolescentes',
-            'Geriatría' => 'Atención del adulto mayor',
-            'Cardiología' => 'Enfermedades del corazón y presión arterial',
-            'Ginecología' => 'Salud de la mujer',
-            'Traumatología' => 'Lesiones de huesos, músculos y articulaciones',
-            'Reumatología' => 'Enfermedades de las articulaciones y autoinmunes',
-            'Oftalmología' => 'Salud visual',
-            'Otorrinolaringología' => 'Oído, nariz y garganta',
+            'Medicina general' => ['Atención primaria, control y derivación', 100],
+            'Pediatría' => ['Atención de niños y adolescentes', 150],
+            'Geriatría' => ['Atención del adulto mayor', 150],
+            'Cardiología' => ['Enfermedades del corazón y presión arterial', 200],
+            'Ginecología' => ['Salud de la mujer', 180],
+            'Traumatología' => ['Lesiones de huesos, músculos y articulaciones', 180],
+            'Reumatología' => ['Enfermedades de las articulaciones y autoinmunes', 200],
+            'Oftalmología' => ['Salud visual', 180],
+            'Otorrinolaringología' => ['Oído, nariz y garganta', 180],
         ];
-        foreach ($especialidades as $nombre => $descripcion) {
-            Especialidad::updateOrCreate(['nombre' => $nombre], ['descripcion' => $descripcion]);
+        // nombre => [descripción, precio de la ficha en Bs (CU21)]
+        foreach ($especialidades as $nombre => [$descripcion, $precio]) {
+            Especialidad::updateOrCreate(['nombre' => $nombre], ['descripcion' => $descripcion, 'precio_consulta' => $precio]);
         }
     }
 }

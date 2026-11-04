@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Capa de negocio – CU13 Registrar asistencia (RF10).
- *  - Llegada: PROGRAMADA → CONFIRMADA (solo el día de la cita).
+ *  - Llegada: PROGRAMADA → CONFIRMADA (solo el día de la cita y con la ficha pagada, RN14).
  *  - Inasistencia: PROGRAMADA → INASISTENCIA (solo cuando ya pasó la hora de inicio).
  */
 class AsistenciaService
@@ -29,6 +29,9 @@ class AsistenciaService
             }
 
             if ($tipo === 'LLEGADA') {
+                if (! $cita->pago()->exists()) {
+                    throw new ReglaNegocioException("La ficha {$cita->codigo} está pendiente de pago. Cobre la ficha antes de registrar la llegada (RN14).");
+                }
                 $nuevo = Cita::CONFIRMADA;
                 $accion = 'CONFIRMADA';
             } else {

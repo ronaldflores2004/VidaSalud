@@ -36,10 +36,12 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 | CU17 | Registrar tratamiento | P5 | II ✅ |
 | CU18 | Gestionar estudios médicos (varios por consulta, resultado y archivo) | P5 | II ✅ |
 | CU19 | Consultar historial y resultados (paciente) | P5 | II ✅ |
-| CU20 | Generar reportes (vista previa, PDF y Excel) | P6 | II ✅ |
+| CU20 | Generar reportes (vista previa, PDF y Excel; incluye pagos e ingresos) | P6 | II ✅ |
+| CU21 | Pagar ficha (en línea con PayPal o en recepción con efectivo, QR o tarjeta) | P7 | II ✅ |
+| CU22 | Gestionar notificaciones (bandeja y notificaciones push en el navegador) | P7 | II ✅ |
 
 ### Base de datos
-La base de datos está **diseñada completa desde el Ciclo I y normalizada en 3FN: 21 tablas**, incluidas las que se
+La base de datos está **diseñada completa desde el Ciclo I y normalizada en 3FN: 23 tablas** (21 desde el Ciclo I + `pagos` y `suscripciones_push` del paquete P7), incluidas las que se
 usan en la atención médica (historial clínico, consultas, tratamientos, estudios y sus catálogos), el historial de cada cita,
 feriados/bloqueos de agenda, recordatorios (notificaciones) y la bitácora de auditoría.
 
@@ -54,6 +56,29 @@ Normalización aplicada:
  El script completo para pgAdmin/psql está en
 `backend/database/sql/clinica_vida_salud.sql` y es equivalente a `php artisan migrate --seed`.
 El diagrama de clases de la base de datos está en StarUML: `docs/uml/clinica_vida_salud_bd.mdj` (imagen: `docs/uml/diagrama_clases_bd.png`).
+
+### Pagos (CU21) – PayPal en modo de pruebas
+- Al reservar desde la web, el paciente pasa a **Pagar ficha**. PayPal no acepta bolivianos: se cobra en USD con el
+  tipo de cambio de `configuracion.TIPO_CAMBIO_USD` (6.96). La orden y la captura se hacen **en el servidor**
+  (`PaypalService`, API Orders v2), así el monto no se puede alterar desde el navegador.
+- Si no paga en línea, la recepcionista cobra en **Asistencia de hoy** o en la ficha (efectivo, QR o tarjeta).
+  Sin pago no se registra la llegada ni se atiende la consulta (RN14). Una ficha pagada que se cancela queda
+  **por reembolsar** hasta que recepción registra la devolución (RN15).
+- **Configurar PayPal (sandbox):** cree una cuenta en https://developer.paypal.com → *Apps & Credentials* →
+  *Sandbox* → *Create App*, copie el *Client ID* y el *Secret* en `.env` (`PAYPAL_CLIENT_ID`, `PAYPAL_SECRET`)
+  y ejecute `php artisan config:clear`. Para pagar use la cuenta *Personal* de prueba que aparece en
+  *Sandbox accounts* (no se cobra dinero real). **Sin credenciales** el botón funciona como
+  *«pago de prueba simulado»* (marcado así en pantalla), útil para demostrar sin internet.
+
+### Notificaciones push (CU22)
+- Web Push estándar (VAPID + cifrado aes128gcm) implementado en PHP sin librerías (`app/Support/WebPush.php`).
+- Generar las claves una sola vez: `php artisan push:claves` → copiar las dos líneas en `.env` → `php artisan config:clear`.
+- El paciente o el médico entra a **Notificaciones → Activar notificaciones** y acepta el permiso del navegador.
+  Funciona en Chrome, Edge y Firefox con `http://localhost` / `127.0.0.1` o con HTTPS (no con una IP de la red sin HTTPS),
+  y necesita internet porque el navegador recibe el mensaje a través del servicio push de Google/Mozilla.
+- Avisos: nueva ficha y cancelación (al médico); recordatorio el día anterior, reprogramación, cancelación,
+  pago confirmado y resultado de estudio (al paciente). Los recordatorios los envía la tarea programada:
+  `php artisan schedule:work` (dejar abierta) o `php artisan notificaciones:enviar`.
 
 ### Cómo se evita la doble reserva (RN07)
 1. El formulario solo ofrece los bloques libres (`DisponibilidadService`).
@@ -94,18 +119,23 @@ clinica-vida-salud/
 │   │   │   ├── CU17_RegistrarTratamiento/         TratamientoController
 │   │   │   ├── CU18_GestionarEstudiosMedicos/     EstudioController
 │   │   │   └── CU19_ConsultarHistorialResultados/ MiHistorialController
-│   │   └── P6_Reportes/
-│   │       └── CU20_GenerarReportes/              ReporteController
+│   │   ├── P6_Reportes/
+│   │   │   └── CU20_GenerarReportes/              ReporteController
+│   │   └── P7_PagosNotificaciones/
+│   │       ├── CU21_PagarFicha/                   PagoController
+│   │       └── CU22_GestionarNotificaciones/      NotificacionController
 │   ├── app/Services/                              reglas de negocio, una carpeta por caso de uso
 │   │   ├── P4_GestionCitas/CU9 … CU13/            Disponibilidad, Cita, ReprogramarCita, CancelarCita, Asistencia
 │   │   ├── P5_AtencionMedica/CU15, CU18/          ConsultaService, EstudioService
-│   │   └── P6_Reportes/CU20_GenerarReportes/      ReporteService (PDF y Excel)
-│   ├── app/Support/                               PdfSimple y XlsxSimple (PDF y .xlsx sin librerías)
+│   │   ├── P6_Reportes/CU20_GenerarReportes/      ReporteService (PDF y Excel)
+│   │   └── P7_PagosNotificaciones/CU21, CU22/     PagoService, PaypalService, NotificacionService
+│   ├── app/Support/                               PdfSimple, XlsxSimple y WebPush (sin librerías)
 │   ├── app/Http/Middleware/P1_SeguridadAcceso/    VerificarRol (control de acceso por perfil)
-│   ├── app/Models/P1_SeguridadAcceso … P5_AtencionMedica/   entidades compartidas
+│   ├── app/Models/P1_SeguridadAcceso … P7_PagosNotificaciones/   entidades compartidas
 │   ├── app/Exceptions/                            ReglaNegocioException
 │   ├── database/migrations, seeders, sql/         Esquema PostgreSQL normalizado (3FN)
-│   └── routes/web.php                             Rutas ordenadas por paquete y caso de uso
+│   ├── routes/web.php                             Rutas ordenadas por paquete y caso de uso
+│   └── routes/console.php                         push:claves, notificaciones:enviar y tarea programada
 └── frontend/                                  FRONT END – HTML5 (Blade) / CSS3 / JavaScript
     ├── views/
     │   ├── compartido/                            layouts, partials y paneles de inicio
@@ -114,12 +144,17 @@ clinica-vida-salud/
     │   ├── P3_GestionPacientes/ CU7_GestionarPacientes · CU8_RegistrarsePaciente
     │   ├── P4_GestionCitas/     CU9 … CU14 (disponibilidad, reservar, reprogramar, cancelar, asistencia, agenda)
     │   ├── P5_AtencionMedica/   CU15 … CU19 (consulta, historial, tratamiento, estudios, mi historial)
-    │   └── P6_Reportes/         CU20_GenerarReportes
+    │   ├── P6_Reportes/         CU20_GenerarReportes
+    │   └── P7_PagosNotificaciones/  CU21_PagarFicha · CU22_GestionarNotificaciones
     └── assets/
         ├── css/compartido/app.css
         └── js/compartido/app.js
             js/P4_GestionCitas/CU9_ConsultarDisponibilidad/horarios-publicos.js
             js/P4_GestionCitas/CU10_ReservarFicha/cita.js
+            js/P4_GestionCitas/CU11_ReprogramarCita/reprogramar.js
+            js/P5_AtencionMedica/CU17_RegistrarTratamiento/tratamiento.js
+            js/P7_PagosNotificaciones/CU21_PagarFicha/pagar.js
+            js/P7_PagosNotificaciones/CU22_GestionarNotificaciones/push.js, sw.js (service worker)
 ```
 
 El backend lee las vistas desde `frontend/views` (`backend/config/view.php`) y entrega los archivos de
@@ -187,6 +222,7 @@ Están en `backend/database/seeders/P1_UsuarioSeeder.php`.
 | `P5_MedicamentoSeeder` | Catálogo de medicamentos |
 | `P5_CatalogoEstudioSeeder` | Catálogo de estudios |
 | `P5_AtencionMedicaSeeder` | Historial de atenciones de las últimas 3 semanas (consultas, tratamientos, estudios) |
+| `P7_PagoNotificacionSeeder` | Pagos de las fichas (CM-0002, CM-0003 y CM-0006 quedan pendientes de pago) y avisos al médico |
 
 ```bash
 php artisan migrate:fresh --seed                 # borra todo, crea las tablas y carga todos los seeders
@@ -196,7 +232,11 @@ Cada seeder se puede ejecutar solo: si necesita datos de otro (las citas necesit
 carga primero, y si se ejecuta dos veces no duplica registros. Los estados de cita y la duración de la ficha
 (15 min) los inserta la propia migración, porque son parte del diseño de la base de datos.
 
-## Pruebas mínimas cubiertas en el Ciclo I
+## Pruebas
+
+Recorridos automáticos con Playwright: Ciclo I, Ciclo II (27 pruebas) y P7 pagos y notificaciones (31 pruebas).
+
+### Pruebas mínimas cubiertas en el Ciclo I
 
 1. Registrar paciente nuevo → queda guardado.
 2. Paciente con CI duplicado → rechazado.

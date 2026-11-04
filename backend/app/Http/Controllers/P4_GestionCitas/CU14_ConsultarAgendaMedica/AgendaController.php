@@ -21,7 +21,7 @@ class AgendaController extends Controller
         abort_unless($medico, 403, 'Su cuenta no está vinculada a un médico.');
 
         $fecha = $request->fecha ? Carbon::parse($request->fecha) : today();
-        $citas = Cita::with('paciente', 'especialidad', 'consulta')
+        $citas = Cita::with('paciente', 'especialidad', 'consulta', 'pago')
             ->where('medico_id', $medico->id)
             ->whereDate('fecha', $fecha)
             ->orderBy('hora_inicio')->get();

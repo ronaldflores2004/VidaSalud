@@ -35,4 +35,21 @@ return [
         ],
     ],
 
+
+    // P7 – CU21 Pagar ficha: PayPal (modo sandbox = pruebas, sin dinero real).
+    // Sin client_id/secret el sistema usa un "pago de prueba simulado" claramente marcado.
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_SECRET'),
+        'modo' => env('PAYPAL_MODE', 'sandbox'),
+        'url' => env('PAYPAL_MODE', 'sandbox') === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com',
+    ],
+
+    // P7 – CU22 Notificaciones push (claves VAPID; se generan con: php artisan push:claves)
+    'webpush' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@vidasalud.bo'),
+    ],
+
 ];

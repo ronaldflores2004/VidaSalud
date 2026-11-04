@@ -23,7 +23,7 @@ class AsistenciaController extends Controller
 
     public function index(Request $request): View
     {
-        $citas = Cita::with('paciente', 'medico', 'especialidad')
+        $citas = Cita::with('paciente', 'medico', 'especialidad', 'pago')
             ->whereDate('fecha', today())
             ->when($request->medico, fn ($q, $m) => $q->where('medico_id', $m))
             ->orderBy('hora_inicio')->get();

@@ -8,7 +8,7 @@ use App\Models\P2_GestionMedica\Medico;
 use App\Models\P3_GestionPacientes\Paciente;
 use App\Models\P4_GestionCitas\Cita;
 use App\Models\P4_GestionCitas\HistorialCita;
-use App\Models\P4_GestionCitas\Notificacion;
+use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Models\P5_AtencionMedica\CatalogoEstudio;
 use App\Models\P5_AtencionMedica\Consulta;
 use App\Models\P5_AtencionMedica\Estudio;

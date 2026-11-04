@@ -46,6 +46,12 @@ class User extends Authenticatable
     }
 
     /** Verifica si el usuario tiene alguno de los roles indicados. */
+    /** CU22: navegadores donde el usuario activó las notificaciones push. */
+    public function suscripcionesPush(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\P7_PagosNotificaciones\SuscripcionPush::class);
+    }
+
     public function tieneRol(string ...$roles): bool
     {
         return in_array($this->rol?->nombre, $roles, true);

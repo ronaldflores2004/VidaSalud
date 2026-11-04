@@ -26,7 +26,7 @@
 </form>
 <div class="card">
     <table class="tabla">
-        <thead><tr><th>Código</th><th>Fecha</th><th>Horario</th><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>Estado</th></tr></thead>
+        <thead><tr><th>Código</th><th>Fecha</th><th>Horario</th><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Pago</th></tr></thead>
         <tbody>
         @forelse($citas as $c)
             <tr>
@@ -37,9 +37,10 @@
                 <td>{{ $c->medico->nombre_completo }}</td>
                 <td>{{ $c->especialidad->nombre }}</td>
                 <td>@include('compartido.partials.estado-cita', ['estado' => $c->estado])</td>
+                <td>@include('compartido.partials.estado-pago', ['cita' => $c])</td>
             </tr>
         @empty
-            <tr><td colspan="7" class="vacio">No hay citas con esos filtros.</td></tr>
+            <tr><td colspan="8" class="vacio">No hay citas con esos filtros.</td></tr>
         @endforelse
         </tbody>
     </table>

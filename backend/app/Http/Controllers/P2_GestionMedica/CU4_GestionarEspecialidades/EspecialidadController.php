@@ -65,6 +65,7 @@ class EspecialidadController extends Controller
                     }
                 }],
             'descripcion' => ['nullable', 'string', 'max:255'],
+            'precio_consulta' => ['required', 'numeric', 'min:0', 'max:9999'],  // CU21: costo de la ficha
         ], [
             'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
         ]);

@@ -28,7 +28,7 @@ class CitaController extends Controller
     {
         $usuario = $request->user();
 
-        $citas = Cita::with(['paciente', 'medico', 'especialidad'])
+        $citas = Cita::with(['paciente', 'medico', 'especialidad', 'pago'])
             // El médico solo ve su propia agenda y el paciente solo sus propias citas
             ->when($usuario->tieneRol('Medico'), fn ($q) => $q->where('medico_id', $usuario->medico?->id ?? 0))
             ->when($usuario->tieneRol('Paciente'), fn ($q) => $q->where('paciente_id', $usuario->paciente?->id ?? 0))
@@ -89,6 +89,11 @@ class CitaController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
+        // CU21: el paciente que reserva desde la web pasa directo a pagar su ficha
+        if ($request->user()->tieneRol('Paciente')) {
+            return redirect()->route('pagos.create', $cita)->with('ok', "Ficha {$cita->codigo} reservada. Pague ahora para asegurarla o hágalo en recepción antes de su consulta.");
+        }
+
         return redirect()->route('citas.show', $cita)->with('ok', "Cita {$cita->codigo} programada correctamente.");
     }
 
@@ -98,6 +103,6 @@ class CitaController extends Controller
         abort_if($usuario->tieneRol('Medico') && $cita->medico_id !== $usuario->medico?->id, 403);
         abort_if($usuario->tieneRol('Paciente') && $cita->paciente_id !== $usuario->paciente?->id, 403);
 
-        return view('P4_GestionCitas.CU10_ReservarFicha.show', ['cita' => $cita->load('paciente', 'medico', 'especialidad', 'registradoPor', 'historial.usuario')]);
+        return view('P4_GestionCitas.CU10_ReservarFicha.show', ['cita' => $cita->load('paciente', 'medico', 'especialidad', 'registradoPor', 'historial.usuario', 'pago')]);
     }
 }

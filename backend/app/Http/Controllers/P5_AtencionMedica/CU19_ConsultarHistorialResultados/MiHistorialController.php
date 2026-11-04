@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\P5_AtencionMedica\CU19_ConsultarHistorialResultados;
 
 use App\Http\Controllers\Controller;
-use App\Models\P4_GestionCitas\Notificacion;
+use App\Models\P7_PagosNotificaciones\Notificacion;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -23,10 +23,7 @@ class MiHistorialController extends Controller
             ->latest('fecha_hora')->get();
 
         // Avisos de sus citas y estudios; al verlos quedan como leídos
-        $avisos = Notificacion::where(function ($q) use ($paciente, $consultas) {
-            $q->whereHas('cita', fn ($c) => $c->where('paciente_id', $paciente->id))
-              ->orWhereIn('estudio_id', $consultas->flatMap->estudios->pluck('id'));
-        })->where('programada_para', '<=', now())->latest('programada_para')->limit(10)->get();
+        $avisos = Notificacion::delUsuario($request->user())->latest('programada_para')->limit(10)->get();
         Notificacion::whereIn('id', $avisos->whereNull('leida_en')->pluck('id'))->update(['leida_en' => now()]);
 
         return view('P5_AtencionMedica.CU19_ConsultarHistorialResultados.index', [

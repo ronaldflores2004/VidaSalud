@@ -61,6 +61,23 @@ class Cita extends Model
         return $this->hasOne(\App\Models\P5_AtencionMedica\Consulta::class);
     }
 
+    /** CU21: pago de la ficha (no hay fila mientras está pendiente de pago, RN14). */
+    public function pago(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\P7_PagosNotificaciones\Pago::class);
+    }
+
+    public function estaPagada(): bool
+    {
+        return $this->pago !== null;
+    }
+
+    /** Precio de la ficha según la especialidad de la cita (Bs). */
+    public function getPrecioAttribute(): float
+    {
+        return (float) $this->especialidad->precio_consulta;
+    }
+
     /** La cita todavía puede reprogramarse, cancelarse o atenderse. */
     public function estaVigente(): bool
     {

@@ -6,11 +6,12 @@ use App\Exceptions\ReglaNegocioException;
 use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P4_GestionCitas\Cita;
 use App\Models\P4_GestionCitas\HistorialCita;
-use App\Models\P4_GestionCitas\Notificacion;
+use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Models\P2_GestionMedica\Medico;
 use App\Models\P3_GestionPacientes\Paciente;
 use App\Models\P1_SeguridadAcceso\User;
 use App\Services\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadService; // CU10 incluye a CU9
+use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService; // CU22
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -81,11 +82,20 @@ class CitaService
                 ]);
 
                 // Recordatorio automático 24 horas antes, si el paciente acepta notificaciones
+                $avisos = app(NotificacionService::class);
                 if ($paciente->acepta_notificaciones) {
-                    Notificacion::create([
+                    $avisos->crear([
                         'cita_id' => $cita->id, 'tipo' => 'RECORDATORIO',
                         'mensaje' => "Recuerde su cita {$cita->codigo} el " . $fecha->format('d/m/Y') . " a las {$cita->hora_inicio} con {$medico->nombre_completo}.",
                         'programada_para' => Carbon::parse($fecha->toDateString() . ' ' . $cita->hora_inicio)->subDay(),
+                    ]);
+                }
+
+                // CU22: aviso push al médico de que tiene una nueva ficha
+                if ($medico->user_id) {
+                    $avisos->crear([
+                        'cita_id' => $cita->id, 'tipo' => 'NUEVA_CITA', 'para_medico' => true,
+                        'mensaje' => "Nueva ficha {$cita->codigo}: {$paciente->nombre_completo}, " . $fecha->format('d/m/Y') . ' a las ' . substr($cita->hora_inicio, 0, 5) . '.',
                     ]);
                 }
 
