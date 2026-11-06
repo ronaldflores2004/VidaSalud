@@ -4,7 +4,7 @@
 
 @section('contenido')
 <div class="cabecera"><div><h1>Asistencia de hoy</h1>
-    <p class="sub">{{ ucfirst(now()->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY')) }} · Marque la llegada del paciente o su inasistencia.</p></div></div>
+    <p class="sub">{{ ucfirst(now()->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY')) }} · Marque la llegada del paciente o su inasistencia (tolerancia de {{ \App\Support\PoliticaCitas::toleranciaMin() }} minutos, RN19).</p></div></div>
 <div class="kpis">
     <div class="kpi"><span>Programadas</span><strong>{{ $resumen['PROGRAMADA'] ?? 0 }}</strong></div>
     <div class="kpi"><span>Llegaron (confirmadas)</span><strong>{{ $resumen['CONFIRMADA'] ?? 0 }}</strong></div>
@@ -40,7 +40,7 @@
                         @if($c->pago)
                         <form method="POST" action="{{ route('asistencia.store', $c) }}">@csrf<input type="hidden" name="tipo" value="LLEGADA"><button class="btn btn-primario btn-sm">Llegó</button></form>
                         @endif
-                        @if($c->inicio->lte(now()))
+                        @if(\App\Support\PoliticaCitas::puedeMarcarInasistencia($c))
                         <form method="POST" action="{{ route('asistencia.store', $c) }}" data-confirmar="¿Registrar inasistencia de {{ $c->paciente->nombre_completo }}?">@csrf<input type="hidden" name="tipo" value="INASISTENCIA"><button class="btn btn-ghost btn-sm">No asistió</button></form>
                         @endif
                     @else

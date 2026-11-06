@@ -63,7 +63,7 @@
     @php($u = auth()->user())
     <a href="{{ $u->tieneRol('Medico') ? route('agenda', ['fecha' => $cita->fecha->toDateString()]) : route('citas.index') }}" class="btn btn-ghost">Volver</a>
     @if($cita->estaVigente() && $cita->inicio->gt(now()))
-        @if($u->tieneRol('Administrador', 'Recepcionista'))
+        @if($u->tieneRol('Administrador', 'Recepcionista', 'Paciente'))
             <a href="{{ route('citas.reprogramar', $cita) }}" class="btn btn-sec">Reprogramar (CU11)</a>
         @endif
         @if($u->tieneRol('Administrador', 'Recepcionista', 'Paciente'))

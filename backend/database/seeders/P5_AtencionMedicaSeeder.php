@@ -45,6 +45,7 @@ class P5_AtencionMedicaSeeder extends Seeder
         $pacientes = Paciente::orderBy('id')->pluck('id')->all();
         $medicamentos = Medicamento::pluck('id')->all();
         $estudios = CatalogoEstudio::pluck('id')->all();
+        $faltas = [];
 
         foreach (Medico::with('horarios', 'especialidades', 'usuario')->orderBy('id')->get() as $medico) {
             $especialidad = $medico->especialidades->first();
@@ -60,6 +61,10 @@ class P5_AtencionMedicaSeeder extends Seeder
                         $inicio = Carbon::parse($d->toDateString() . ' ' . $h->hora_inicio)->addMinutes($min);
                         $estado = ($r = mt_rand(1, 100)) <= 70 ? Cita::ATENDIDA : ($r <= 85 ? Cita::CANCELADA : Cita::INASISTENCIA);
                         $paciente = $pacientes[mt_rand(0, count($pacientes) - 1)];
+                        // Como máximo 1 inasistencia por paciente: así nadie queda bloqueado por RN20 en los datos de ejemplo
+                        if ($estado === Cita::INASISTENCIA && ($faltas[$paciente] = ($faltas[$paciente] ?? 0) + 1) > 1) {
+                            $estado = Cita::CANCELADA;
+                        }
                         $this->cita($medico, $especialidad->id, $paciente, $inicio, $estado, $admin, $medicamentos, $estudios, $especialidad->nombre);
                     }
                 }

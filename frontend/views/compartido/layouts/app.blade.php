@@ -53,6 +53,7 @@
                 <span class="menu-grupo">Administración</span>
                 <a href="{{ route('especialidades.index') }}" class="{{ request()->routeIs('especialidades.*') ? 'activo' : '' }}">Especialidades</a>
                 <a href="{{ route('usuarios.index') }}" class="{{ request()->routeIs('usuarios.*') ? 'activo' : '' }}">Usuarios</a>
+                <a href="{{ route('politica.index') }}" class="{{ request()->routeIs('politica.*') ? 'activo' : '' }}">Política de citas</a>
                 <a href="{{ route('reportes.index') }}" class="{{ request()->routeIs('reportes.*') ? 'activo' : '' }}">Reportes</a>
             @endif
         </nav>

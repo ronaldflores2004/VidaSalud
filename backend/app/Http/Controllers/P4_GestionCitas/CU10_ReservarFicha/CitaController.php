@@ -54,6 +54,9 @@ class CitaController extends Controller
 
         return view('P4_GestionCitas.CU10_ReservarFicha.create', [
             'esPaciente' => $usuario->tieneRol('Paciente'),
+            // RN20: con muchas inasistencias recientes el paciente reserva solo en recepción
+            'bloqueoWeb' => $usuario->tieneRol('Paciente') && $usuario->paciente && \App\Support\PoliticaCitas::reservaWebBloqueada($usuario->paciente)
+                ? CitaService::mensajeBloqueo() : null,
             'especialidades' => Especialidad::where('activo', true)->whereHas('medicos', fn ($m) => $m->where('activo', true))->orderBy('nombre')->get(),
             // Si vuelve con error de validación se conserva el paciente elegido
             'pacienteSeleccionado' => $usuario->tieneRol('Paciente')

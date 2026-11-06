@@ -7,12 +7,13 @@ use App\Models\P1_SeguridadAcceso\Bitacora;
 use App\Models\P1_SeguridadAcceso\User;
 use App\Models\P4_GestionCitas\Cita;
 use App\Models\P4_GestionCitas\HistorialCita;
+use App\Support\PoliticaCitas;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Capa de negocio – CU13 Registrar asistencia (RF10).
  *  - Llegada: PROGRAMADA → CONFIRMADA (solo el día de la cita y con la ficha pagada, RN14).
- *  - Inasistencia: PROGRAMADA → INASISTENCIA (solo cuando ya pasó la hora de inicio).
+ *  - Inasistencia: PROGRAMADA → INASISTENCIA (pasada la tolerancia de llegada, RN19).
  */
 class AsistenciaService
 {
@@ -35,8 +36,8 @@ class AsistenciaService
                 $nuevo = Cita::CONFIRMADA;
                 $accion = 'CONFIRMADA';
             } else {
-                if ($cita->inicio->gt(now())) {
-                    throw new ReglaNegocioException('Todavía no llegó la hora de la cita; no se puede marcar inasistencia.');
+                if (! PoliticaCitas::puedeMarcarInasistencia($cita)) {   // RN19: tolerancia de llegada
+                    throw new ReglaNegocioException('La inasistencia se marca ' . PoliticaCitas::toleranciaMin() . ' minutos después de la hora de la cita (tolerancia, RN19).');
                 }
                 $nuevo = Cita::INASISTENCIA;
                 $accion = 'INASISTENCIA';

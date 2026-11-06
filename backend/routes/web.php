@@ -17,6 +17,7 @@ use App\Http\Controllers\P1_SeguridadAcceso\CU3_GestionarUsuarios\UsuarioControl
 use App\Http\Controllers\P2_GestionMedica\CU4_GestionarEspecialidades\EspecialidadController;
 use App\Http\Controllers\P2_GestionMedica\CU5_GestionarMedicos\MedicoController;
 use App\Http\Controllers\P2_GestionMedica\CU6_GestionarHorarios\HorarioController;
+use App\Http\Controllers\P2_GestionMedica\CU6_GestionarHorarios\PoliticaCitasController;
 use App\Http\Controllers\P3_GestionPacientes\CU7_GestionarPacientes\PacienteController;
 use App\Http\Controllers\P3_GestionPacientes\CU8_RegistrarsePaciente\RegistroPacienteController;
 use App\Http\Controllers\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadController;
@@ -71,6 +72,10 @@ Route::middleware(['auth', 'rol:Administrador'])->group(function () {
     Route::post('medicos/{medico}/horarios', [HorarioController::class, 'store'])->name('horarios.store');
     Route::patch('medicos/{medico}/horarios/{horario}/estado', [HorarioController::class, 'cambiarEstado'])->name('horarios.estado');
     Route::delete('medicos/{medico}/horarios/{horario}', [HorarioController::class, 'destroy'])->name('horarios.destroy');
+
+    // CU6 Política de citas: duración de la ficha y plazos RN17 – RN20
+    Route::get('politica-citas', [PoliticaCitasController::class, 'index'])->name('politica.index');
+    Route::put('politica-citas', [PoliticaCitasController::class, 'update'])->name('politica.update');
 });
 
 Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function () {
@@ -112,10 +117,13 @@ Route::middleware(['auth', 'rol:Administrador,Recepcionista,Medico,Paciente'])->
     Route::get('citas/{cita}', [CitaController::class, 'show'])->name('citas.show')->whereNumber('cita');
 });
 
-Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function () {
-    // CU11 Reprogramar cita (incluye CU9: fichas libres del mismo médico)
+Route::middleware(['auth', 'rol:Administrador,Recepcionista,Paciente'])->group(function () {
+    // CU11 Reprogramar cita (incluye CU9: fichas libres del mismo médico); el paciente, solo las suyas (RN18)
     Route::get('citas/{cita}/reprogramar', [ReprogramarCitaController::class, 'edit'])->name('citas.reprogramar');
     Route::put('citas/{cita}/reprogramar', [ReprogramarCitaController::class, 'update'])->name('citas.reprogramar.guardar');
+});
+
+Route::middleware(['auth', 'rol:Administrador,Recepcionista'])->group(function () {
 
     // CU13 Registrar asistencia (citas del día)
     Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');

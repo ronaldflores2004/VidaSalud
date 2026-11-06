@@ -10,6 +10,7 @@ use App\Models\P4_GestionCitas\Cita;
 use App\Models\P4_GestionCitas\HistorialCita;
 use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Services\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadService; // CU11 incluye a CU9
+use App\Support\PoliticaCitas;
 use Carbon\Carbon;
 use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService;
 use Illuminate\Database\QueryException;
@@ -34,11 +35,12 @@ class ReprogramarCitaService
                 $medico = Medico::whereKey($cita->medico_id)->lockForUpdate()->firstOrFail();
                 $nueva = Carbon::parse($fecha);
 
-                if (! $cita->estaVigente()) {
-                    throw new ReglaNegocioException('Solo se pueden reprogramar citas programadas o confirmadas.');
+                // RN18: hasta N horas antes y como máximo M reprogramaciones
+                if ($motivoNo = PoliticaCitas::motivoNoReprogramable($cita)) {
+                    throw new ReglaNegocioException($motivoNo);
                 }
-                if ($cita->inicio->lte(now())) {
-                    throw new ReglaNegocioException('La cita ya comenzó o pasó; no se puede reprogramar.');
+                if ($usuario->tieneRol('Paciente') && $cita->paciente_id !== $usuario->paciente?->id) {
+                    throw new ReglaNegocioException('Solo puede reprogramar sus propias citas.');
                 }
                 if ($nueva->lt(Carbon::today())) {
                     throw new ReglaNegocioException('No se pueden elegir fechas pasadas (RN06).');

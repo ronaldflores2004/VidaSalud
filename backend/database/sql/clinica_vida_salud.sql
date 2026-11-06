@@ -448,7 +448,14 @@ CREATE TABLE cache_locks (
 
 INSERT INTO configuracion (clave, valor, descripcion, created_at, updated_at) VALUES
     ('DURACION_FICHA_MIN', '15', 'Minutos de atención por paciente (una ficha)', NOW(), NOW()),
-    ('TIPO_CAMBIO_USD', '6.96', 'Bolivianos por dólar para cobrar con PayPal (PayPal no acepta BOB).', NOW(), NOW());
+    ('TIPO_CAMBIO_USD', '6.96', 'Bolivianos por dólar para cobrar con PayPal (PayPal no acepta BOB).', NOW(), NOW()),
+    -- Política de citas (RN17 – RN20), editable por el administrador
+    ('CANCELACION_REEMBOLSO_HORAS', '24', 'RN17: horas de anticipación para cancelar con reembolso del pago', NOW(), NOW()),
+    ('REPROGRAMACION_MIN_HORAS', '2', 'RN18: horas de anticipación mínimas para reprogramar una cita', NOW(), NOW()),
+    ('REPROGRAMACION_MAXIMA', '2', 'RN18: cantidad máxima de reprogramaciones por cita', NOW(), NOW()),
+    ('TOLERANCIA_LLEGADA_MIN', '10', 'RN19: minutos de tolerancia antes de marcar la inasistencia', NOW(), NOW()),
+    ('INASISTENCIAS_LIMITE', '3', 'RN20: inasistencias que bloquean la reserva por la web', NOW(), NOW()),
+    ('INASISTENCIAS_DIAS', '90', 'RN20: días hacia atrás en que se cuentan las inasistencias', NOW(), NOW());
 
 INSERT INTO estados_cita (codigo, nombre, descripcion, ocupa_horario) VALUES
     ('PROGRAMADA',   'Programada',   'La cita está reservada',                   TRUE),

@@ -307,3 +307,6 @@ span.slot { text-align: center; cursor: default; }
 .chip-notif-resultado, .chip-notif-pago { background: var(--verde-claro); color: var(--verde-osc); }
 @media (max-width: 900px) { .pago-layout { grid-template-columns: 1fr; } }
 .pago-aviso { background: var(--ambar-claro); color: #78350f; border-radius: 10px; padding: .7rem .85rem; font-size: .88rem; margin-top: .8rem; line-height: 1.45; }
+/* Política de citas (RN17 – RN20) */
+.politica-fila { display: flex; align-items: center; gap: .6rem; }
+.politica-fila input { width: 7rem; }

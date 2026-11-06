@@ -21,4 +21,11 @@ class Configuracion extends Model
     {
         return Cache::remember("config.$clave", 300, fn () => static::find($clave)?->valor ?? $defecto);
     }
+
+    /** Cambia un parámetro y limpia su caché para que se use de inmediato. */
+    public static function guardar(string $clave, string $valor): void
+    {
+        static::whereKey($clave)->update(['valor' => $valor]);
+        Cache::forget("config.$clave");
+    }
 }

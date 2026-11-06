@@ -10,12 +10,14 @@ use App\Models\P4_GestionCitas\HistorialCita;
 use App\Models\P7_PagosNotificaciones\Notificacion;
 use App\Models\P7_PagosNotificaciones\Pago;
 use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService;
+use App\Support\PoliticaCitas;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Capa de negocio – CU12 Cancelar cita (RF09).
  * La cita no se borra: pasa a CANCELADA, libera la ficha (RN09) y guarda el motivo en su historial.
- * Si ya estaba pagada, el pago queda «por reembolsar» (RN15) y se devuelve en recepción.
+ * Si ya estaba pagada y se cancela con la anticipación de la política (24 h, RN17), el pago queda
+ * «por reembolsar» (RN15); si se cancela con menos anticipación, el pago no se devuelve.
  */
 class CancelarCitaService
 {
@@ -31,6 +33,7 @@ class CancelarCitaService
                 throw new ReglaNegocioException('La hora de la cita ya pasó; registre la asistencia o la inasistencia (CU13).');
             }
 
+            $reembolso = PoliticaCitas::cancelacionConReembolso($cita);
             $anterior = $cita->estado;
             $cita->update(['estado' => Cita::CANCELADA]);
 
@@ -55,8 +58,10 @@ class CancelarCitaService
                 ]);
             }
 
-            // RN15: una ficha pagada que se cancela queda por reembolsar
-            Pago::where('cita_id', $cita->id)->update(['estado' => Pago::POR_REEMBOLSAR]);
+            // RN15 / RN17: reembolso solo si se cancela con la anticipación de la política
+            if ($reembolso) {
+                Pago::where('cita_id', $cita->id)->update(['estado' => Pago::POR_REEMBOLSAR]);
+            }
 
             Bitacora::registrar('CANCELAR', 'P4_GestionCitas', $cita, "Cita {$cita->codigo} cancelada: {$motivo}", $usuario->id);
 

@@ -4,6 +4,7 @@
 
 @section('contenido')
 <div class="cabecera"><div><h1>{{ $esPaciente ? 'Reservar ficha médica' : 'Programar cita médica' }}</h1><p class="sub">Solo se muestran los horarios libres del médico. La disponibilidad se verifica otra vez al guardar.</p></div></div>
+@if($bloqueoWeb ?? null)<div class="alerta alerta-error">{{ $bloqueoWeb }}</div>@endif
 
 <form method="POST" action="{{ route('citas.store') }}" id="form-cita" class="cita-layout" data-validar novalidate
       data-url-medicos="{{ url('api/especialidades') }}" data-url-bloques="{{ url('api/medicos') }}" data-url-pacientes="{{ $esPaciente ? '' : route('api.pacientes') }}">

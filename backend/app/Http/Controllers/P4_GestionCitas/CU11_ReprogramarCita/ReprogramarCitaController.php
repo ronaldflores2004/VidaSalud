@@ -6,13 +6,15 @@ use App\Exceptions\ReglaNegocioException;
 use App\Http\Controllers\Controller;
 use App\Models\P4_GestionCitas\Cita;
 use App\Services\P4_GestionCitas\CU11_ReprogramarCita\ReprogramarCitaService;
+use App\Support\PoliticaCitas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * CU11 Reprogramar cita: la recepcionista cambia la fecha y la hora de una cita vigente
- * con el mismo médico. Incluye a CU9 para mostrar las fichas libres.
+ * CU11 Reprogramar cita: la recepcionista (o el propio paciente, solo sus citas) cambia la fecha
+ * y la hora de una cita vigente con el mismo médico. Incluye a CU9 para mostrar las fichas libres.
+ * RN18: hasta 2 horas antes y como máximo 2 reprogramaciones por cita (valores configurables).
  */
 class ReprogramarCitaController extends Controller
 {
@@ -20,17 +22,29 @@ class ReprogramarCitaController extends Controller
     {
     }
 
-    public function edit(Cita $cita): View|RedirectResponse
+    private function autorizar(Request $request, Cita $cita): void
     {
-        if (! $cita->estaVigente() || $cita->inicio->lte(now())) {
-            return redirect()->route('citas.show', $cita)->with('error', 'Esta cita ya no se puede reprogramar.');
+        $u = $request->user();
+        abort_if($u->tieneRol('Paciente') && $cita->paciente_id !== $u->paciente?->id, 403, 'Solo puede reprogramar sus propias citas.');
+    }
+
+    public function edit(Request $request, Cita $cita): View|RedirectResponse
+    {
+        $this->autorizar($request, $cita);
+        if ($motivo = PoliticaCitas::motivoNoReprogramable($cita)) {
+            return redirect()->route('citas.show', $cita)->with('error', $motivo);
         }
 
-        return view('P4_GestionCitas.CU11_ReprogramarCita.form', ['cita' => $cita->load('paciente', 'medico', 'especialidad')]);
+        return view('P4_GestionCitas.CU11_ReprogramarCita.form', [
+            'cita' => $cita->load('paciente', 'medico', 'especialidad'),
+            'restantes' => PoliticaCitas::maxReprogramaciones() - PoliticaCitas::reprogramaciones($cita),
+            'horasMin' => PoliticaCitas::horasReprogramar(),
+        ]);
     }
 
     public function update(Request $request, Cita $cita): RedirectResponse
     {
+        $this->autorizar($request, $cita);
         $datos = $request->validate([
             'fecha' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
             'hora_inicio' => ['required', 'date_format:H:i'],

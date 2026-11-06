@@ -12,6 +12,7 @@ use App\Models\P3_GestionPacientes\Paciente;
 use App\Models\P1_SeguridadAcceso\User;
 use App\Services\P4_GestionCitas\CU9_ConsultarDisponibilidad\DisponibilidadService; // CU10 incluye a CU9
 use App\Services\P7_PagosNotificaciones\CU22_GestionarNotificaciones\NotificacionService; // CU22
+use App\Support\PoliticaCitas;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,12 @@ class CitaService
     {
     }
 
+    public static function mensajeBloqueo(): string
+    {
+        return 'Tiene ' . PoliticaCitas::limiteInasistencias() . ' o más inasistencias en los últimos ' . PoliticaCitas::diasInasistencias()
+            . ' días. Por la política de la clínica debe reservar su ficha en recepción (RN20).';
+    }
+
     /**
      * @param  array{paciente_id:int, especialidad_id:int, medico_id:int, fecha:string, hora_inicio:string, motivo:?string}  $datos
      */
@@ -43,6 +50,10 @@ class CitaService
 
                 if (! $paciente->activo) {
                     throw new ReglaNegocioException('El paciente está inactivo y no puede recibir nuevas citas.');
+                }
+                // RN20: con muchas inasistencias recientes, la reserva se hace solo en recepción
+                if ($usuario->tieneRol('Paciente') && PoliticaCitas::reservaWebBloqueada($paciente)) {
+                    throw new ReglaNegocioException(self::mensajeBloqueo());
                 }
                 if (! $medico->activo) {
                     throw new ReglaNegocioException('El médico seleccionado está inactivo (RN04).');

@@ -6,6 +6,7 @@ use App\Exceptions\ReglaNegocioException;
 use App\Http\Controllers\Controller;
 use App\Models\P4_GestionCitas\Cita;
 use App\Services\P4_GestionCitas\CU12_CancelarCita\CancelarCitaService;
+use App\Support\PoliticaCitas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -33,7 +34,11 @@ class CancelarCitaController extends Controller
             return redirect()->route('citas.show', $cita)->with('error', 'Esta cita ya no se puede cancelar.');
         }
 
-        return view('P4_GestionCitas.CU12_CancelarCita.form', ['cita' => $cita->load('paciente', 'medico', 'especialidad')]);
+        return view('P4_GestionCitas.CU12_CancelarCita.form', [
+            'cita' => $cita->load('paciente', 'medico', 'especialidad', 'pago'),
+            'conReembolso' => PoliticaCitas::cancelacionConReembolso($cita),   // RN17
+            'horasReembolso' => PoliticaCitas::horasReembolso(),
+        ]);
     }
 
     public function store(Request $request, Cita $cita): RedirectResponse
@@ -47,6 +52,13 @@ class CancelarCitaController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('citas.show', $cita)->with('ok', "Cita {$cita->codigo} cancelada. La ficha quedó libre.");
+        $cita->refresh()->load('pago');
+        $extra = match (true) {
+            ! $cita->pago => '',
+            $cita->pago->estado === 'POR_REEMBOLSAR' => ' El pago se devolverá en recepción.',
+            default => ' Por cancelar con menos de ' . PoliticaCitas::horasReembolso() . ' horas de anticipación, el pago no se reembolsa (RN17).',
+        };
+
+        return redirect()->route('citas.show', $cita)->with('ok', "Cita {$cita->codigo} cancelada. La ficha quedó libre.{$extra}");
     }
 }

@@ -1,10 +1,11 @@
 @extends('compartido.layouts.app')
 @section('titulo', 'Reprogramar ' . $cita->codigo)
-@section('migas', 'Atención / Citas / ' . $cita->codigo . ' / Reprogramar')
+@section('migas', (auth()->user()->tieneRol('Paciente') ? 'Mis citas / ' : 'Atención / Citas / ') . $cita->codigo . ' / Reprogramar')
 
 @section('contenido')
 <div class="cabecera"><div><h1>Reprogramar cita {{ $cita->codigo }}</h1>
-    <p class="sub">Se mantiene el mismo médico y especialidad. Solo se muestran las fichas libres.</p></div>
+    <p class="sub">Se mantiene el mismo médico y especialidad. Solo se muestran las fichas libres.
+        Política: se reprograma hasta {{ $horasMin }} horas antes; a esta cita le quedan <strong>{{ $restantes }}</strong> reprogramación(es) (RN18).</p></div>
     @include('compartido.partials.estado-cita', ['estado' => $cita->estado])
 </div>
 

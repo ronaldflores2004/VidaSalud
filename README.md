@@ -27,7 +27,7 @@ Aplicación web para registrar pacientes, médicos, especialidades y horarios, y
 | CU8 | Registrarse como paciente desde la web | P3 | I ✅ |
 | CU9 | Consultar disponibilidad de horarios (portal público) | P4 | I ✅ |
 | CU10 | Reservar ficha médica | P4 | I ✅ |
-| CU11 | Reprogramar cita (mismo médico, sin cruces) | P4 | II ✅ |
+| CU11 | Reprogramar cita (mismo médico, sin cruces; recepción o el propio paciente) | P4 | II ✅ |
 | CU12 | Cancelar cita (libera la ficha, guarda el motivo) | P4 | II ✅ |
 | CU13 | Registrar asistencia (llegada / inasistencia) | P4 | II ✅ |
 | CU14 | Consultar agenda médica (solo sus pacientes) | P4 | II ✅ |
@@ -79,6 +79,16 @@ El diagrama de clases de la base de datos está en StarUML: `docs/uml/clinica_vi
 - Avisos: nueva ficha y cancelación (al médico); recordatorio el día anterior, reprogramación, cancelación,
   pago confirmado y resultado de estudio (al paciente). Los recordatorios los envía la tarea programada:
   `php artisan schedule:work` (dejar abierta) o `php artisan notificaciones:enviar`.
+
+### Política de citas (RN17 – RN20)
+Valores por defecto (el administrador los cambia en **Política de citas**, se guardan en la tabla `configuracion`):
+
+| Regla | Valor | Qué pasa |
+|-------|-------|----------|
+| RN17 Cancelar con reembolso | hasta 24 h antes | Con menos de 24 h se puede cancelar, pero el pago no se devuelve |
+| RN18 Reprogramar | hasta 2 h antes, máximo 2 veces | El pago se mantiene; recepción o el propio paciente desde la web |
+| RN19 Tolerancia de llegada | 10 min | Recién entonces se puede marcar la inasistencia; el pago no se reembolsa |
+| RN20 Inasistencias | 3 en 90 días | El paciente ya no reserva por la web: debe hacerlo en recepción |
 
 ### Cómo se evita la doble reserva (RN07)
 1. El formulario solo ofrece los bloques libres (`DisponibilidadService`).
@@ -234,7 +244,7 @@ carga primero, y si se ejecuta dos veces no duplica registros. Los estados de ci
 
 ## Pruebas
 
-Recorridos automáticos con Playwright: Ciclo I, Ciclo II (27 pruebas) y P7 pagos y notificaciones (31 pruebas).
+Recorridos automáticos con Playwright: Ciclo I, Ciclo II (27 pruebas), P7 pagos y notificaciones (31 pruebas) y política de citas RN17–RN20 (22 pruebas).
 
 ### Pruebas mínimas cubiertas en el Ciclo I
 
