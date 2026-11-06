@@ -54,6 +54,7 @@ rectangle "Ciclo II" {
   usecase "CU10. Reservar ficha médica" as CU10
 }
 REC -- CU11
+PAC -- CU11
 REC -- CU12
 PAC -- CU12
 REC -- CU13

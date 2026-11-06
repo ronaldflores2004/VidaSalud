@@ -35,8 +35,10 @@ skinparam roundcorner 8
 left to right direction
 rectangle "CU11. Reprogramar cita" {
 actor "Recepcionista" as REC
+actor "Paciente" as PAC
 usecase "CU11. Reprogramar cita" as U
 REC -- U
+PAC -- U
 usecase "CU9. Consultar disponibilidad de horarios" as I1
 U ..> I1 : <<include>>
 }

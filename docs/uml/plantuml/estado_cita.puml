@@ -43,17 +43,17 @@ state "Atendida" as A
 state "Cancelada" as X
 state "Inasistencia" as I
 [*] --> P : CU10 reservar ficha
-P --> P : CU11 reprogramar\n(nueva fecha y hora)
+P --> P : CU11 reprogramar\n(hasta 2 h antes, máx. 2 veces)
 C --> P : CU11 reprogramar
 P --> C : CU13 registrar llegada
 P --> X : CU12 cancelar\n(con motivo)
 C --> X : CU12 cancelar
-P --> I : CU13 no asistió\n(pasó la hora)
+P --> I : CU13 no asistió\n(pasados 10 min de tolerancia)
 P --> A : CU15 registrar consulta
 C --> A : CU15 registrar consulta
 A --> [*]
 X --> [*]
 I --> [*]
-note right of X : libera la ficha (RN09);\nla cita no se borra
+note right of X : libera la ficha (RN09);\nreembolso solo con 24 h o más (RN17)
 
 @enduml

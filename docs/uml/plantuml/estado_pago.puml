@@ -47,7 +47,8 @@ P --> O : CU21 pagar con PayPal
 O --> P : el paciente cancela /\npago no completado
 O --> G : captura COMPLETED\n(monto verificado)
 P --> G : CU21 cobro en recepción\n(efectivo, QR, tarjeta)
-G --> R : CU12 cancelar la cita (RN15)
+G --> R : CU12 cancelar con 24 h\no más de anticipación (RN17)
+G --> G : CU11 reprogramar (se mantiene) /\nCU12 cancelar tarde (sin reembolso)
 R --> E : CU21 registrar reembolso
 G --> [*] : CU13 llegada / CU15 atención
 E --> [*]

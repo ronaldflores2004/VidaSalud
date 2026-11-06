@@ -45,5 +45,7 @@ usecase "Activar/desactivar horario" as S2
 U ..> S2 : <<include>>
 usecase "Quitar horario" as S3
 U ..> S3 : <<include>>
+usecase "Configurar política de citas" as S4
+U ..> S4 : <<include>>
 }
 @enduml

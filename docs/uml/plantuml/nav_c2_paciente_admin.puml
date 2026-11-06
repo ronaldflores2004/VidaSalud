@@ -44,6 +44,8 @@ rectangle "Archivo del resultado\n(PDF / imagen)" as PF
 rectangle "Mis citas" as PC
 rectangle "Detalle de la cita" as PCD
 rectangle "Cancelar cita\nCU12" as PX
+rectangle "Reprogramar cita\nCU11 (RN18)" as PR
+rectangle "Política de citas\nCU6 (RN17–RN20)" as AO
 rectangle "Panel del administrador" as AD
 rectangle "Reportes\nCU20 (vista previa)" as AR
 rectangle "Reporte .pdf" as AP
@@ -54,6 +56,10 @@ PD --> PC : Mis citas
 PC --> PCD : ver cita
 PCD --> PX : Cancelar cita
 PX --> PCD : Confirmar
+PCD --> PR : Reprogramar
+PR --> PCD : Guardar
+AD --> AO : Política de citas
+AO --> AO : Guardar plazos
 AD --> AR : Reportes
 AR --> AR : Ver reporte (filtros)
 AR --> AP : Exportar PDF
