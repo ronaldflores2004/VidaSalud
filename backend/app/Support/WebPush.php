@@ -38,8 +38,8 @@ class WebPush
     /** Genera un par de claves VAPID: pública en base64url (para el navegador) y privada PEM en base64 (.env). */
     public static function generarClaves(): array
     {
-        $clave = openssl_pkey_new(['curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC]);
-        openssl_pkey_export($clave, $pem);
+        $clave = self::nuevaClaveEc();
+        openssl_pkey_export($clave, $pem, null, self::opcionesOpenssl());
 
         return ['public' => self::b64u(self::puntoPublico($clave)), 'private' => base64_encode($pem)];
     }
@@ -78,7 +78,7 @@ class WebPush
     public function cifrar(string $mensaje, string $clavePublicaNavegador, string $secretoAuth): string
     {
         // 1. Clave temporal del servidor y secreto compartido ECDH con el navegador
-        $local = openssl_pkey_new(['curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC]);
+        $local = self::nuevaClaveEc();
         $localPublica = self::puntoPublico($local);
         $pemNavegador = "-----BEGIN PUBLIC KEY-----\n"
             . chunk_split(base64_encode(hex2bin(self::SPKI_P256) . $clavePublicaNavegador), 64, "\n") . "-----END PUBLIC KEY-----\n";
@@ -98,6 +98,34 @@ class WebPush
 
         // Cabecera: sal (16) | tamaño de registro (4) | largo de la clave (1) | clave pública temporal (65)
         return $sal . pack('N', 4096) . chr(strlen($localPublica)) . $localPublica . $cifrado . $tag;
+    }
+
+    /**
+     * Nueva clave P-256. En Windows (XAMPP) OpenSSL a veces no encuentra su openssl.cnf y falla:
+     * entonces se le indica el archivo que trae PHP (extras/ssl/openssl.cnf).
+     */
+    private static function nuevaClaveEc()
+    {
+        $clave = openssl_pkey_new(['curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC] + self::opcionesOpenssl());
+        if ($clave === false) {
+            throw new RuntimeException('OpenSSL no pudo crear la clave. En Windows defina OPENSSL_CONF con la ruta de openssl.cnf (por ejemplo C:\\xampp\\php\\extras\\ssl\\openssl.cnf).');
+        }
+
+        return $clave;
+    }
+
+    private static function opcionesOpenssl(): array
+    {
+        if (PHP_OS_FAMILY !== 'Windows' || getenv('OPENSSL_CONF')) {
+            return [];
+        }
+        foreach ([dirname(PHP_BINARY) . '/extras/ssl/openssl.cnf', 'C:/xampp/php/extras/ssl/openssl.cnf', 'C:/xampp/apache/conf/openssl.cnf'] as $cnf) {
+            if (is_file($cnf)) {
+                return ['config' => $cnf];
+            }
+        }
+
+        return [];
     }
 
     /** Punto público sin comprimir (0x04 | X | Y) de una clave P-256. */
