@@ -207,6 +207,23 @@ Abrir http://127.0.0.1:8000 (portal público) o http://127.0.0.1:8000/login
 > En XAMPP habilite `extension=pdo_pgsql` y `extension=pgsql` en `php.ini`.
 > Las migraciones crean las extensiones `btree_gist` y `unaccent` (vienen con PostgreSQL); el usuario de la BD necesita permiso para crearlas.
 
+## Despliegue en Render (gratis, con HTTPS)
+
+El repositorio trae `Dockerfile`, `render.yaml` y la carpeta `deploy/` (Apache, PHP y arranque).
+Al iniciar, el contenedor ejecuta las migraciones, carga los datos de demostración si la base está
+vacía y deja corriendo la tarea programada de los recordatorios.
+
+1. Crear una cuenta en https://render.com (con la cuenta de GitHub).
+2. **New → Blueprint** → elegir este repositorio → Render lee `render.yaml` y crea la base
+   PostgreSQL `clinica-db` y el servicio web `clinica-vida-salud`.
+3. Completar las variables que pide: `APP_URL` (`https://<nombre>.onrender.com`), `PAYPAL_CLIENT_ID`,
+   `PAYPAL_SECRET`, `VAPID_PUBLIC_KEY` y `VAPID_PRIVATE_KEY` (generadas con `php artisan push:claves`).
+4. Esperar el primer despliegue (5–10 min) y abrir la URL.
+
+Límites del plan gratuito: el servicio se duerme tras 15 min sin visitas (tarda ~1 min en despertar),
+la base gratuita vence a los 30 días y los archivos subidos (resultados de estudios) se pierden al
+reiniciar el servicio.
+
 ### Usuarios de prueba (contraseña `Clinica2026`)
 
 Están en `backend/database/seeders/P1_UsuarioSeeder.php`.

@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // En producción la app está detrás del proxy HTTPS de la plataforma (Render, Railway…):
+        // se confía en sus cabeceras para generar enlaces https y cookies seguras.
+        $middleware->trustProxies(at: '*');
         // Control de acceso por rol (RN12)
         $middleware->alias(['rol' => \App\Http\Middleware\P1_SeguridadAcceso\VerificarRol::class]);
         // Sin sesión válida se redirige al login (prueba 9)

@@ -1,0 +1,57 @@
+# Despliegue en Render (Blueprint): crea la base PostgreSQL y el servicio web con Docker.
+# Render → New → Blueprint → elegir este repositorio.
+databases:
+  - name: clinica-db
+    plan: free
+    databaseName: clinica_vida_salud
+    user: clinica
+
+services:
+  - type: web
+    name: clinica-vida-salud
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: "Clínica Vida Salud"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false            # https://<nombre>.onrender.com
+      - key: APP_TIMEZONE
+        value: America/La_Paz
+      - key: APP_LOCALE
+        value: es
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: clinica-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: PAYPAL_MODE
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_SECRET
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:admin@vidasalud.bo

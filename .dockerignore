@@ -1,0 +1,9 @@
+.git
+backend/vendor
+backend/.env
+backend/storage/logs/*
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/app/private/*
+docs
