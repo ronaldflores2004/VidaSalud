@@ -37,6 +37,8 @@ rectangle "CU18. Gestionar estudios médicos" {
 actor "Médico" as MED
 usecase "CU18. Gestionar estudios médicos" as U
 MED -- U
+usecase "CU15. Registrar consulta médica" as Y1
+U ..> Y1 : <<extend>>
 usecase "Solicitar estudio" as S0
 U ..> S0 : <<include>>
 usecase "Registrar resultado" as S1

@@ -1,0 +1,51 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+left to right direction
+title CU22 – Gestionar notificaciones
+actor "Paciente" as A
+boundary "Pantalla Notificaciones" as B
+control "Control Notificaciones" as C
+entity "Notificación" as E0
+entity "Suscripción Push" as E1
+entity "Servicio Push" as E2
+A --> B : 1: abrir notificaciones\n4: activar notificaciones
+B --> C : 2: bandeja(usuario)\n5: suscribir(endpoint, claves)
+C --> E0 : 3: obtener avisos del usuario\n7: aviso nuevo (evento)
+C --> E1 : 6: guardar suscripción
+C --> E2 : 8: enviar push cifrado (VAPID)
+E2 --> A : 9: mostrar notificación
+B <-- C : 10: resultado
+A <-- B : 11: mostrar estado y avisos
+@enduml

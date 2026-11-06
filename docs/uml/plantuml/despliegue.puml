@@ -49,6 +49,7 @@ node "Servidor de Aplicaciones" <<device>> as SA {
     component "Controladores HTTP" as CT
     component "Servicios de negocio" as SV
     component "Modelos Eloquent (PDO pdo_pgsql)" as MD
+    component "Tarea programada\n(schedule:work)" as SCH
   }
 }
 node "Servidor de Base de Datos" <<device>> as SBD {
@@ -59,10 +60,18 @@ node "Servidor de Base de Datos" <<device>> as SBD {
 node "GitHub" <<cloud>> as GH {
   artifact "Repositorio del código fuente" as REPO
 }
+node "PayPal (sandbox / live)" <<cloud>> as PP {
+  artifact "API REST Orders v2" as PPA
+}
+node "Servicio push del navegador\n(Google FCM, Mozilla, Apple)" <<cloud>> as WP
 PC -- SA : HTTP/HTTPS\nTCP 80/443 (LAN)
 MOV -- SA : Internet\nHTTPS 443
 SA -- SBD : TCP/IP 5432\n(PDO pgsql)
 SA ..> GH : git (despliegue)
+SA -- PP : HTTPS 443\n(OAuth2 + JSON)
+SA -- WP : HTTPS 443\nWeb Push (VAPID, aes128gcm)
+WP -- MOV : notificación push
+NAV2 ..> PP : botón PayPal (SDK JS)
 CT --> SV
 SV --> MD
 

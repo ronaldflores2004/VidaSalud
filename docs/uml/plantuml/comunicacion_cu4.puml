@@ -38,7 +38,7 @@ actor "Administrador" as A
 boundary "Pantalla Especialidades" as B
 control "Control Especialidades" as C
 entity "Especialidad" as E0
-A --> B : 1: ingresar nombre y descripción
+A --> B : 1: ingresar nombre, descripción y precio
 B --> C : 2: registrar(datos)
 C --> C : 3: normalizar nombre
 C --> E0 : 4: verificar nombre único\n5: guardar

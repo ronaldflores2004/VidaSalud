@@ -27,6 +27,10 @@ entity CATALOGO_ESTUDIO {
 }
 entity NOTIFICACION {
 }
+entity PAGO {
+}
+entity SUSCRIPCION_PUSH {
+}
 relationship TIENE_ROL {
 }
 relationship ATIENDE_ESP {
@@ -50,6 +54,10 @@ relationship SOLICITA {
 relationship CLASIFICA {
 }
 relationship AVISA {
+}
+relationship SE_PAGA {
+}
+relationship ACTIVA {
 }
 ROL -1- TIENE_ROL
 TIENE_ROL -N- USUARIO
@@ -75,4 +83,8 @@ ESTUDIO -N- CLASIFICA
 CLASIFICA -1- CATALOGO_ESTUDIO
 CITA -1- AVISA
 AVISA -N- NOTIFICACION
+CITA -1- SE_PAGA
+SE_PAGA -1- PAGO
+USUARIO -1- ACTIVA
+ACTIVA -N- SUSCRIPCION_PUSH
 @endchen

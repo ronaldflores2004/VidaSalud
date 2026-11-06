@@ -54,8 +54,10 @@ rectangle "Sistema de Gestión de Citas Médicas – Clínica Vida Salud" {
   usecase "CU11. Reprogramar cita" as CU11
   usecase "CU12. Cancelar cita" as CU12
   usecase "CU13. Registrar asistencia" as CU13
+  usecase "CU21. Pagar ficha" as CU21
   usecase "CU8. Registrarse como paciente" as CU8
   usecase "CU19. Consultar historial y resultados" as CU19
+  usecase "CU22. Gestionar notificaciones" as CU22
   usecase "CU14. Consultar agenda médica" as CU14
   usecase "CU15. Registrar consulta médica" as CU15
   usecase "CU16. Gestionar historial clínico" as CU16
@@ -90,9 +92,14 @@ MED -- CU17
 MED -- CU18
 PAC -- CU19
 ADM -- CU20
+PAC -- CU21
+REC -- CU21
+PAC -- CU22
+MED -- CU22
 CU10 ..> CU9 : <<include>>
 CU11 ..> CU9 : <<include>>
 CU15 ..> CU16 : <<include>>
 CU17 ..> CU15 : <<extend>>
 CU18 ..> CU15 : <<extend>>
+CU21 ..> CU10 : <<extend>>
 @enduml

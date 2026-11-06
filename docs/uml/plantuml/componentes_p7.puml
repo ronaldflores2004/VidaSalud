@@ -1,0 +1,76 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam componentStyle uml2
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #1F4E79
+skinparam PackageBackgroundColor #FBFBFB
+skinparam ArrowColor #555555
+skinparam defaultFontSize 11
+
+skinparam ranksep 70
+skinparam nodesep 25
+top to bottom direction
+rectangle "Capa de presentación (frontend/views)" as LF #F7FAFD {
+  component "«form»\nCU21 FPagarFicha\n(pagar.blade.php\n+ pagar.js)" as F_CU21_0 #E3EEFB
+  component "«form»\nCU21 FPagos\n(index, _cobrar.blade.php)" as F_CU21_1 #E3EEFB
+  component "«form»\nCU22 FNotificaciones\n(index.blade.php\n+ push.js, sw.js)" as F_CU22_0 #E3EEFB
+}
+rectangle "Capa de control y negocio (backend/app)" as LC #F7FAF8 {
+  component "«class»\nGPagarFicha\n(PagoController.php,\nPagoService.php,\nPaypalService.php)" as C_CU21_0 #E6F5EC
+  component "«class»\nGGestionarNotificaciones\n(NotificacionController.php,\nNotificacionService.php,\nWebPush.php)" as C_CU22_0 #E6F5EC
+}
+rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
+  component "«table»\npagos" as T_pagos #FCE8E8
+  component "«table»\ncitas" as T_citas #FCE8E8
+  component "«table»\nespecialidades" as T_especialidades #FCE8E8
+  component "«table»\nconfiguracion" as T_configuracion #FCE8E8
+  component "«table»\nnotificaciones" as T_notificaciones #FCE8E8
+  component "«table»\nsuscripciones_push" as T_suscripciones_push #FCE8E8
+  component "«table»\nusers" as T_users #FCE8E8
+}
+F_CU21_0 -[hidden]right- F_CU21_1
+F_CU21_1 -[hidden]right- F_CU22_0
+F_CU21_0 ..> C_CU21_0
+F_CU21_1 ..> C_CU21_0
+C_CU21_0 ..> T_pagos
+C_CU21_0 ..> T_citas
+C_CU21_0 ..> T_especialidades
+C_CU21_0 ..> T_configuracion
+C_CU21_0 ..> T_notificaciones
+F_CU22_0 ..> C_CU22_0
+C_CU22_0 ..> T_notificaciones
+C_CU22_0 ..> T_suscripciones_push
+C_CU22_0 ..> T_users
+@enduml

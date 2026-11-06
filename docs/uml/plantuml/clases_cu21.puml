@@ -1,0 +1,107 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Paciente" as A
+class "Pantalla Pagar Ficha" as B <<boundary>> {
+  metodo: PAYPAL | EFECTIVO | QR | TARJETA
+  referencia: string
+  orderID: string
+}
+class "Control Pagos" as C <<control>> {
+  + mostrarPago(cita)
+  + crearOrden(cita)
+  + capturar(cita, orden)
+  + cobrar(cita, metodo, referencia)
+  + reembolsar(pago)
+  + listarPagos(filtros)
+}
+class "Cita" as E0 <<entity>> {
+  id: int
+  codigo: string
+  fecha: date
+  hora_inicio: time
+  hora_fin: time
+  modalidad: string
+  motivo: string
+  estado: EstadoCita
+  --
+  + siguienteCodigo(): string
+}
+class "Pago" as E1 <<entity>> {
+  id: int
+  codigo: string
+  monto: decimal
+  monto_usd: decimal
+  metodo: string
+  estado: string
+  referencia: string
+  pagado_en: datetime
+  --
+  + siguienteCodigo(): string
+  + metodoTexto(): string
+}
+class "PayPal" as E2 <<entity>> {
+  (servicio externo)
+  --
+  + crearOrden(monto)
+  + capturar(orden)
+}
+class "Notificación" as E3 <<entity>> {
+  id: int
+  tipo: string
+  canal: string
+  mensaje: string
+  para_medico: bool
+  programada_para: datetime
+  enviada_en: datetime
+  leida_en: datetime
+  --
+  + destinatario(): Usuario
+  + url(): string
+  + marcarLeida()
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+C --> E3
+E0 "1" -- "0..1" E1 : se paga con
+E1 "0..*" -- "1" E2 : procesa
+E0 "0..1" -- "0..*" E3 : genera
+@enduml

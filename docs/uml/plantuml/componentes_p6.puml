@@ -55,7 +55,7 @@ rectangle "Capa de datos (PostgreSQL)" as LD #FDF8F8 {
   component "«table»\npacientes" as T_pacientes #FCE8E8
   component "«table»\nmedicos" as T_medicos #FCE8E8
   component "«table»\nespecialidades" as T_especialidades #FCE8E8
-  component "«table»\nbitacora" as T_bitacora #FCE8E8
+  component "«table»\npagos" as T_pagos #FCE8E8
 }
 F_CU20_0 -[hidden]right- F_CU20_1
 F_CU20_1 -[hidden]right- F_CU20_2
@@ -66,5 +66,5 @@ C_CU20_0 ..> T_citas
 C_CU20_0 ..> T_pacientes
 C_CU20_0 ..> T_medicos
 C_CU20_0 ..> T_especialidades
-C_CU20_0 ..> T_bitacora
+C_CU20_0 ..> T_pagos
 @enduml

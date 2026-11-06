@@ -48,25 +48,29 @@ folder "P3. Gestión de Pacientes" as P3
 folder "P4. Gestión de Citas" as P4
 folder "P5. Atención Médica e\nHistorial Clínico" as P5
 folder "P6. Reportes" as P6
+folder "P7. Pagos y\nNotificaciones" as P7
 component "«file»\n.env\n(configuración)" as ENV #EEEEEE
-component "«file»\nroutes/web.php\n(rutas P1…P6, CU1…CU20)" as RT #EEEEEE
+component "«file»\nroutes/web.php\n(rutas P1…P7, CU1…CU22)" as RT #EEEEEE
 component "«file»\nlayouts/app.blade.php\n(plantilla y menú por rol)" as LY #EEEEEE
-component "«file»\napp.css · app.js" as CSS #EEEEEE
+component "«file»\napp.css · app.js · sw.js\n(service worker push)" as CSS #EEEEEE
 component "«library»\nLaravel 12\n(framework PHP)" as LV #E3EEFB
 component "«library»\nPDO pdo_pgsql" as PDO #E3EEFB
+component "«library»\nPayPal JS SDK\n(botón de pago)" as PPS #E3EEFB
+component "«file»\nWebPush.php\n(VAPID + aes128gcm)" as WPF #EEEEEE
 package "B.D." as BD {
   component "«engine»\nPostgreSQL 16" as PG #E3EEFB
   component "«file»\nclinica_vida_salud.sql\n(script)" as SQL #EEEEEE
   component "«table»\nusers · roles · bitacora" as T1 #FCE8E8
   component "«table»\nmedicos · especialidades\nespecialidad_medico · horarios" as T2 #FCE8E8
   component "«table»\npacientes ·\ncontactos_emergencia" as T3 #FCE8E8
-  component "«table»\ncitas · historial_citas\nestados_cita · notificaciones" as T4 #FCE8E8
+  component "«table»\ncitas · historial_citas\nestados_cita" as T4 #FCE8E8
   component "«table»\nhistorias_clinicas · consultas\ntratamientos · medicamentos\nestudios · catalogo_estudios" as T5 #FCE8E8
   component "«table»\nconfiguracion ·\nbloqueos_agenda" as T6 #FCE8E8
+  component "«table»\npagos · notificaciones\nsuscripciones_push" as T7 #FCE8E8
 }
 package "Reportes" as RP {
-  component "«PDF»\nreporte_citas.pdf\nreporte_atenciones.pdf" as RPDF #F3E8FA
-  component "«MS Excel»\nreporte_pacientes.xlsx\nreporte_atenciones.xlsx" as RXLS #E6F5EC
+  component "«PDF»\nreporte_citas.pdf\nreporte_pagos.pdf" as RPDF #F3E8FA
+  component "«MS Excel»\nreporte_atenciones.xlsx\nreporte_pagos.xlsx" as RXLS #E6F5EC
   component "«file»\nReporteService.php" as RS #EEEEEE
   component "«file»\nPdfSimple.php" as PS #EEEEEE
   component "«file»\nXlsxSimple.php" as XS #EEEEEE
@@ -77,6 +81,7 @@ MAIN .up.> P3
 MAIN .up.> P4
 MAIN .up.> P5
 MAIN .up.> P6
+MAIN .up.> P7
 MAIN .left.> ENV
 MAIN .left.> RT
 MAIN .left.> LY
@@ -87,12 +92,17 @@ LY -[hidden]down- CSS
 MAIN .right.> LV
 MAIN .right.> PDO
 LV -[hidden]down- PDO
+PDO -[hidden]down- PPS
+PPS -[hidden]down- WPF
+MAIN .right.> PPS
+MAIN .right.> WPF
 MAIN .down.> BD
 MAIN .down.> RP
 T1 -[hidden]right- T2
 T2 -[hidden]right- T3
 T4 -[hidden]right- T5
 T5 -[hidden]right- T6
+T6 -[hidden]right- T7
 T1 -[hidden]down- T4
 PG ..> SQL
 SQL ..> T1
@@ -101,11 +111,13 @@ SQL ..> T3
 SQL ..> T4
 SQL ..> T5
 SQL ..> T6
+SQL ..> T7
 P1 -[hidden]right- P2
 P2 -[hidden]right- P3
 P3 -[hidden]right- P4
 P4 -[hidden]right- P5
 P5 -[hidden]right- P6
+P6 -[hidden]right- P7
 RS ..> PS
 RS ..> XS
 PS ..> RPDF

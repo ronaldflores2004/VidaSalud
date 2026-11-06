@@ -77,6 +77,7 @@ entity especialidades {
   --
   nombre : varchar(80) <<UQ f_normalizar>>
   descripcion : varchar(255)
+  precio_consulta : numeric(8,2)  CHECK >= 0
   activo : boolean
 }
 entity medicos {
@@ -228,7 +229,29 @@ entity notificaciones {
   tipo : varchar(15)  CHECK
   canal : varchar(10)  CHECK
   mensaje : varchar(255)
+  para_medico : boolean
   programada_para, enviada_en, leida_en
+}
+entity pagos {
+  * id : bigserial <<PK>>
+  --
+  codigo : varchar(12) <<UQ>>
+  cita_id : bigint <<FK, UQ>>
+  monto, monto_usd : numeric(8,2)
+  metodo : varchar(10)  CHECK
+  estado : varchar(15)  CHECK
+  referencia : varchar(60)
+  registrado_por : bigint <<FK>>
+  pagado_en : timestamp
+}
+entity suscripciones_push {
+  * id : bigserial <<PK>>
+  --
+  user_id : bigint <<FK>>
+  endpoint : text <<UQ>>
+  clave_p256dh : varchar(120)
+  clave_auth : varchar(40)
+  navegador : varchar(120)
 }
 roles ||--o{ users
 users ||--o{ bitacora
@@ -253,5 +276,8 @@ consultas ||--o{ estudios
 catalogo_estudios ||--o{ estudios
 citas |o--o{ notificaciones
 estudios |o--o{ notificaciones
+citas ||--o| pagos
+users ||--o{ pagos
+users ||--o{ suscripciones_push
 
 @enduml

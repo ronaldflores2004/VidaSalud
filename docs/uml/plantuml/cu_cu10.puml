@@ -41,5 +41,7 @@ PAC -- U
 REC -- U
 usecase "CU9. Consultar disponibilidad de horarios" as I0
 U ..> I0 : <<include>>
+usecase "CU21. Pagar ficha" as X2
+X2 ..> U : <<extend>>
 }
 @enduml

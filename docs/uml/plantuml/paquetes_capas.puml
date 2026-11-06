@@ -44,11 +44,12 @@ package "FRONTEND  (frontend/)  –  Capa de Presentación" as FE {
   folder "views/P4_GestionCitas" as F4
   folder "views/P5_AtencionMedica" as F5
   folder "views/P6_Reportes" as F6
-  folder "assets: css/compartido · js/compartido · js/P4_GestionCitas · js/P5_AtencionMedica" as FA
+  folder "views/P7_PagosNotificaciones" as F7
+  folder "assets: css · js/compartido · js/P4 · js/P5 · js/P7 (pagar.js, push.js, sw.js)" as FA
 }
 package "BACKEND  (backend/)" as BE {
   package "Capa de Control  (app/Http)" as CC {
-    folder "routes/web.php\n(ordenado P1…P6)" as RT
+    folder "routes/web.php · console.php\n(ordenado P1…P7)" as RT
     folder "Middleware/\nP1_SeguridadAcceso" as MW
     folder "Controllers/\nP1_SeguridadAcceso" as C1
     folder "Controllers/\nP2_GestionMedica" as C2
@@ -56,12 +57,14 @@ package "BACKEND  (backend/)" as BE {
     folder "Controllers/\nP4_GestionCitas" as C4
     folder "Controllers/\nP5_AtencionMedica" as C5
     folder "Controllers/\nP6_Reportes" as C6
+    folder "Controllers/\nP7_PagosNotificaciones" as C7
   }
   package "Capa de Negocio  (app/Services)" as CN {
     folder "Services/P4_GestionCitas\nDisponibilidad · Cita · ReprogramarCita\nCancelarCita · Asistencia" as S4
     folder "Services/P5_AtencionMedica\nConsultaService · EstudioService" as S5
     folder "Services/P6_Reportes\nReporteService" as S6
-    folder "Support\nPdfSimple · XlsxSimple" as SP
+    folder "Services/P7_PagosNotificaciones\nPagoService · PaypalService\nNotificacionService" as S7
+    folder "Support\nPdfSimple · XlsxSimple · WebPush" as SP
     folder "Exceptions\nReglaNegocioException" as EX
   }
   package "Capa de Datos  (app/Models, database)" as CD {
@@ -70,6 +73,7 @@ package "BACKEND  (backend/)" as BE {
     folder "Models/\nP3_GestionPacientes" as M3
     folder "Models/\nP4_GestionCitas" as M4
     folder "Models/\nP5_AtencionMedica" as M5
+    folder "Models/\nP7_PagosNotificaciones" as M7
     folder "database/\nmigrations · seeders · sql" as MG
   }
 }
@@ -81,6 +85,7 @@ F2 -[hidden]right- F3
 F3 -[hidden]down- F4
 F4 -[hidden]right- F5
 F5 -[hidden]right- F6
+F6 -[hidden]right- F7
 F4 -[hidden]down- FA
 RT -[hidden]right- MW
 MW -[hidden]right- C1
@@ -89,18 +94,24 @@ C2 -[hidden]right- C3
 C3 -[hidden]right- C4
 C4 -[hidden]right- C5
 C5 -[hidden]right- C6
+C6 -[hidden]down- C7
 S4 -[hidden]right- S5
 S5 -[hidden]right- S6
-S6 -[hidden]down- SP
+S6 -[hidden]down- S7
+S7 -[hidden]right- SP
 SP -[hidden]right- EX
 M1 -[hidden]right- M2
 M2 -[hidden]right- M3
 M3 -[hidden]down- M4
 M4 -[hidden]right- M5
-M5 -[hidden]right- MG
+M5 -[hidden]right- M7
+M7 -[hidden]down- MG
+FA -[hidden]down- RT
+C7 -[hidden]down- S4
+EX -[hidden]down- M1
+MG -[hidden]down- FW
 FE -down-> CC : HTTP (formularios,\nfetch JSON)
 CC -down-> CN
-CC -down-> CD
 CN -down-> CD
 CD -down-> FW
 FW -down-> PG

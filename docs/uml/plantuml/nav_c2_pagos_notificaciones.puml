@@ -1,0 +1,61 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam RectangleBackgroundColor #F3F8FD
+skinparam RectangleBorderColor #1F4E79
+skinparam roundcorner 12
+skinparam ArrowColor #1F4E79
+
+title Ciclo II – Pagos y notificaciones (CU21, CU22)
+rectangle "Reservar ficha\nCU10" as RF
+rectangle "Pagar ficha\nCU21" as PG
+rectangle "Ventana de PayPal" as PP
+rectangle "Detalle de la cita\n(Pagada)" as DC
+rectangle "Asistencia de hoy\nCU13" as AS
+rectangle "Pagos\nCU21 (recepción)" as LP
+rectangle "Notificaciones\nCU22" as NO
+rectangle "Permiso del navegador" as PE
+rectangle "Notificación push" as NP
+RF --> PG : Confirmar (paciente)
+PG --> PP : Pagar con PayPal
+PP --> DC : pago aprobado
+PG --> DC : Pagar después en recepción
+AS --> AS : Cobrar (efectivo, QR, tarjeta)
+AS --> LP : Pagos
+LP --> LP : Reembolsar
+NO --> PE : Activar notificaciones
+PE --> NO : permitido
+NP --> DC : tocar la notificación
+
+@enduml

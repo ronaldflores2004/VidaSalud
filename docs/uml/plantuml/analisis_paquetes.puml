@@ -78,29 +78,40 @@ package "P4. Gestión de Citas (Fichas)" as P4 {
   class "Control Agenda" as K31 <<control>>
   class "Cita" as K32 <<entity>>
   class "Historial Cita" as K33 <<entity>>
-  class "Notificación" as K34 <<entity>>
 }
 package "P5. Atención Médica e Historial Clínico" as P5 {
-  class "Pantalla Consulta Médica" as K35 <<boundary>>
-  class "Pantalla Historial Clínico" as K36 <<boundary>>
-  class "Pantalla Estudios" as K37 <<boundary>>
-  class "Pantalla Mi Historial" as K38 <<boundary>>
-  class "Control Consulta" as K39 <<control>>
-  class "Control Historial" as K40 <<control>>
-  class "Control Tratamiento" as K41 <<control>>
-  class "Control Estudios" as K42 <<control>>
-  class "Control Mi Historial" as K43 <<control>>
-  class "Historia Clínica" as K44 <<entity>>
-  class "Consulta" as K45 <<entity>>
-  class "Tratamiento" as K46 <<entity>>
-  class "Medicamento" as K47 <<entity>>
-  class "Estudio" as K48 <<entity>>
-  class "Catálogo Estudio" as K49 <<entity>>
+  class "Pantalla Consulta Médica" as K34 <<boundary>>
+  class "Pantalla Historial Clínico" as K35 <<boundary>>
+  class "Pantalla Estudios" as K36 <<boundary>>
+  class "Pantalla Mi Historial" as K37 <<boundary>>
+  class "Control Consulta" as K38 <<control>>
+  class "Control Historial" as K39 <<control>>
+  class "Control Tratamiento" as K40 <<control>>
+  class "Control Estudios" as K41 <<control>>
+  class "Control Mi Historial" as K42 <<control>>
+  class "Historia Clínica" as K43 <<entity>>
+  class "Consulta" as K44 <<entity>>
+  class "Tratamiento" as K45 <<entity>>
+  class "Medicamento" as K46 <<entity>>
+  class "Estudio" as K47 <<entity>>
+  class "Catálogo Estudio" as K48 <<entity>>
 }
 package "P6. Reportes" as P6 {
-  class "Pantalla Reportes" as K50 <<boundary>>
-  class "Control Reportes" as K51 <<control>>
-  class "Reporte PDF / Excel" as K52 <<boundary>>
+  class "Pantalla Reportes" as K49 <<boundary>>
+  class "Control Reportes" as K50 <<control>>
+  class "Reporte PDF / Excel" as K51 <<boundary>>
+}
+package "P7. Pagos y Notificaciones" as P7 {
+  class "Pantalla Pagar Ficha" as K52 <<boundary>>
+  class "Pantalla Pagos" as K53 <<boundary>>
+  class "Pantalla Notificaciones" as K54 <<boundary>>
+  class "Control Pagos" as K55 <<control>>
+  class "Control Notificaciones" as K56 <<control>>
+  class "Pago" as K57 <<entity>>
+  class "Notificación" as K58 <<entity>>
+  class "Suscripción Push" as K59 <<entity>>
+  class "PayPal" as K60 <<boundary>>
+  class "Servicio Push" as K61 <<boundary>>
 }
 P4 ..> P3
 P4 ..> P2
@@ -112,4 +123,6 @@ P4 ..> P1
 P5 ..> P1
 P6 ..> P4
 P6 ..> P1
+P7 ..> P4
+P7 ..> P1
 @enduml

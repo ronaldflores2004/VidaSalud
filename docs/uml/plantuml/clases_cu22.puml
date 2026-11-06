@@ -1,0 +1,88 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+allowmixing
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+actor "Paciente" as A
+class "Pantalla Notificaciones" as B <<boundary>> {
+  endpoint: string
+  p256dh: string
+  auth: string
+}
+class "Control Notificaciones" as C <<control>> {
+  + bandeja(usuario)
+  + marcarLeidas()
+  + suscribir(datos)
+  + desuscribir(endpoint)
+  + probar()
+  + enviar(notificacion)
+}
+class "Notificación" as E0 <<entity>> {
+  id: int
+  tipo: string
+  canal: string
+  mensaje: string
+  para_medico: bool
+  programada_para: datetime
+  enviada_en: datetime
+  leida_en: datetime
+  --
+  + destinatario(): Usuario
+  + url(): string
+  + marcarLeida()
+}
+class "Suscripción Push" as E1 <<entity>> {
+  id: int
+  endpoint: string
+  clave_p256dh: string
+  clave_auth: string
+  navegador: string
+  --
+  + usuario(): Usuario
+}
+class "Servicio Push" as E2 <<entity>> {
+  (servicio externo del navegador)
+  --
+  + entregar(mensaje cifrado)
+}
+A --> B
+B --> C
+C --> E0
+C --> E1
+C --> E2
+E1 "0..*" -- "1" E2 : usa
+E0 "0..*" -- "0..*" E1 : se envía a
+@enduml

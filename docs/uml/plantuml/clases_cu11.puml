@@ -87,10 +87,13 @@ class "Notificación" as E3 <<entity>> {
   tipo: string
   canal: string
   mensaje: string
+  para_medico: bool
   programada_para: datetime
+  enviada_en: datetime
   leida_en: datetime
   --
-  + avisar(paciente, mensaje)
+  + destinatario(): Usuario
+  + url(): string
   + marcarLeida()
 }
 A --> B
@@ -100,6 +103,6 @@ C --> E1
 C --> E2
 C --> E3
 E0 "1" -- "1..*" E2 : registra
-E0 "0..1" -- "0..*" E3 : genera
 E1 "1" -- "0..*" E0 : ofrece fichas
+E0 "0..1" -- "0..*" E3 : genera
 @enduml

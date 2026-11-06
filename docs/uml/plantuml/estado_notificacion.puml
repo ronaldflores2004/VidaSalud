@@ -36,16 +36,16 @@ skinparam StateBackgroundColor #F3F8FD
 skinparam StateBorderColor #1F4E79
 hide empty description
 
-title Aviso al paciente (CU10, CU11, CU12, CU18, CU19)
-state "Programado" as P
-state "Pendiente de lectura" as N
-state "Leído" as L
+title Notificación al paciente o al médico (CU10–CU12, CU18, CU21, CU22)
+state "Programada" as P
+state "Enviada\n(push + bandeja)" as N
+state "Leída" as L
 [*] --> P : CU10 recordatorio 24 h antes
 P --> P : CU11 reprogramar\n(se mueve la fecha)
 P --> [*] : CU12 cancelar\n(se elimina)
-P --> N : llega la fecha programada
-[*] --> N : CU11 / CU12 / CU18\naviso inmediato
-N --> L : CU19 el paciente abre Mi historial
+P --> N : tarea programada\nnotificaciones:enviar
+[*] --> N : CU10 / CU11 / CU12 / CU18 / CU21\naviso inmediato
+N --> L : CU22 marcar leídas /\nCU19 Mi historial
 L --> [*]
 
 @enduml

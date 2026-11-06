@@ -47,6 +47,7 @@ rectangle "Clínica Vida Salud (negocio)" {
   usecase/ "Consultar historial y resultados" as N5
   usecase/ "Administrar médicos,\nespecialidades y horarios" as N6
   usecase/ "Elaborar informes de atención" as N7
+  usecase/ "Pagar la ficha en caja" as N8
 }
 actor "Recepcionista" as REC
 actor "Médico" as MED
@@ -63,5 +64,7 @@ N4 -- MED
 N5 -- MED
 N6 -- ADM
 N7 -- ADM
+PAC -- N8
+N8 -- REC
 
 @enduml

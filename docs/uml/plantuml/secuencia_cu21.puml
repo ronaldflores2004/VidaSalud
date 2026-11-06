@@ -1,0 +1,94 @@
+@startuml
+
+set separator none
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #333333
+skinparam ActorBorderColor #222222
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #1F4E79
+skinparam UsecaseBackgroundColor #DCE9F7
+skinparam PackageBorderColor #333333
+skinparam PackageBackgroundColor #FFFFFF
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassHeaderBackgroundColor #DCE9F7
+skinparam NoteBackgroundColor #FFF8DC
+skinparam RectangleBorderColor #333333
+skinparam NodeBorderColor #1F4E79
+skinparam NodeBackgroundColor #F3F8FD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor #DCE9F7
+skinparam SequenceLifeLineBorderColor #888888
+skinparam SequenceParticipantBackgroundColor #DCE9F7
+skinparam SequenceParticipantBorderColor #1F4E79
+skinparam ParticipantPadding 12
+skinparam BoundaryBackgroundColor #DCE9F7
+skinparam ControlBackgroundColor #DCE9F7
+skinparam EntityBackgroundColor #DCE9F7
+skinparam BoundaryBorderColor #1F4E79
+skinparam ControlBorderColor #1F4E79
+skinparam EntityBorderColor #1F4E79
+skinparam roundcorner 8
+skinparam SequenceParticipantBackgroundColor #FBF4E4
+skinparam SequenceParticipantBorderColor #555555
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceGroupBorderColor #555555
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ArrowColor #222222
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+mainframe **sd CU21_PagarFicha**
+actor "Paciente" as A
+participant ":PagarFicha" as F <<frm>>
+participant ":CtrlPagos" as C <<ctrl>>
+participant ":Cita" as E1 <<entidad>>
+participant ":Pago" as E2 <<entidad>>
+participant ":PayPal" as E3 <<entidad>>
+participant ":Notificacion" as E4 <<entidad>>
+A -> F : pagarConPayPal()
+activate F
+F -> C : crearOrden(cita)
+activate C
+C -> E1 : verificarVigenteSinPago()
+activate E1
+E1 --> C : ok
+alt ya pagada o no vigente
+C --> F : error
+F --> A : mostrarMensaje()
+else se puede pagar
+C -> E3 : crearOrden(montoUSD)
+activate E3
+E3 --> C : orderID
+C --> F : orderID
+A -> E3 : aprobarPago()
+F -> C : capturar(cita, orderID)
+C -> E3 : capturarOrden(orderID)
+E3 --> C : COMPLETED, monto
+C -> C : verificarMontoYFicha()
+C -> E2 : registrar(PAYPAL, referencia)
+activate E2
+E2 --> C : pago
+C -> E4 : crear(PAGO)
+activate E4
+C --> F : ficha pagada
+F --> A : mostrarFichaPagada()
+end
+opt cobro en recepción
+A -> F : cobrar(EFECTIVO | QR | TARJETA, comprobante)
+F -> C : cobrar(cita, metodo)
+C -> E2 : registrar(metodo, referencia)
+C --> F : pago registrado
+end
+deactivate F
+deactivate E4
+deactivate E3
+deactivate E2
+deactivate E1
+deactivate C
+@enduml

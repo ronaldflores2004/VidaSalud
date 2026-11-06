@@ -37,5 +37,7 @@ rectangle "CU17. Registrar tratamiento" {
 actor "Médico" as MED
 usecase "CU17. Registrar tratamiento" as U
 MED -- U
+usecase "CU15. Registrar consulta médica" as Y0
+U ..> Y0 : <<extend>>
 }
 @enduml

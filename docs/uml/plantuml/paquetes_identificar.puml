@@ -44,6 +44,8 @@ package "P5. Atención Médica e Historial Clínico" as P5 {
 }
 package "P6. Reportes" as P6 {
 }
+package "P7. Pagos y Notificaciones" as P7 {
+}
 P4 ..> P3
 P4 ..> P2
 P5 ..> P4
@@ -54,4 +56,6 @@ P4 ..> P1
 P5 ..> P1
 P6 ..> P4
 P6 ..> P1
+P7 ..> P4
+P7 ..> P1
 @enduml

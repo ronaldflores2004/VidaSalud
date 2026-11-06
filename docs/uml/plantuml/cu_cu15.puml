@@ -39,5 +39,9 @@ usecase "CU15. Registrar consulta médica" as U
 MED -- U
 usecase "CU16. Gestionar historial clínico" as I2
 U ..> I2 : <<include>>
+usecase "CU17. Registrar tratamiento" as X0
+X0 ..> U : <<extend>>
+usecase "CU18. Gestionar estudios médicos" as X1
+X1 ..> U : <<extend>>
 }
 @enduml

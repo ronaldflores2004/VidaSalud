@@ -40,6 +40,7 @@ actor "Administrador" as A
 class "Pantalla Especialidades" as B <<boundary>> {
   nombre: string
   descripcion: string
+  precio_consulta: decimal
 }
 class "Control Especialidades" as C <<control>> {
   + listar(filtro)
@@ -52,6 +53,7 @@ class "Especialidad" as E0 <<entity>> {
   id: int
   nombre: string
   descripcion: string
+  precio_consulta: decimal
   activo: bool
   --
   + nombreRepetido(nombre): bool

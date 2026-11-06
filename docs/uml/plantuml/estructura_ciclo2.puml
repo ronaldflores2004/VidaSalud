@@ -48,7 +48,10 @@ rectangle "Ciclo II" {
   usecase "CU18. Gestionar estudios médicos" as CU18
   usecase "CU19. Consultar historial y resultados" as CU19
   usecase "CU20. Generar reportes" as CU20
+  usecase "CU21. Pagar ficha" as CU21
+  usecase "CU22. Gestionar notificaciones" as CU22
   usecase "CU9. Consultar disponibilidad de horarios" as CU9
+  usecase "CU10. Reservar ficha médica" as CU10
 }
 REC -- CU11
 REC -- CU12
@@ -61,8 +64,13 @@ MED -- CU17
 MED -- CU18
 PAC -- CU19
 ADM -- CU20
+PAC -- CU21
+REC -- CU21
+PAC -- CU22
+MED -- CU22
 CU11 ..> CU9 : <<include>>
 CU15 ..> CU16 : <<include>>
 CU17 ..> CU15 : <<extend>>
 CU18 ..> CU15 : <<extend>>
+CU21 ..> CU10 : <<extend>>
 @enduml

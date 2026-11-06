@@ -71,6 +71,7 @@ class "Especialidad" as E1 <<entity>> {
   id: int
   nombre: string
   descripcion: string
+  precio_consulta: decimal
   activo: bool
   --
   + nombreRepetido(nombre): bool
